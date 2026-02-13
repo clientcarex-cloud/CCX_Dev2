@@ -1,0 +1,214 @@
+body {
+    font-family: "Open Sans", sans-serif;
+    background-color: #f4f5f9;
+    padding: 20px;
+}
+
+.panel {
+    border-radius: 6px;
+    border: 1px solid #dce1ef;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    background: #fff;
+}
+
+.panel-heading {
+    color: #333;
+    background-color: #f8f9fa;
+    border-color: #eee;
+    font-weight: 600;
+    font-size: 18px;
+    padding: 15px 20px;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
+
+.panel-body {
+    padding: 25px;
+}
+
+.btn-primary {
+    background-color: #28b8da;
+    border-color: #22a7c6;
+    padding: 8px 20px;
+    font-size: 14px;
+}
+
+.btn-primary:hover {
+    background-color: #1e95b3;
+    border-color: #1b8aa6;
+}
+
+.form-group label {
+    font-weight: 600;
+    font-size: 13px;
+    color: #4a5568;
+    margin-bottom: 8px;
+}
+
+.form-control {
+    height: 40px;
+    box-shadow: none;
+    border-color: #e2e8f0;
+}
+
+.form-control:focus {
+    border-color: #28b8da;
+    box-shadow: 0 0 0 1px rgba(40, 184, 218, 0.2);
+}
+
+.required {
+    color: #e53e3e;
+}
+
+/* Star Rating CSS */
+.star-rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+}
+
+.star-rating input {
+    display: none;
+}
+
+.star-rating label {
+    width: 30px;
+    font-size: 30px;
+    color: #ccc;
+    cursor: pointer;
+    margin: 0;
+    line-height: 1;
+}
+
+.star-rating label:hover,
+.star-rating label:hover~label,
+.star-rating input:checked~label {
+    color: #f5b942;
+}
+
+
+/* Branding Card Styles */
+.branding-container {
+    position: relative;
+    cursor: pointer;
+}
+
+.healtho-card {
+    display: none;
+    position: absolute;
+    bottom: 150%;
+    right: 0;
+    width: 280px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    padding: 20px;
+    z-index: 1000;
+    border: 1px solid #eee;
+    animation: fadeIn 0.3s ease;
+    text-align: left;
+}
+
+.healtho-card::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    right: 20px;
+    border-width: 8px;
+    border-style: solid;
+    border-color: #fff transparent transparent transparent;
+}
+
+.healtho-card h5 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.healtho-card-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    color: #666;
+    font-size: 13px;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.healtho-card-item:last-child {
+    margin-bottom: 0;
+}
+
+.healtho-card-item:hover {
+    color: #28b8da;
+    text-decoration: none;
+}
+
+.healtho-card-item i {
+    width: 25px;
+    color: #28b8da;
+    font-size: 14px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .col-md-8 {
+        width: 100%;
+    }
+}
+
+.slots-container {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -5px;
+}
+
+.slot-btn {
+    background-color: #f1f1f1;
+    border: 1px solid #dcdcdc;
+    color: #555;
+    padding: 10px 15px;
+    margin: 5px;
+    border-radius: 6px;
+    cursor: pointer;
+    width: calc(25% - 10px);
+    /* 4 columns */
+    text-align: center;
+    font-size: 13px;
+    transition: all 0.2s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.slot-btn:hover {
+    background-color: #e6e6e6;
+    border-color: #adadad;
+}
+
+.slot-btn.active {
+    background-color: #fff;
+    border: 2px solid #28b8da;
+    color: #28b8da;
+    font-weight: 600;
+}
+
+.slot-btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #f9f9f9;
+}
+
+@media (max-width: 768px) {
+    .slot-btn {
+        width: calc(50% - 10px);
+        /* 2 columns on mobile */
+    }
+}

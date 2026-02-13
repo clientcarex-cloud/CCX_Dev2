@@ -1,0 +1,15 @@
+<?php
+define('BASEPATH', __DIR__); // Dummy for environment checks if needed, but not really needed for raw script if I bootstrap CI.
+// Actually, it's easier to just assume this runs inside CI if I can, but I can't easily trigger it. 
+// So I will try to use the CodeIgniter instance if I can, OR just write a raw script assuming db credentials?
+// No, raw credentials are hard to guess. 
+// The BEST way is to create a controller method that runs it, then curl it.
+// OR, since I have `run_command`, I can try to use `php index.php ...` but that's CLI.
+// Let's creating a temporary controller file in `modules/b2b_labs/controllers/Setup_db.php`
+// Then I can visit it or run it via CLI if configured.
+// But wait, `install.php` runs on module activation.
+// If I can't deactivate/activate, I should just run the SQL manually via a controller method.
+
+// Let's add a temporary method to `B2b_labs.php` to create the table, call it, then remove it.
+// That is the safest way to access the DB instance.
+?>
