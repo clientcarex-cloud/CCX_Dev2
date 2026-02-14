@@ -357,10 +357,14 @@ $(function () {
                 // Reset file input
                 $('#module_data_import_file').val('');
             },
-            error: function () {
+            error: function (jqXHR, textStatus, errorThrown) {
                 btn.prop('disabled', false).html(original_text);
-                alert_float('danger', 'Request failed');
-                $('#module_data_result').html('<div class="alert alert-danger">Request failed</div>');
+                var msg = 'Request failed: ' + errorThrown;
+                if (jqXHR.responseText) {
+                    msg = jqXHR.responseText;
+                }
+                alert_float('danger', msg);
+                $('#module_data_result').html('<div class="alert alert-danger">' + msg + '</div>');
                 $('#module_data_import_file').val('');
             }
         });

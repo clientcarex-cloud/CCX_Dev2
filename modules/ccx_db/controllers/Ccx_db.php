@@ -922,14 +922,7 @@ class Ccx_db extends AdminController
         echo "SET FOREIGN_KEY_CHECKS=0;\n\n";
 
         foreach ($valid_tables as $real_table) {
-            // Get CREATE TABLE
-            $q = $db->query("SHOW CREATE TABLE `" . $real_table . "`");
-            $row = $q->row_array();
-            $create_sql = $row['Create Table'] ?? null;
-            if ($create_sql) {
-                echo "DROP TABLE IF EXISTS `{$real_table}`;\n";
-                echo $create_sql . ";\n\n";
-            }
+            // No DROP TABLE or CREATE TABLE for Module Data Export (Data Only / Update)
 
             // Dump data
             $batch = 1000;
@@ -944,6 +937,17 @@ class Ccx_db extends AdminController
                 continue;
 
             $cols_list = '`' . implode('`, `', $cols) . '`';
+
+            // Build ON DUPLICATE KEY UPDATE clause
+            $update_clause = [];
+            foreach ($cols as $col) {
+                // Skip primary key updates if we want, but usually we just update everything to match source
+                // verification: checked syntax, VALUES(col) is deprecated in newer MySQL (8.0.20+), use NEW.col alias or strictly VALUES function where supported.
+                // CI/Perfex environment usually supports standard syntax.
+                // Safe standard syntax: `col` = VALUES(`col`)
+                $update_clause[] = "`$col` = VALUES(`$col`)";
+            }
+            $update_sql_suffix = " ON DUPLICATE KEY UPDATE " . implode(', ', $update_clause);
 
             do {
                 $res = $db->query("SELECT $cols_list FROM `{$real_table}` LIMIT {$batch} OFFSET {$offset}");
@@ -964,7 +968,7 @@ class Ccx_db extends AdminController
                 }
 
                 if (!empty($values)) {
-                    echo "INSERT INTO `{$real_table}` ($cols_list) VALUES \n" . implode(",\n", $values) . ";\n\n";
+                    echo "INSERT INTO `{$real_table}` ($cols_list) VALUES \n" . implode(",\n", $values) . "\n{$update_sql_suffix};\n\n";
                 }
 
                 $offset += $batch;
@@ -1130,6 +1134,12 @@ class Ccx_db extends AdminController
             if ($line === false)
                 break;
 
+            // Security: Strip DROP TABLE to prevent data loss on existing tables
+            // We checks if the line STARTS with DROP TABLE (ignoring whitespace) to avoid false positives in data values
+            if (stripos(ltrim($line), 'DROP TABLE') === 0) {
+                continue;
+            }
+
             // Replace logic
             // We match everything in backticks
             $line = preg_replace_callback('/`([a-zA-Z0-9_]+)`/', function ($m) use ($expected_tables, $dest_prefix, &$stats, &$found_any) {
@@ -1192,6 +1202,12 @@ class Ccx_db extends AdminController
             if ($line === false)
                 break;
 
+            // Fix Collation Compatibility
+            $line = str_replace(['utf8mb4_0900_ai_ci', 'utf8mb4_0900_as_cs'], 'utf8mb4_general_ci', $line);
+
+            // Allow retry by ignoring duplicates
+            $line = str_replace('INSERT INTO', 'INSERT IGNORE INTO', $line);
+
             $trim = trim($line);
             if ($trim === '' || strpos($trim, '--') === 0)
                 continue;
@@ -1222,10 +1238,12 @@ class Ccx_db extends AdminController
             // Preview Data
             $msg .= "<h4>Data Preview:</h4>";
             foreach ($stats['tables'] as $tbl) {
-                $real_table = $dest_prefix . $tbl;
-                // Handler for double prefix if any (rare but safe)
-                // Based on previous logic, we replaced full match with $dest_prefix . $tbl
-                // So we trust that structure.
+                // Prevent Double Prefix (e.g. celabs_tbl + tblfoo = celabs_tbltblfoo)
+                if (substr($dest_prefix, -3) === 'tbl' && substr($tbl, 0, 3) === 'tbl') {
+                    $real_table = $dest_prefix . substr($tbl, 3);
+                } else {
+                    $real_table = $dest_prefix . $tbl;
+                }
 
                 $msg .= "<strong>Table: {$real_table}</strong><br>";
                 $res = $db->query("SELECT * FROM `{$real_table}` LIMIT 3");
@@ -1245,7 +1263,7 @@ class Ccx_db extends AdminController
                             $msg .= "<tr>";
                             foreach ($row as $val) {
                                 // Truncate long values
-                                $disp = strip_tags($val);
+                                $disp = strip_tags((string) $val);
                                 if (strlen($disp) > 50)
                                     $disp = substr($disp, 0, 50) . '...';
                                 $msg .= "<td>{$disp}</td>";
@@ -1258,6 +1276,47 @@ class Ccx_db extends AdminController
                     }
                 }
                 $msg .= "<br>";
+            }
+
+            // Post-Import Fix for Tests Master
+            if ($module_name === 'tests_master') {
+                // 1. Get or Create 'Tests' group in destination
+                $groups_tbl = $dest_prefix . 'items_groups';
+                $items_tbl = $dest_prefix . 'items';
+
+                $res = $db->query("SELECT id FROM `$groups_tbl` WHERE name = 'Tests'");
+                $group_row = $res ? $res->row() : null;
+
+                $tests_group_id = 0;
+                if ($group_row) {
+                    $tests_group_id = $group_row->id;
+                } else {
+                    $db->query("INSERT INTO `$groups_tbl` (name) VALUES ('Tests')");
+                    $tests_group_id = $db->insert_id();
+                }
+
+                if ($tests_group_id) {
+                    // 2. Update items to belong to this group if they are linked to templates
+                    // or have test-specific flags
+
+                    // Table names
+                    $tmpl_word = $dest_prefix . 'tests_word_templates';
+                    $tmpl_fixed = $dest_prefix . 'tests_fixed_templates';
+
+                    // Flags: test_method_id > 0, or linked in templates
+                    $sql_fix = "UPDATE `$items_tbl` 
+                                SET group_id = $tests_group_id 
+                                WHERE id IN (SELECT test_id FROM `$tmpl_word`) 
+                                   OR id IN (SELECT test_id FROM `$tmpl_fixed`)
+                                   OR test_method_id > 0
+                                   OR is_blood_sample_required = 1";
+
+                    $db->query($sql_fix);
+                    $affected = $db->affected_rows();
+                    if ($affected > 0) {
+                        $msg .= "<br><strong>Post-Import Fix:</strong> Assigned $affected items to 'Tests' group (ID: $tests_group_id).<br>";
+                    }
+                }
             }
 
             echo json_encode(['success' => true, 'message' => $msg]);
