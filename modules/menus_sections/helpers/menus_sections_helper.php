@@ -4,15 +4,21 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 function menus_sections_inject($items)
 {
-    $saved_config = get_option('menus_sections_active');
+    $CI = &get_instance();
 
-    // If no config, return original items
-    if (!$saved_config || $saved_config === '[]') {
+    // Check if table exists
+    if (!$CI->db->table_exists(db_prefix() . 'menus_sections')) {
         return $items;
     }
 
-    $saved_config = json_decode($saved_config, true);
-    if (!is_array($saved_config)) {
+    $saved_rows = $CI->db->select('*')
+        ->from(db_prefix() . 'menus_sections')
+        ->order_by('position', 'ASC')
+        ->get()
+        ->result_array();
+
+    // If no config, return original items
+    if (empty($saved_rows)) {
         return $items;
     }
 
@@ -25,27 +31,26 @@ function menus_sections_inject($items)
         $items_map[$item['slug']] = $item;
     }
 
-    foreach ($saved_config as $node) {
+    foreach ($saved_rows as $node) {
         if ($node['type'] === 'section') {
             // Create a section item
-            // We use a dummy slug but with a unique ID
-            $section_slug = $node['id'];
+            $section_slug = $node['slug'];
 
             $new_items[$section_slug] = [
                 'slug' => $section_slug,
-                'name' => $node['name'], // Name is the section title - Arrow added via CSS
+                'name' => $node['name'],
                 'icon' => '',
                 'href' => '#',
                 'position' => $position_counter++,
                 'li_attributes' => [
                     'class' => 'menu-section-label',
-                    'id' => $section_slug, // Add ID for JS targeting
+                    'id' => $section_slug,
                 ],
                 'children' => []
             ];
 
         } else if ($node['type'] === 'item') {
-            $slug = $node['id'];
+            $slug = $node['slug'];
             if (isset($items_map[$slug])) {
                 $item = $items_map[$slug];
                 $item['position'] = $position_counter++;
@@ -65,3 +70,5 @@ function menus_sections_inject($items)
 
     return $new_items;
 }
+
+
