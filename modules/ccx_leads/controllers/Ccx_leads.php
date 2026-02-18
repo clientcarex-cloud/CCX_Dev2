@@ -148,6 +148,39 @@ class Ccx_leads extends AdminController
             access_denied('CCX Leads Settings');
         }
 
+        if ($this->input->post()) {
+            $data = $this->input->post();
+            if (isset($data['ccx_leads_fields'])) {
+                update_option('ccx_leads_field_settings', json_encode($data['ccx_leads_fields']));
+                set_alert('success', _l('updated_successfully', _l('ccx_leads_settings')));
+            }
+            redirect(admin_url('ccx_leads/settings'));
+        }
+
+        $settings = get_option('ccx_leads_field_settings');
+        if (empty($settings)) {
+            $default_fields = [
+                ['name' => 'Name', 'slug' => 'name', 'mandatory' => 1, 'status' => 1],
+                ['name' => 'Phone', 'slug' => 'phonenumber', 'mandatory' => 0, 'status' => 1],
+                ['name' => 'Email', 'slug' => 'email', 'mandatory' => 0, 'status' => 1],
+                ['name' => 'Position', 'slug' => 'title', 'mandatory' => 0, 'status' => 1],
+                ['name' => 'Website', 'slug' => 'website', 'mandatory' => 0, 'status' => 1],
+                ['name' => 'Description', 'slug' => 'description', 'mandatory' => 0, 'status' => 1],
+                ['name' => 'Address', 'slug' => 'address', 'mandatory' => 0, 'status' => 1],
+                ['name' => 'City', 'slug' => 'city', 'mandatory' => 0, 'status' => 1],
+                ['name' => 'State', 'slug' => 'state', 'mandatory' => 0, 'status' => 1],
+                ['name' => 'Country', 'slug' => 'country', 'mandatory' => 0, 'status' => 1],
+                ['name' => 'Zip Code', 'slug' => 'zip', 'mandatory' => 0, 'status' => 1],
+                ['name' => 'Lead Value', 'slug' => 'lead_value', 'mandatory' => 0, 'status' => 1],
+                ['name' => 'Priority', 'slug' => 'priority', 'mandatory' => 0, 'status' => 1],
+                ['name' => 'Status', 'slug' => 'status', 'mandatory' => 1, 'status' => 1],
+                ['name' => 'Assigned', 'slug' => 'assigned', 'mandatory' => 0, 'status' => 1],
+            ];
+            $data['ccx_leads_fields'] = $default_fields;
+        } else {
+            $data['ccx_leads_fields'] = json_decode($settings, true);
+        }
+
         $data['title'] = _l('ccx_leads_settings');
         $this->load->view('settings', $data);
     }

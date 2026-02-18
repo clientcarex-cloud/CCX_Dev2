@@ -52,7 +52,67 @@
 
                         <div class="tab-content">
                             <div role="tabpanel" class="tab-pane active" id="fields">
-                                <p>Fields settings coming soon...</p>
+                                <?php echo form_open(admin_url('ccx_leads/settings')); ?>
+                                <div class="table-responsive">
+                                    <table class="table dt-table" data-order-col="0" data-order-type="asc">
+                                        <thead>
+                                            <tr>
+                                                <th>Field Name</th>
+                                                <th>Slug</th>
+                                                <th>Mandatory</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($ccx_leads_fields as $key => $field) { ?>
+                                                <tr>
+                                                    <td>
+                                                        <input type="hidden"
+                                                            name="ccx_leads_fields[<?php echo $key; ?>][name]"
+                                                            value="<?php echo $field['name']; ?>">
+                                                        <?php echo $field['name']; ?>
+                                                    </td>
+                                                    <td>
+                                                        <input type="hidden"
+                                                            name="ccx_leads_fields[<?php echo $key; ?>][slug]"
+                                                            value="<?php echo $field['slug']; ?>">
+                                                        <?php echo $field['slug']; ?>
+                                                    </td>
+                                                    <td>
+                                                        <div class="checkbox checkbox-primary">
+                                                            <input type="hidden"
+                                                                name="ccx_leads_fields[<?php echo $key; ?>][mandatory]"
+                                                                value="0">
+                                                            <input type="checkbox"
+                                                                name="ccx_leads_fields[<?php echo $key; ?>][mandatory]"
+                                                                value="1" <?php if (isset($field['mandatory']) && $field['mandatory'] == 1) {
+                                                                    echo 'checked';
+                                                                } ?>>
+                                                            <label></label>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="onoffswitch">
+                                                            <input type="hidden"
+                                                                name="ccx_leads_fields[<?php echo $key; ?>][status]"
+                                                                value="0">
+                                                            <input type="checkbox"
+                                                                name="ccx_leads_fields[<?php echo $key; ?>][status]"
+                                                                class="onoffswitch-checkbox" id="status_<?php echo $key; ?>"
+                                                                value="1" <?php if (isset($field['status']) && $field['status'] == 1) {
+                                                                    echo 'checked';
+                                                                } ?>>
+                                                            <label class="onoffswitch-label"
+                                                                for="status_<?php echo $key; ?>"></label>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            <?php } ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <button type="submit" class="btn btn-info pull-right"><?php echo _l('save'); ?></button>
+                                <?php echo form_close(); ?>
                             </div>
                             <div role="tabpanel" class="tab-pane" id="ordering">
                                 <p>Ordering settings coming soon...</p>
