@@ -184,7 +184,7 @@
                                                 ], ['id', 'name'], 'Type'); ?>
 
                                                 <div id="options_wrapper" class="hide">
-                                                    <?php echo render_textarea('options', 'Options (comma separated)'); ?>
+                                                    <?php echo render_textarea('options', 'Options (one per line or comma separated)', '', ['rows' => 5]); ?>
                                                 </div>
 
                                                 <div class="checkbox checkbox-primary">

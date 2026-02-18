@@ -263,11 +263,13 @@
                                 } elseif($field['type'] == 'textarea') {
                                     echo render_textarea($input_name, $label, $value, $attrs);
                                 } elseif($field['type'] == 'select') {
-                                    $options = explode(',', $field['options']);
+                                    $options = preg_split('/[\r\n,]+/', $field['options'], -1, PREG_SPLIT_NO_EMPTY);
                                     $select_options = [];
                                     foreach($options as $opt) {
                                         $opt = trim($opt);
-                                        $select_options[] = ['id' => $opt, 'name' => $opt];
+                                        if($opt !== '') {
+                                            $select_options[] = ['id' => $opt, 'name' => $opt];
+                                        }
                                     }
                                     echo render_select($input_name, $select_options, ['id', 'name'], $label, $value, $attrs);
                                 }
