@@ -42,62 +42,127 @@
             </div>
             <?php echo form_open(admin_url('ccx_leads/lead'), ['id' => 'ccx-lead-modal-form']); ?>
             <div class="modal-body">
+                <?php
+                $fields_settings = get_option('ccx_leads_field_settings');
+                $fields_map = [];
+                if ($fields_settings) {
+                    $decoded = json_decode($fields_settings, true);
+                    foreach ($decoded as $f) {
+                        $fields_map[$f['slug']] = $f;
+                    }
+                }
+                $get_field = function($slug) use ($fields_map) {
+                    return isset($fields_map[$slug]) ? $fields_map[$slug] : ['status' => 1, 'mandatory' => 0];
+                };
+                ?>
+
+                <?php $f = $get_field('name'); if ($f['status'] == 1) { ?>
                 <div class="form-group">
-                    <label for="name" class="control-label"><?php echo _l('ccx_leads_name'); ?></label>
-                    <input type="text" id="name" name="name" class="form-control" required>
+                    <label for="name" class="control-label">
+                        <?php echo _l('ccx_leads_name'); ?>
+                        <?php if ($f['mandatory'] == 1) echo '<span class="text-danger">*</span>'; ?>
+                    </label>
+                    <input type="text" id="name" name="name" class="form-control" <?php if ($f['mandatory'] == 1) echo 'required'; ?>>
                 </div>
+                <?php } ?>
+
+                <?php $f = $get_field('phonenumber'); if ($f['status'] == 1) { ?>
                 <div class="form-group" id="phone_group">
-                    <label for="phonenumber" class="control-label"><?php echo _l('ccx_leads_phonenumber'); ?></label>
-                    <input type="text" id="phonenumber" name="phonenumber" class="form-control">
+                    <label for="phonenumber" class="control-label">
+                        <?php echo _l('ccx_leads_phonenumber'); ?>
+                        <?php if ($f['mandatory'] == 1) echo '<span class="text-danger">*</span>'; ?>
+                    </label>
+                    <input type="text" id="phonenumber" name="phonenumber" class="form-control" <?php if ($f['mandatory'] == 1) echo 'required'; ?>>
                     <span id="phone_counter" class="text-muted small pull-right" style="display:none;"></span>
                     <span id="phone_duplicate_error" class="text-danger small" style="display:none;"></span>
                 </div>
-                <div class="form-group">
-                    <label for="email" class="control-label"><?php echo _l('ccx_leads_email'); ?></label>
-                    <input type="email" id="email" name="email" class="form-control">
-                </div>
+                <?php } ?>
 
+                <?php $f = $get_field('email'); if ($f['status'] == 1) { ?>
                 <div class="form-group">
-                    <label for="title" class="control-label"><?php echo _l('ccx_leads_title'); ?></label>
-                    <input type="text" id="title" name="title" class="form-control">
+                    <label for="email" class="control-label">
+                        <?php echo _l('ccx_leads_email'); ?>
+                        <?php if ($f['mandatory'] == 1) echo '<span class="text-danger">*</span>'; ?>
+                    </label>
+                    <input type="email" id="email" name="email" class="form-control" <?php if ($f['mandatory'] == 1) echo 'required'; ?>>
                 </div>
+                <?php } ?>
 
+                <?php $f = $get_field('title'); if ($f['status'] == 1) { ?>
                 <div class="form-group">
-                    <label for="website" class="control-label"><?php echo _l('ccx_leads_website'); ?></label>
-                    <input type="text" id="website" name="website" class="form-control">
+                    <label for="title" class="control-label">
+                        <?php echo _l('ccx_leads_title'); ?>
+                        <?php if ($f['mandatory'] == 1) echo '<span class="text-danger">*</span>'; ?>
+                    </label>
+                    <input type="text" id="title" name="title" class="form-control" <?php if ($f['mandatory'] == 1) echo 'required'; ?>>
                 </div>
+                <?php } ?>
 
+                <?php $f = $get_field('website'); if ($f['status'] == 1) { ?>
                 <div class="form-group">
-                    <label for="description" class="control-label"><?php echo _l('ccx_leads_description'); ?></label>
-                    <textarea id="description" name="description" class="form-control" rows="4"></textarea>
+                    <label for="website" class="control-label">
+                        <?php echo _l('ccx_leads_website'); ?>
+                        <?php if ($f['mandatory'] == 1) echo '<span class="text-danger">*</span>'; ?>
+                    </label>
+                    <input type="text" id="website" name="website" class="form-control" <?php if ($f['mandatory'] == 1) echo 'required'; ?>>
+                </div>
+                <?php } ?>
+
+                <?php $f = $get_field('description'); if ($f['status'] == 1) { ?>
+                <div class="form-group">
+                    <label for="description" class="control-label">
+                        <?php echo _l('ccx_leads_description'); ?>
+                        <?php if ($f['mandatory'] == 1) echo '<span class="text-danger">*</span>'; ?>
+                    </label>
+                    <textarea id="description" name="description" class="form-control" rows="4" <?php if ($f['mandatory'] == 1) echo 'required'; ?>></textarea>
+                </div>
+                <?php } ?>
+
+                <div class="row">
+                    <?php $f = $get_field('address'); if ($f['status'] == 1) { ?>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="address" class="control-label">
+                                <?php echo _l('ccx_leads_address'); ?>
+                                <?php if ($f['mandatory'] == 1) echo '<span class="text-danger">*</span>'; ?>
+                            </label>
+                            <input type="text" id="address" name="address" class="form-control" <?php if ($f['mandatory'] == 1) echo 'required'; ?>>
+                        </div>
+                    </div>
+                    <?php } ?>
+                    <?php $f = $get_field('city'); if ($f['status'] == 1) { ?>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="city" class="control-label">
+                                <?php echo _l('ccx_leads_city'); ?>
+                                <?php if ($f['mandatory'] == 1) echo '<span class="text-danger">*</span>'; ?>
+                            </label>
+                            <input type="text" id="city" name="city" class="form-control" <?php if ($f['mandatory'] == 1) echo 'required'; ?>>
+                        </div>
+                    </div>
+                    <?php } ?>
                 </div>
 
                 <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="address" class="control-label"><?php echo _l('ccx_leads_address'); ?></label>
-                            <input type="text" id="address" name="address" class="form-control">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="city" class="control-label"><?php echo _l('ccx_leads_city'); ?></label>
-                            <input type="text" id="city" name="city" class="form-control">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
+                    <?php $f = $get_field('state'); if ($f['status'] == 1) { ?>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="state" class="control-label"><?php echo _l('ccx_leads_state'); ?></label>
-                            <input type="text" id="state" name="state" class="form-control">
+                            <label for="state" class="control-label">
+                                <?php echo _l('ccx_leads_state'); ?>
+                                <?php if ($f['mandatory'] == 1) echo '<span class="text-danger">*</span>'; ?>
+                            </label>
+                            <input type="text" id="state" name="state" class="form-control" <?php if ($f['mandatory'] == 1) echo 'required'; ?>>
                         </div>
                     </div>
+                    <?php } ?>
+                    <?php $f = $get_field('country'); if ($f['status'] == 1) { ?>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="country" class="control-label"><?php echo _l('ccx_leads_country'); ?></label>
-                            <select id="country" name="country" class="form-control"
+                            <label for="country" class="control-label">
+                                <?php echo _l('ccx_leads_country'); ?>
+                                <?php if ($f['mandatory'] == 1) echo '<span class="text-danger">*</span>'; ?>
+                            </label>
+                            <select id="country" name="country" class="form-control" <?php if ($f['mandatory'] == 1) echo 'required'; ?>
                                 data-none-selected-text="<?php echo _l('dropdown_non_selected_tex'); ?>">
                                 <option value=""></option>
                                 <?php foreach (get_all_countries() as $country) { ?>
@@ -108,34 +173,66 @@
                             </select>
                         </div>
                     </div>
+                    <?php } ?>
+                    <?php $f = $get_field('zip'); if ($f['status'] == 1) { ?>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="zip" class="control-label"><?php echo _l('ccx_leads_zip'); ?></label>
-                            <input type="text" id="zip" name="zip" class="form-control">
+                            <label for="zip" class="control-label">
+                                <?php echo _l('ccx_leads_zip'); ?>
+                                <?php if ($f['mandatory'] == 1) echo '<span class="text-danger">*</span>'; ?>
+                            </label>
+                            <input type="text" id="zip" name="zip" class="form-control" <?php if ($f['mandatory'] == 1) echo 'required'; ?>>
                         </div>
                     </div>
+                    <?php } ?>
                 </div>
                 <!-- Add other fields as needed (source, status, assigned) -->
                 <div class="row">
+                    <?php $f = $get_field('status'); if ($f['status'] == 1) { ?>
                     <div class="col-md-6">
-                        <?php echo render_select('status', $statuses, array('id', 'name'), 'ccx_leads_status', (isset($lead) ? $lead->status : '')); ?>
+                        <?php 
+                            $attrs = [];
+                            if ($f['mandatory'] == 1) $attrs['required'] = true;
+                            echo render_select('status', $statuses, array('id', 'name'), 'ccx_leads_status', (isset($lead) ? $lead->status : ''), $attrs); 
+                        ?>
                     </div>
-                     <div class="col-md-6">
+                    <?php } ?>
+                    <?php $f = $get_field('source'); if ($f['status'] == 1) { // Assuming 'source' is mapped or we add it to settings later. Defaulting to show if not in map or treating as 'source' slug. ?>
+                    <div class="col-md-6">
                         <?php echo render_select('source', $sources, array('id', 'name'), 'ccx_leads_source', (isset($lead) ? $lead->source : '')); ?>
                     </div>
+                    <?php } ?>
                 </div>
                  <div class="row">
+                    <?php $f = $get_field('assigned'); if ($f['status'] == 1) { ?>
                     <div class="col-md-6">
-                        <?php echo render_select('assigned', $staff_members, array('staffid', array('firstname', 'lastname')), 'ccx_leads_assigned', (isset($lead) ? $lead->assigned : get_staff_user_id())); ?>
+                        <?php 
+                            $attrs = [];
+                            if ($f['mandatory'] == 1) $attrs['required'] = true;
+                            echo render_select('assigned', $staff_members, array('staffid', array('firstname', 'lastname')), 'ccx_leads_assigned', (isset($lead) ? $lead->assigned : get_staff_user_id()), $attrs); 
+                        ?>
                     </div>
+                    <?php } ?>
+                    <?php $f = $get_field('lead_value'); if ($f['status'] == 1) { ?>
                      <div class="col-md-6">
-                         <?php echo render_input('lead_value', 'ccx_leads_value', (isset($lead) ? $lead->lead_value : ''), 'number'); ?>
+                         <?php 
+                            $attrs = ['step' => '0.01'];
+                            if ($f['mandatory'] == 1) $attrs['required'] = true;
+                            echo render_input('lead_value', 'ccx_leads_value', (isset($lead) ? $lead->lead_value : ''), 'number', $attrs); 
+                         ?>
                     </div>
+                    <?php } ?>
                 </div>
                  <div class="row">
+                    <?php $f = $get_field('priority'); if ($f['status'] == 1) { ?>
                     <div class="col-md-12">
-                         <?php echo render_select('priority', $priorities, array('priorityid', 'name'), 'ccx_leads_priority', (isset($lead) ? $lead->priority : '')); ?>
+                         <?php 
+                            $attrs = [];
+                            if ($f['mandatory'] == 1) $attrs['required'] = true;
+                            echo render_select('priority', $priorities, array('priorityid', 'name'), 'ccx_leads_priority', (isset($lead) ? $lead->priority : ''), $attrs); 
+                         ?>
                     </div>
+                    <?php } ?>
                 </div>
             </div>
             <div class="modal-footer">
