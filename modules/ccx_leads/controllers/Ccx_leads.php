@@ -80,8 +80,6 @@ class Ccx_leads extends AdminController
             $data['title'] = _l('add_new', _l('ccx_lead'));
         } else {
             $data['lead'] = $this->ccx_leads_model->get_lead($id);
-        } else {
-            $data['lead'] = $this->ccx_leads_model->get_lead($id);
             $data['call_logs'] = $this->ccx_leads_model->get_call_logs($id);
             $data['title'] = _l('edit', _l('ccx_lead'));
         }
