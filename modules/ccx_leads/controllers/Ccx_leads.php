@@ -233,21 +233,22 @@ class Ccx_leads extends AdminController
         if ($this->input->post()) {
             $data = $this->input->post();
             $id = $data['id'];
-            unset($data['id']);
-
-            if (!isset($data['mandatory'])) {
-                $data['mandatory'] = 0;
-            } else {
-                $data['mandatory'] = 1;
-            }
+            $insert_data = [
+                'name' => $data['name'],
+                'type' => $data['type'],
+                'options' => $data['options'],
+                'mandatory' => isset($data['mandatory']) ? 1 : 0,
+                // 'status' => isset($data['status']) ? 1 : 0, // form doesn't send status, default is 1
+            ];
 
             if ($id == '') {
-                $data['slug'] = slug_it($data['name']);
-                $this->db->insert(db_prefix() . 'ccx_leads_custom_fields', $data);
+                $insert_data['slug'] = slug_it($data['name']);
+                $insert_data['status'] = 1;
+                $this->db->insert(db_prefix() . 'ccx_leads_custom_fields', $insert_data);
                 set_alert('success', _l('added_successfully', 'Custom Field'));
             } else {
                 $this->db->where('id', $id);
-                $this->db->update(db_prefix() . 'ccx_leads_custom_fields', $data);
+                $this->db->update(db_prefix() . 'ccx_leads_custom_fields', $insert_data);
                 set_alert('success', _l('updated_successfully', 'Custom Field'));
             }
         }
