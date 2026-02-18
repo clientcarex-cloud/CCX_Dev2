@@ -222,12 +222,17 @@
                                         });
                                     }
                                     $(function () {
-                                        $('select[name="type"]').on('change', function () {
+                                        $('body').on('change', 'select[name="type"]', function () {
                                             if ($(this).val() == 'select') {
                                                 $('#options_wrapper').removeClass('hide');
                                             } else {
                                                 $('#options_wrapper').addClass('hide');
                                             }
+                                        });
+
+                                        // Trigger change on modal show to set initial state
+                                        $('#custom_field_modal').on('shown.bs.modal', function () {
+                                            $('select[name="type"]').trigger('change');
                                         });
                                     });
                                 </script>
