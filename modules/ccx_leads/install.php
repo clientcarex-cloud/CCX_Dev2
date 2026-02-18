@@ -14,6 +14,8 @@ if (!$CI->db->table_exists(db_prefix() . 'ccx_leads')) {
   `source` int(11) DEFAULT NULL,
   `status` int(11) DEFAULT 1,
   `assigned` int(11) DEFAULT 0,
+  `lead_value` decimal(15,2) DEFAULT NULL,
+  `priority` int(11) DEFAULT 0,
   `dateadded` datetime NOT NULL,
   `addedfrom` int(11) NOT NULL,
   `title` varchar(100) DEFAULT NULL,
@@ -37,6 +39,8 @@ $columns = [
   'city' => 'VARCHAR(100) NULL DEFAULT NULL',
   'state' => 'VARCHAR(100) NULL DEFAULT NULL',
   'country' => 'INT(11) DEFAULT 0',
+  'lead_value' => 'DECIMAL(15,2) DEFAULT NULL',
+  'priority' => 'INT(11) DEFAULT 0',
   'zip' => 'VARCHAR(15) NULL DEFAULT NULL',
 ];
 

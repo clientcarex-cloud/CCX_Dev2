@@ -111,11 +111,25 @@
                         </div>
 
                         <!-- Add other fields as needed (source, status, assigned) -->
+                        <?php
+                        $ccx_priorities = [
+                            ['id' => 0, 'name' => _l('not_set')],
+                            ['id' => 1, 'name' => _l('low')],
+                            ['id' => 2, 'name' => _l('medium')],
+                            ['id' => 3, 'name' => _l('high')],
+                        ];
+                        ?>
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <?php echo render_input('lead_value', 'lead_value', isset($lead) ? $lead->lead_value : '', 'number', ['step' => '0.01']); ?>
+                            </div>
+                            <div class="col-md-4">
+                                <?php echo render_select('priority', $ccx_priorities, ['id', 'name'], 'priority', (isset($lead) ? $lead->priority : 0)); ?>
+                            </div>
+                            <div class="col-md-4">
                                 <?php echo render_select('status', $statuses ?? [], ['id', 'name'], 'status', (isset($lead) ? $lead->status : '')); ?>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-12 mtop10">
                                 <?php echo render_select('assigned', $staff ?? [], ['staffid', ['firstname', 'lastname']], 'assigned', (isset($lead) ? $lead->assigned : '')); ?>
                             </div>
                         </div>
