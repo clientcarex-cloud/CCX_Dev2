@@ -57,7 +57,8 @@
                 <!-- Add other fields as needed (source, status, assigned) -->
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal"><?php echo _l('ccx_leads_close'); ?></button>
+                <button type="button" class="btn btn-default"
+                    data-dismiss="modal"><?php echo _l('ccx_leads_close'); ?></button>
                 <button type="submit" class="btn btn-info"><?php echo _l('ccx_leads_save'); ?></button>
             </div>
             <?php echo form_close(); ?>
@@ -65,6 +66,13 @@
     </div>
 </div>
 <?php init_tail(); ?>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+<style>
+    .iti {
+        width: 100%;
+    }
+</style>
 <script>
     $(function () {
         initDataTable('.table-ccx-leads', window.location.href, [7], [7]);
@@ -86,6 +94,17 @@
 
     function new_ccx_lead() {
         $('#ccx_lead_modal').modal('show');
+        // Re-initialize to ensure it renders correctly if modal was hidden
+        setTimeout(function () {
+            var input = document.querySelector("#phonenumber");
+            if (!input.classList.contains("iti-enabled")) {
+                window.intlTelInput(input, {
+                    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+                    separateDialCode: true,
+                });
+                input.classList.add("iti-enabled");
+            }
+        }, 500);
     }
 </script>
 </body>

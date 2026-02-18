@@ -138,12 +138,26 @@
 </div>
 
 <?php init_tail(); ?>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+<style>
+    .iti {
+        width: 100%;
+    }
+</style>
 <script>
     function new_call_log() {
         $('#call_log_modal').modal('show');
     }
 
     $(function () {
+        var input = document.querySelector("#phonenumber");
+        if (input) {
+            window.intlTelInput(input, {
+                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+                separateDialCode: true,
+            });
+        }
         appValidateForm($('#ccx-lead-form'), {
             name: 'required'
         });
