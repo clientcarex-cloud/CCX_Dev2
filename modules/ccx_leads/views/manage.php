@@ -56,6 +56,65 @@
                     <label for="email" class="control-label"><?php echo _l('ccx_leads_email'); ?></label>
                     <input type="email" id="email" name="email" class="form-control">
                 </div>
+
+                <div class="form-group">
+                    <label for="title" class="control-label"><?php echo _l('ccx_leads_title'); ?></label>
+                    <input type="text" id="title" name="title" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label for="website" class="control-label"><?php echo _l('ccx_leads_website'); ?></label>
+                    <input type="text" id="website" name="website" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label for="description" class="control-label"><?php echo _l('ccx_leads_description'); ?></label>
+                    <textarea id="description" name="description" class="form-control" rows="4"></textarea>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="address" class="control-label"><?php echo _l('ccx_leads_address'); ?></label>
+                            <input type="text" id="address" name="address" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="city" class="control-label"><?php echo _l('ccx_leads_city'); ?></label>
+                            <input type="text" id="city" name="city" class="form-control">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="state" class="control-label"><?php echo _l('ccx_leads_state'); ?></label>
+                            <input type="text" id="state" name="state" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="country" class="control-label"><?php echo _l('ccx_leads_country'); ?></label>
+                            <select id="country" name="country" class="form-control"
+                                data-none-selected-text="<?php echo _l('dropdown_non_selected_tex'); ?>">
+                                <option value=""></option>
+                                <?php foreach (get_all_countries() as $country) { ?>
+                                    <option value="<?php echo $country['country_id']; ?>" <?php if (get_option('customer_default_country') == $country['country_id']) {
+                                           echo 'selected';
+                                       } ?>><?php echo $country['short_name']; ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="zip" class="control-label"><?php echo _l('ccx_leads_zip'); ?></label>
+                            <input type="text" id="zip" name="zip" class="form-control">
+                        </div>
+                    </div>
+                </div>
                 <!-- Add other fields as needed (source, status, assigned) -->
             </div>
             <div class="modal-footer">

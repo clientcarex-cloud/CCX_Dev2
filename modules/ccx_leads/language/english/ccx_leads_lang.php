@@ -16,6 +16,15 @@ $lang['ccx_leads_assigned'] = 'Assigned To';
 $lang['ccx_leads_dateadded'] = 'Date Added';
 $lang['ccx_leads_options'] = 'Options';
 
+$lang['ccx_leads_title'] = 'Position';
+$lang['ccx_leads_website'] = 'Website';
+$lang['ccx_leads_address'] = 'Address';
+$lang['ccx_leads_city'] = 'City';
+$lang['ccx_leads_state'] = 'State';
+$lang['ccx_leads_country'] = 'Country';
+$lang['ccx_leads_zip'] = 'Zip Code';
+$lang['ccx_leads_description'] = 'Description';
+
 $lang['ccx_leads_call_logs'] = 'Call Logs';
 $lang['ccx_leads_new_call_log'] = 'New Call Log';
 $lang['ccx_leads_no_call_logs_found'] = 'No Call Logs Found';

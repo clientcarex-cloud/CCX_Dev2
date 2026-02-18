@@ -5,7 +5,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 $CI = &get_instance();
 
 if (!$CI->db->table_exists(db_prefix() . 'ccx_leads')) {
-    $CI->db->query('CREATE TABLE `' . db_prefix() . 'ccx_leads` (
+  $CI->db->query('CREATE TABLE `' . db_prefix() . 'ccx_leads` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(191) NOT NULL,
   `company` varchar(191) DEFAULT NULL,
@@ -16,12 +16,38 @@ if (!$CI->db->table_exists(db_prefix() . 'ccx_leads')) {
   `assigned` int(11) DEFAULT 0,
   `dateadded` datetime NOT NULL,
   `addedfrom` int(11) NOT NULL,
+  `title` varchar(100) DEFAULT NULL,
+  `website` varchar(150) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `address` varchar(100) DEFAULT NULL,
+  `city` varchar(100) DEFAULT NULL,
+  `state` varchar(100) DEFAULT NULL,
+  `country` int(11) DEFAULT 0,
+  `zip` varchar(15) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=' . $CI->db->char_set . ';');
 }
 
+/* Add columns if they don't exist (for updates) */
+$columns = [
+  'title' => 'VARCHAR(100) NULL DEFAULT NULL',
+  'website' => 'VARCHAR(150) NULL DEFAULT NULL',
+  'description' => 'TEXT NULL DEFAULT NULL',
+  'address' => 'VARCHAR(100) NULL DEFAULT NULL',
+  'city' => 'VARCHAR(100) NULL DEFAULT NULL',
+  'state' => 'VARCHAR(100) NULL DEFAULT NULL',
+  'country' => 'INT(11) DEFAULT 0',
+  'zip' => 'VARCHAR(15) NULL DEFAULT NULL',
+];
+
+foreach ($columns as $column => $definition) {
+  if (!$CI->db->field_exists($column, db_prefix() . 'ccx_leads')) {
+    $CI->db->query("ALTER TABLE `" . db_prefix() . "ccx_leads` ADD `" . $column . "` " . $definition);
+  }
+}
+
 if (!$CI->db->table_exists(db_prefix() . 'ccx_leads_call_logs')) {
-    $CI->db->query('CREATE TABLE `' . db_prefix() . 'ccx_leads_call_logs` (
+  $CI->db->query('CREATE TABLE `' . db_prefix() . 'ccx_leads_call_logs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `lead_id` int(11) NOT NULL,
   `staff_id` int(11) NOT NULL,
