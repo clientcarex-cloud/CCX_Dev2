@@ -160,7 +160,14 @@
             var iti = window.intlTelInput(input, {
                 utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
                 separateDialCode: true,
-                autoPlaceholder: "aggressive"
+                autoPlaceholder: "aggressive",
+                initialCountry: "auto",
+                geoIpLookup: function (callback) {
+                    $.get('https://ipapi.co/json', function () { }, "jsonp").always(function (resp) {
+                        var countryCode = (resp && resp.country_code) ? resp.country_code : "us";
+                        callback(countryCode);
+                    });
+                }
             });
 
             input.addEventListener("countrychange", function () {
