@@ -110,6 +110,28 @@
                             </div>
                         </div>
 
+                        <div class="row">
+                             <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="leadvalue" class="control-label"><?php echo _l('ccx_leads_lead_value'); ?></label>
+                                    <input type="number" step="0.01" id="leadvalue" name="leadvalue" class="form-control" value="<?php echo (isset($lead) ? $lead->leadvalue : ''); ?>">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="priority" class="control-label"><?php echo _l('ccx_leads_priority'); ?></label>
+                                     <select id="priority" name="priority" class="form-control" data-none-selected-text="<?php echo _l('dropdown_non_selected_tex'); ?>">
+                                        <option value=""></option>
+                                        <?php 
+                                        $selected_priority = (isset($lead) ? $lead->priority : '');
+                                        foreach($priorities as $priority){ ?>
+                                        <option value="<?php echo $priority['priorityid']; ?>" <?php if($selected_priority == $priority['priorityid']){echo 'selected';} ?>><?php echo $priority['name']; ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Add other fields as needed (source, status, assigned) -->
                         <div class="row">
                             <div class="col-md-6">

@@ -115,6 +115,42 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="leadvalue"
+                                class="control-label"><?php echo _l('ccx_leads_lead_value'); ?></label>
+                            <input type="number" step="0.01" id="leadvalue" name="leadvalue" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="priority" class="control-label"><?php echo _l('ccx_leads_priority'); ?></label>
+                            <select id="priority" name="priority" class="form-control"
+                                data-none-selected-text="<?php echo _l('dropdown_non_selected_tex'); ?>">
+                                <option value=""></option>
+                                <?php foreach ($priorities as $priority) { ?>
+                                    <option value="<?php echo $priority['priorityid']; ?>"><?php echo $priority['name']; ?>
+                                    </option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="assigned" class="control-label"><?php echo _l('ccx_leads_assigned'); ?></label>
+                            <select id="assigned" name="assigned" class="form-control"
+                                data-none-selected-text="<?php echo _l('dropdown_non_selected_tex'); ?>">
+                                <option value=""></option>
+                                <?php foreach ($staff as $member) { ?>
+                                    <option value="<?php echo $member['staffid']; ?>">
+                                        <?php echo $member['firstname'] . ' ' . $member['lastname']; ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                    </div>
+                </div>
                 <!-- Add other fields as needed (source, status, assigned) -->
             </div>
             <div class="modal-footer">
