@@ -127,7 +127,8 @@
     </div>
 </div>
 <?php if (is_admin()) { ?>
-    <a href="#" class="floating-settings-btn" data-toggle="tooltip" title="<?php echo _l('settings'); ?>">
+    <a href="<?php echo admin_url('ccx_leads/settings'); ?>" class="floating-settings-btn" data-toggle="tooltip"
+        title="<?php echo _l('settings'); ?>">
         <i class="fa fa-cogs"></i>
     </a>
     <style>

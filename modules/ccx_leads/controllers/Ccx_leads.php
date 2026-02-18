@@ -132,4 +132,14 @@ class Ccx_leads extends AdminController
             echo json_encode(['exists' => $exists, 'message' => _l('ccx_leads_phone_exists')]);
         }
     }
+
+    public function settings()
+    {
+        if (!is_admin()) {
+            access_denied('CCX Leads Settings');
+        }
+
+        $data['title'] = _l('ccx_leads_settings');
+        $this->load->view('settings', $data);
+    }
 }
