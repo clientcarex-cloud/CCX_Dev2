@@ -5,7 +5,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
 $aColumns = [
     'id',
     'name',
-    'company',
     'phonenumber',
     'email',
     'status',
@@ -35,7 +34,6 @@ foreach ($rResult as $aRow) {
     $name .= '</div>';
 
     $row[] = $name;
-    $row[] = $aRow['company'];
     $row[] = '<a href="tel:' . $aRow['phonenumber'] . '">' . $aRow['phonenumber'] . '</a>';
     $row[] = '<a href="mailto:' . $aRow['email'] . '">' . $aRow['email'] . '</a>';
 
