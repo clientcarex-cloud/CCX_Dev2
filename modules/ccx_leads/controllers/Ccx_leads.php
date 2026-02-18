@@ -69,6 +69,9 @@ class Ccx_leads extends AdminController
                     // Save Custom Fields
                     if (!empty($custom_fields)) {
                         foreach ($custom_fields as $field_id => $value) {
+                            if (is_array($value)) {
+                                $value = implode(',', $value);
+                            }
                             $this->db->insert(db_prefix() . 'ccx_leads_custom_values', [
                                 'lead_id' => $id,
                                 'field_id' => $field_id,
@@ -91,6 +94,9 @@ class Ccx_leads extends AdminController
                 // Save/Update Custom Fields
                 if (!empty($custom_fields)) {
                     foreach ($custom_fields as $field_id => $value) {
+                        if (is_array($value)) {
+                            $value = implode(',', $value);
+                        }
                         $exists = $this->db->where('lead_id', $id)->where('field_id', $field_id)->get(db_prefix() . 'ccx_leads_custom_values')->row();
                         if ($exists) {
                             $this->db->where('id', $exists->id);

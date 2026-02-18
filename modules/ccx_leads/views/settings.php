@@ -179,6 +179,7 @@
                                                     ['id' => 'number', 'name' => 'Number'],
                                                     ['id' => 'textarea', 'name' => 'Textarea'],
                                                     ['id' => 'select', 'name' => 'Select'],
+                                                    ['id' => 'multiselect', 'name' => 'Multi Select'],
                                                     ['id' => 'date', 'name' => 'Date'],
                                                     ['id' => 'email', 'name' => 'Email'],
                                                 ], ['id', 'name'], 'Type'); ?>
@@ -228,7 +229,7 @@
                                         // Robust change listener for both native and bootstrap-select
                                         $('body').on('change changed.bs.select', '#custom_field_modal select[name="type"]', function () {
                                             var val = $(this).val();
-                                            if (val == 'select') {
+                                            if (val == 'select' || val == 'multiselect') {
                                                 $('#options_wrapper').removeClass('hide');
                                             } else {
                                                 $('#options_wrapper').addClass('hide');

@@ -272,6 +272,26 @@
                                         }
                                     }
                                     echo render_select($input_name, $select_options, ['id', 'name'], $label, $value, $attrs);
+                                } elseif($field['type'] == 'multiselect') {
+                                    $options = preg_split('/[\r\n,]+/', $field['options'], -1, PREG_SPLIT_NO_EMPTY);
+                                    $select_options = [];
+                                    foreach($options as $opt) {
+                                        $opt = trim($opt);
+                                        if($opt !== '') {
+                                            $select_options[] = ['id' => $opt, 'name' => $opt];
+                                        }
+                                    }
+                                    $attrs['multiple'] = true;
+                                    // Parse value if it is a string (comma separated)
+                                    $selected_values = $value;
+                                    if (is_string($value) && strpos($value, ',') !== false) {
+                                        $selected_values = explode(',', $value);
+                                        $selected_values = array_map('trim', $selected_values);
+                                    } elseif (is_string($value) && !empty($value)) {
+                                        $selected_values = [$value]; // Single value
+                                    }
+                                    
+                                    echo render_select($input_name . '[]', $select_options, ['id', 'name'], $label, $selected_values, $attrs);
                                 }
                                 echo '</div>';
                             }
