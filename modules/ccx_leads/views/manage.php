@@ -126,6 +126,35 @@
         </div>
     </div>
 </div>
+<?php if (is_admin()) { ?>
+    <a href="#" class="floating-settings-btn" data-toggle="tooltip" title="<?php echo _l('settings'); ?>">
+        <i class="fa fa-cogs"></i>
+    </a>
+    <style>
+        .floating-settings-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 9999;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            line-height: 50px;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            font-size: 20px;
+            color: #555;
+            transition: all 0.3s ease;
+            display: block;
+        }
+
+        .floating-settings-btn:hover {
+            transform: scale(1.1);
+            color: #333;
+        }
+    </style>
+<?php } ?>
 <?php init_tail(); ?>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
