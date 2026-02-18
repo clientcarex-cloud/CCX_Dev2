@@ -232,17 +232,33 @@ class Ccx_leads extends AdminController
         }
         if ($this->input->post()) {
             $data = $this->input->post();
+
+            if (!$data['name'] || !$data['type']) {
+                set_alert('danger', _l('problem_adding', 'Custom Field'));
+                redirect(admin_url('ccx_leads/settings'));
+            }
+
             $id = $data['id'];
             $insert_data = [
                 'name' => $data['name'],
                 'type' => $data['type'],
-                'options' => $data['options'],
+                'options' => trim($data['options']),
                 'mandatory' => isset($data['mandatory']) ? 1 : 0,
                 // 'status' => isset($data['status']) ? 1 : 0, // form doesn't send status, default is 1
             ];
 
             if ($id == '') {
-                $insert_data['slug'] = slug_it($data['name']);
+                $slug = slug_it($data['name']);
+
+                // Ensure unique slug
+                $original_slug = $slug;
+                $count = 1;
+                while ($this->db->where('slug', $slug)->count_all_results(db_prefix() . 'ccx_leads_custom_fields') > 0) {
+                    $slug = $original_slug . '_' . $count;
+                    $count++;
+                }
+
+                $insert_data['slug'] = $slug;
                 $insert_data['status'] = 1;
                 $this->db->insert(db_prefix() . 'ccx_leads_custom_fields', $insert_data);
                 set_alert('success', _l('added_successfully', 'Custom Field'));
@@ -261,7 +277,10 @@ class Ccx_leads extends AdminController
             ajax_access_denied();
         }
         $field = $this->db->where('id', $id)->get(db_prefix() . 'ccx_leads_custom_fields')->row();
-        echo json_encode($field);
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($field));
     }
 
     public function delete_custom_field($id)

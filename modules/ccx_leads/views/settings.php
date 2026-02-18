@@ -212,7 +212,9 @@
                                     }
                                     function edit_custom_field(id) {
                                         $.get(admin_url + 'ccx_leads/get_custom_field/' + id, function (response) {
-                                            response = JSON.parse(response);
+                                            if (typeof response === 'string') {
+                                                response = JSON.parse(response);
+                                            }
                                             $('#custom_field_modal input[name="id"]').val(response.id);
                                             $('#custom_field_modal input[name="name"]').val(response.name);
                                             // Trigger change after setting value to ensure visibility update
