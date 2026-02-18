@@ -20,6 +20,9 @@ class Ccx_leads extends AdminController
             $this->app->get_table_data(module_views_path('ccx_leads', 'table'));
         }
 
+        $data['staff'] = $this->staff_model->get('', ['active' => 1]);
+        $this->load->model('leads_model');
+        $data['priorities'] = $this->leads_model->get_priority();
         $data['title'] = _l('ccx_leads');
         $this->load->view('manage', $data);
     }
@@ -77,9 +80,15 @@ class Ccx_leads extends AdminController
             $data['title'] = _l('add_new', _l('ccx_lead'));
         } else {
             $data['lead'] = $this->ccx_leads_model->get_lead($id);
+        } else {
+            $data['lead'] = $this->ccx_leads_model->get_lead($id);
             $data['call_logs'] = $this->ccx_leads_model->get_call_logs($id);
             $data['title'] = _l('edit', _l('ccx_lead'));
         }
+
+        $data['staff'] = $this->staff_model->get('', ['active' => 1]);
+        $this->load->model('leads_model');
+        $data['priorities'] = $this->leads_model->get_priority();
 
         $this->load->view('lead', $data);
     }

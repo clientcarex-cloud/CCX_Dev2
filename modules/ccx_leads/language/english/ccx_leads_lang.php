@@ -24,6 +24,9 @@ $lang['ccx_leads_state'] = 'State';
 $lang['ccx_leads_country'] = 'Country';
 $lang['ccx_leads_zip'] = 'Zip Code';
 $lang['ccx_leads_description'] = 'Description';
+$lang['ccx_leads_priority'] = 'Priority';
+$lang['ccx_leads_lead_value'] = 'Lead Value';
+$lang['ccx_leads_assigned'] = 'Assigned To';
 
 $lang['ccx_leads_call_logs'] = 'Call Logs';
 $lang['ccx_leads_new_call_log'] = 'New Call Log';
