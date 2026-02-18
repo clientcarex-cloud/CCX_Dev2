@@ -113,6 +113,18 @@
         appValidateForm($('#ccx-lead-modal-form'), {
             name: 'required'
         }, function (form) {
+            // Get the intlTelInput instance
+            var phoneInput = document.querySelector("#phonenumber");
+            var iti = window.intlTelInputGlobals.getInstance(phoneInput);
+
+            // If instance exists and is valid/has number, update the input value
+            if (iti) {
+                var fullNumber = iti.getNumber(); // Gets full international number e.g. +12025550109
+                if (fullNumber) {
+                    $(phoneInput).val(fullNumber);
+                }
+            }
+
             $.post(form.action, $(form).serialize(), function (response) {
                 response = JSON.parse(response);
                 if (response.success) {
