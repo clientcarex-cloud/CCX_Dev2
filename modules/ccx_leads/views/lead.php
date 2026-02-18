@@ -164,7 +164,7 @@
                 initialCountry: "auto",
                 geoIpLookup: function (callback) {
                     $.get('https://ipapi.co/json', function () { }, "jsonp").always(function (resp) {
-                        var countryCode = (resp && resp.country_code) ? resp.country_code : "us";
+                        var countryCode = (resp && resp.country_code) ? resp.country_code : "in";
                         callback(countryCode);
                     });
                 }
