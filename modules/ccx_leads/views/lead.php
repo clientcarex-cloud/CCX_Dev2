@@ -233,6 +233,50 @@
                             <?php } ?>
                         </div>
 
+                        <?php
+                        // Fetch Custom Fields
+                        $custom_fields = [];
+                        if($this->db->table_exists(db_prefix() . 'ccx_leads_custom_fields')){
+                            $custom_fields = $this->db->where('status', 1)->order_by('field_order', 'asc')->get(db_prefix() . 'ccx_leads_custom_fields')->result_array();
+                        }
+                        
+                        if(!empty($custom_fields)) {
+                            echo '<div class="row">';
+                            foreach($custom_fields as $field) {
+                                $value = '';
+                                if(isset($lead)) {
+                                    $val_row = $this->db->where('lead_id', $lead->id)->where('field_id', $field['id'])->get(db_prefix() . 'ccx_leads_custom_values')->row();
+                                    $value = $val_row ? $val_row->value : '';
+                                }
+                                $col = ($field['type'] == 'textarea' || $field['type'] == 'select' && count($custom_fields) % 2 != 0) ? 12 : 6;
+                                echo '<div class="col-md-'.$col.'">';
+                                $attrs = [];
+                                if($field['mandatory'] == 1) $attrs['required'] = true;
+                                
+                                $input_name = 'custom_fields['.$field['id'].']';
+                                $label = $field['name'];
+
+                                if($field['type'] == 'text' || $field['type'] == 'number' || $field['type'] == 'email') {
+                                    echo render_input($input_name, $label, $value, $field['type'], $attrs);
+                                } elseif($field['type'] == 'date') {
+                                    echo render_date_input($input_name, $label, $value, $attrs);
+                                } elseif($field['type'] == 'textarea') {
+                                    echo render_textarea($input_name, $label, $value, $attrs);
+                                } elseif($field['type'] == 'select') {
+                                    $options = explode(',', $field['options']);
+                                    $select_options = [];
+                                    foreach($options as $opt) {
+                                        $opt = trim($opt);
+                                        $select_options[] = ['id' => $opt, 'name' => $opt];
+                                    }
+                                    echo render_select($input_name, $select_options, ['id', 'name'], $label, $value, $attrs);
+                                }
+                                echo '</div>';
+                            }
+                            echo '</div>';
+                        }
+                        ?>
+
                         <button type="submit" class="btn btn-info pull-right">
                             <?php echo _l('ccx_leads_submit'); ?>
                         </button>

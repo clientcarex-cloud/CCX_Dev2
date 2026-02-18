@@ -57,9 +57,26 @@ class Ccx_leads extends AdminController
                 $data['company'] = $data['name'];
             }
 
+            $custom_fields = [];
+            if (isset($data['custom_fields'])) {
+                $custom_fields = $data['custom_fields'];
+                unset($data['custom_fields']);
+            }
+
             if ($id == '') {
                 $id = $this->ccx_leads_model->add_lead($data);
                 if ($id) {
+                    // Save Custom Fields
+                    if (!empty($custom_fields)) {
+                        foreach ($custom_fields as $field_id => $value) {
+                            $this->db->insert(db_prefix() . 'ccx_leads_custom_values', [
+                                'lead_id' => $id,
+                                'field_id' => $field_id,
+                                'value' => $value
+                            ]);
+                        }
+                    }
+
                     $message = _l('added_successfully', _l('ccx_lead'));
                     if ($this->input->is_ajax_request()) {
                         echo json_encode(['success' => true, 'message' => $message]);
@@ -70,6 +87,24 @@ class Ccx_leads extends AdminController
                 }
             } else {
                 $success = $this->ccx_leads_model->update_lead($data, $id);
+
+                // Save/Update Custom Fields
+                if (!empty($custom_fields)) {
+                    foreach ($custom_fields as $field_id => $value) {
+                        $exists = $this->db->where('lead_id', $id)->where('field_id', $field_id)->get(db_prefix() . 'ccx_leads_custom_values')->row();
+                        if ($exists) {
+                            $this->db->where('id', $exists->id);
+                            $this->db->update(db_prefix() . 'ccx_leads_custom_values', ['value' => $value]);
+                        } else {
+                            $this->db->insert(db_prefix() . 'ccx_leads_custom_values', [
+                                'lead_id' => $id,
+                                'field_id' => $field_id,
+                                'value' => $value
+                            ]);
+                        }
+                    }
+                }
+
                 $message = _l('updated_successfully', _l('ccx_lead'));
                 if ($this->input->is_ajax_request()) {
                     echo json_encode(['success' => true, 'message' => $message]);
@@ -181,7 +216,74 @@ class Ccx_leads extends AdminController
             $data['ccx_leads_fields'] = json_decode($settings, true);
         }
 
+        // Fetch Custom Fields
+        if ($this->db->table_exists(db_prefix() . 'ccx_leads_custom_fields')) {
+            $data['custom_fields'] = $this->db->get(db_prefix() . 'ccx_leads_custom_fields')->result_array();
+        }
+
         $data['title'] = _l('ccx_leads_settings');
         $this->load->view('settings', $data);
+    }
+
+    public function save_custom_field()
+    {
+        if (!is_admin()) {
+            access_denied('CCX Leads Settings');
+        }
+        if ($this->input->post()) {
+            $data = $this->input->post();
+            $id = $data['id'];
+            unset($data['id']);
+
+            if (!isset($data['mandatory'])) {
+                $data['mandatory'] = 0;
+            } else {
+                $data['mandatory'] = 1;
+            }
+
+            if ($id == '') {
+                $data['slug'] = slug_it($data['name']);
+                $this->db->insert(db_prefix() . 'ccx_leads_custom_fields', $data);
+                set_alert('success', _l('added_successfully', 'Custom Field'));
+            } else {
+                $this->db->where('id', $id);
+                $this->db->update(db_prefix() . 'ccx_leads_custom_fields', $data);
+                set_alert('success', _l('updated_successfully', 'Custom Field'));
+            }
+        }
+        redirect(admin_url('ccx_leads/settings'));
+    }
+
+    public function get_custom_field($id)
+    {
+        if (!is_admin()) {
+            ajax_access_denied();
+        }
+        $field = $this->db->where('id', $id)->get(db_prefix() . 'ccx_leads_custom_fields')->row();
+        echo json_encode($field);
+    }
+
+    public function delete_custom_field($id)
+    {
+        if (!is_admin()) {
+            access_denied('CCX Leads Settings');
+        }
+        $this->db->where('id', $id);
+        $this->db->delete(db_prefix() . 'ccx_leads_custom_fields');
+        // Also delete values
+        $this->db->where('field_id', $id);
+        $this->db->delete(db_prefix() . 'ccx_leads_custom_values');
+
+        set_alert('success', _l('deleted', 'Custom Field'));
+        redirect(admin_url('ccx_leads/settings'));
+    }
+
+    public function change_custom_field_status($id, $status)
+    {
+        if (!is_admin()) {
+            ajax_access_denied();
+        }
+        $this->db->where('id', $id);
+        $this->db->update(db_prefix() . 'ccx_leads_custom_fields', ['status' => $status]);
     }
 }

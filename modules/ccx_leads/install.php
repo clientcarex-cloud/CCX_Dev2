@@ -61,3 +61,27 @@ if (!$CI->db->table_exists(db_prefix() . 'ccx_leads_call_logs')) {
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=' . $CI->db->char_set . ';');
 }
+
+if (!$CI->db->table_exists(db_prefix() . 'ccx_leads_custom_fields')) {
+  $CI->db->query('CREATE TABLE `' . db_prefix() . 'ccx_leads_custom_fields` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `name` varchar(150) NOT NULL,
+    `slug` varchar(150) NOT NULL,
+    `type` varchar(50) NOT NULL,
+    `options` text DEFAULT NULL,
+    `mandatory` int(11) DEFAULT 0,
+    `status` int(11) DEFAULT 1,
+    `field_order` int(11) DEFAULT 0,
+    PRIMARY KEY (`id`)
+  ) ENGINE=InnoDB DEFAULT CHARSET=' . $CI->db->char_set . ';');
+}
+
+if (!$CI->db->table_exists(db_prefix() . 'ccx_leads_custom_values')) {
+  $CI->db->query('CREATE TABLE `' . db_prefix() . 'ccx_leads_custom_values` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `lead_id` int(11) NOT NULL,
+    `field_id` int(11) NOT NULL,
+    `value` text DEFAULT NULL,
+    PRIMARY KEY (`id`)
+  ) ENGINE=InnoDB DEFAULT CHARSET=' . $CI->db->char_set . ';');
+}

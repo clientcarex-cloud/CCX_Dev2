@@ -223,8 +223,7 @@
                     </div>
                     <?php } ?>
                 </div>
-                 <div class="row">
-                    <?php $f = $get_field('priority'); if ($f['status'] == 1) { ?>
+                <div class="row">
                     <div class="col-md-12">
                          <?php 
                             $attrs = [];
@@ -232,8 +231,46 @@
                             echo render_select('priority', $priorities, array('priorityid', 'name'), 'ccx_leads_priority', (isset($lead) ? $lead->priority : ''), $attrs); 
                          ?>
                     </div>
-                    <?php } ?>
                 </div>
+
+                <?php
+                // Fetch Custom Fields
+                $custom_fields = [];
+                if($this->db->table_exists(db_prefix() . 'ccx_leads_custom_fields')){
+                    $custom_fields = $this->db->where('status', 1)->order_by('field_order', 'asc')->get(db_prefix() . 'ccx_leads_custom_fields')->result_array();
+                }
+                
+                if(!empty($custom_fields)) {
+                    echo '<div class="row">';
+                    foreach($custom_fields as $field) {
+                        $col = ($field['type'] == 'textarea' || $field['type'] == 'select' && count($custom_fields) % 2 != 0) ? 12 : 6;
+                        echo '<div class="col-md-'.$col.'">';
+                        $attrs = [];
+                        if($field['mandatory'] == 1) $attrs['required'] = true;
+                        
+                        $input_name = 'custom_fields['.$field['id'].']';
+                        $label = $field['name'];
+
+                        if($field['type'] == 'text' || $field['type'] == 'number' || $field['type'] == 'email') {
+                            echo render_input($input_name, $label, '', $field['type'], $attrs);
+                        } elseif($field['type'] == 'date') {
+                            echo render_date_input($input_name, $label, '', $attrs);
+                        } elseif($field['type'] == 'textarea') {
+                            echo render_textarea($input_name, $label, '', $attrs);
+                        } elseif($field['type'] == 'select') {
+                            $options = explode(',', $field['options']);
+                            $select_options = [];
+                            foreach($options as $opt) {
+                                $opt = trim($opt);
+                                $select_options[] = ['id' => $opt, 'name' => $opt];
+                            }
+                            echo render_select($input_name, $select_options, ['id', 'name'], $label, '', $attrs);
+                        }
+                        echo '</div>';
+                    }
+                    echo '</div>';
+                }
+                ?>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default"
