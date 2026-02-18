@@ -116,6 +116,27 @@
                     </div>
                 </div>
                 <!-- Add other fields as needed (source, status, assigned) -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <?php echo render_select('status', $statuses, array('id', 'name'), 'ccx_leads_status', (isset($lead) ? $lead->status : '')); ?>
+                    </div>
+                     <div class="col-md-6">
+                        <?php echo render_select('source', $sources, array('id', 'name'), 'ccx_leads_source', (isset($lead) ? $lead->source : '')); ?>
+                    </div>
+                </div>
+                 <div class="row">
+                    <div class="col-md-6">
+                        <?php echo render_select('assigned', $staff_members, array('staffid', array('firstname', 'lastname')), 'ccx_leads_assigned', (isset($lead) ? $lead->assigned : '')); ?>
+                    </div>
+                     <div class="col-md-6">
+                         <?php echo render_input('lead_value', 'ccx_leads_value', (isset($lead) ? $lead->lead_value : ''), 'number'); ?>
+                    </div>
+                </div>
+                 <div class="row">
+                    <div class="col-md-12">
+                         <?php echo render_select('priority', $priorities, array('priorityid', 'name'), 'ccx_leads_priority', (isset($lead) ? $lead->priority : '')); ?>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default"

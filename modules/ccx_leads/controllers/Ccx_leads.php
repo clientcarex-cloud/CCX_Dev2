@@ -20,6 +20,15 @@ class Ccx_leads extends AdminController
             $this->app->get_table_data(module_views_path('ccx_leads', 'table'));
         }
 
+        $this->load->model('leads_model');
+        $this->load->model('staff_model');
+        $this->load->model('tickets_model');
+
+        $data['statuses'] = $this->leads_model->get_status();
+        $data['sources'] = $this->leads_model->get_source();
+        $data['staff_members'] = $this->staff_model->get('', ['active' => 1]);
+        $data['priorities'] = $this->tickets_model->get_priority();
+
         $data['title'] = _l('ccx_leads');
         $this->load->view('manage', $data);
     }
