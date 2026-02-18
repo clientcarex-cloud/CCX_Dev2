@@ -57,7 +57,7 @@ foreach ($rResult as $aRow) {
     }
     $row[] = $assigned_name;
 
-    $row[] = _dt($aRow['dateadded']);
+    $row[] = time_ago($aRow['dateadded']) . '<br><span class="text-muted small">' . _dt($aRow['dateadded']) . '</span>';
 
     $options = icon_btn('ccx_leads/lead/' . $aRow['id'], 'pencil-square-o');
     $options .= icon_btn('ccx_leads/delete/' . $aRow['id'], 'remove', 'btn-danger _delete');
