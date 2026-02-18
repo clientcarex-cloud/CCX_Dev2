@@ -24,14 +24,6 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="company" class="control-label">
-                                <?php echo _l('company'); ?>
-                            </label>
-                            <input type="text" id="company" name="company" class="form-control"
-                                value="<?php echo (isset($lead) ? $lead->company : ''); ?>">
-                        </div>
-
-                        <div class="form-group">
                             <label for="phonenumber" class="control-label">
                                 <?php echo _l('phonenumber'); ?>
                             </label>

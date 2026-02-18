@@ -26,28 +26,48 @@ class Ccx_leads extends AdminController
 
     public function lead($id = '')
     {
-        if (!has_permission('ccx_leads', '', 'view')) {
-            access_denied('CCX Leads');
-        }
-
         if ($this->input->post()) {
-            $data = $this->input->post();
             if ($id == '') {
                 if (!has_permission('ccx_leads', '', 'create')) {
-                    access_denied('CCX Leads');
-                }
-                $id = $this->ccx_leads_model->add_lead($data);
-                if ($id) {
-                    set_alert('success', _l('added_successfully', _l('ccx_lead')));
-                    redirect(admin_url('ccx_leads'));
+                    header('HTTP/1.0 401 Unauthorized');
+                    echo json_encode(['success' => false, 'message' => _l('access_denied')]);
+                    die;
                 }
             } else {
                 if (!has_permission('ccx_leads', '', 'edit')) {
-                    access_denied('CCX Leads');
+                    header('HTTP/1.0 401 Unauthorized');
+                    echo json_encode(['success' => false, 'message' => _l('access_denied')]);
+                    die;
                 }
+            }
+
+            $data = $this->input->post();
+
+            // Auto-set company to name if not provided (or force it as per requirement)
+            if (isset($data['name'])) {
+                $data['company'] = $data['name'];
+            }
+
+            if ($id == '') {
+                $id = $this->ccx_leads_model->add_lead($data);
+                if ($id) {
+                    $message = _l('added_successfully', _l('ccx_lead'));
+                    if ($this->input->is_ajax_request()) {
+                        echo json_encode(['success' => true, 'message' => $message]);
+                        die;
+                    }
+                    set_alert('success', $message);
+                    redirect(admin_url('ccx_leads'));
+                }
+            } else {
                 $success = $this->ccx_leads_model->update_lead($data, $id);
+                $message = _l('updated_successfully', _l('ccx_lead'));
+                if ($this->input->is_ajax_request()) {
+                    echo json_encode(['success' => true, 'message' => $message]);
+                    die;
+                }
                 if ($success) {
-                    set_alert('success', _l('updated_successfully', _l('ccx_lead')));
+                    set_alert('success', $message);
                 }
                 redirect(admin_url('ccx_leads/lead/' . $id));
             }
