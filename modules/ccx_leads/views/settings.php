@@ -204,9 +204,86 @@
                                 </div>
 
                             </div>
-                            <div role="tabpanel" class="tab-pane" id="ordering">
-                                <p>Ordering settings coming soon...</p>
-                            </div>
+                                <?php echo form_open(admin_url('ccx_leads/settings')); ?>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <p class="text-info"><i class="fa fa-info-circle"></i> Drag and drop fields to reorder. Adjust width as needed.</p>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <ul id="field_ordering" class="ui-sortable">
+                                            <?php
+                                            // Merge standard and custom fields
+                                            $all_fields = [];
+                                            // Standard fields
+                                            foreach ($ccx_leads_fields as $field) {
+                                                if(isset($field['status']) && $field['status'] == 1){
+                                                    $all_fields[$field['slug']] = [
+                                                        'name' => $field['name'],
+                                                        'slug' => $field['slug'],
+                                                        'width' => 6 // Default width
+                                                    ];
+                                                }
+                                            }
+                                            // Custom fields
+                                            if (isset($custom_fields)) {
+                                                foreach ($custom_fields as $field) {
+                                                    if($field['status'] == 1){
+                                                        $all_fields['custom_' . $field['id']] = [
+                                                            'name' => $field['name'],
+                                                            'slug' => 'custom_' . $field['id'],
+                                                            'width' => 6
+                                                        ];
+                                                    }
+                                                }
+                                            }
+
+                                            // Apply saved order and widths
+                                            $ordered_fields = [];
+                                            $saved_settings = isset($ccx_leads_ordering_settings) ? $ccx_leads_ordering_settings : [];
+                                            
+                                            // First, add saved fields in order
+                                            foreach ($saved_settings as $saved_field) {
+                                                if (isset($all_fields[$saved_field['slug']])) {
+                                                    $ordered_fields[] = array_merge($all_fields[$saved_field['slug']], [
+                                                        'width' => isset($saved_field['width']) ? $saved_field['width'] : 6
+                                                    ]);
+                                                    unset($all_fields[$saved_field['slug']]);
+                                                }
+                                            }
+                                            
+                                            // Add remaining fields
+                                            foreach ($all_fields as $field) {
+                                                $ordered_fields[] = $field;
+                                            }
+
+                                            foreach ($ordered_fields as $field) {
+                                            ?>
+                                                <li class="ui-state-default" data-slug="<?php echo $field['slug']; ?>">
+                                                    <div class="row">
+                                                        <div class="col-md-8">
+                                                            <i class="fa fa-bars handle"></i>
+                                                            <span class="field-name"><?php echo $field['name']; ?></span>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group no-mbot">
+                                                                <select class="selectpicker" data-width="100%" onchange="updateOrderingInput()">
+                                                                    <option value="3" <?php echo ($field['width'] == 3 ? 'selected' : ''); ?>>25%</option>
+                                                                    <option value="4" <?php echo ($field['width'] == 4 ? 'selected' : ''); ?>>33%</option>
+                                                                    <option value="6" <?php echo ($field['width'] == 6 ? 'selected' : ''); ?>>50%</option>
+                                                                    <option value="8" <?php echo ($field['width'] == 8 ? 'selected' : ''); ?>>66%</option>
+                                                                    <option value="12" <?php echo ($field['width'] == 12 ? 'selected' : ''); ?>>100%</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            <?php } ?>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="ccx_leads_ordering_settings" id="ccx_leads_ordering_settings" value="">
+                                <button type="submit" class="btn btn-info pull-right mtop15" onclick="updateOrderingInput()"><?php echo _l('save'); ?></button>
+                                <?php echo form_close(); ?>
                             <div role="tabpanel" class="tab-pane" id="roller_coaster">
                                 <p>Roller Coaster settings coming soon...</p>
                             </div>
@@ -233,6 +310,13 @@
     </div>
 </div>
 <?php init_tail(); ?>
+<style>
+    #field_ordering { list-style-type: none; margin: 0; padding: 0; }
+    #field_ordering li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; height: auto; }
+    #field_ordering li span.field-name { position: absolute; margin-left: -1.3em; }
+    .ui-state-default { border: 1px solid #d3d3d3; background: #e6e6e6; color: #555555; }
+    .handle { cursor: move; margin-right: 10px; color: #777; }
+</style>
 <script>
     function new_custom_field() {
         $('#custom_field_modal input[name="id"]').val('');
@@ -273,5 +357,25 @@
         $('#custom_field_modal').on('shown.bs.modal', function () {
             $('#custom_field_modal select[name="type"]').trigger('change');
         });
+        // Initialize sortable
+        $("#field_ordering").sortable({
+            handle: ".handle",
+            update: function (event, ui) {
+                updateOrderingInput();
+            }
+        });
     });
+
+    function updateOrderingInput() {
+        var ordering = [];
+        $("#field_ordering li").each(function () {
+            var slug = $(this).data('slug');
+            var width = $(this).find('select').val();
+            ordering.push({
+                slug: slug,
+                width: width
+            });
+        });
+        $('#ccx_leads_ordering_settings').val(JSON.stringify(ordering));
+    }
 </script>

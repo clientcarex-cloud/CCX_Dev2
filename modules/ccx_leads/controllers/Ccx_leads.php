@@ -131,6 +131,15 @@ class Ccx_leads extends AdminController
             $data['title'] = _l('edit', _l('ccx_lead'));
         }
 
+        $this->load->model('leads_model');
+        $this->load->model('staff_model');
+        $this->load->model('tickets_model');
+
+        $data['statuses'] = $this->leads_model->get_status();
+        $data['sources'] = $this->leads_model->get_source();
+        $data['staff_members'] = $this->staff_model->get('', ['active' => 1]);
+        $data['priorities'] = $this->tickets_model->get_priority();
+
         $this->load->view('lead', $data);
     }
 
@@ -195,6 +204,10 @@ class Ccx_leads extends AdminController
                 update_option('ccx_leads_field_settings', json_encode($data['ccx_leads_fields']));
                 set_alert('success', _l('updated_successfully', _l('ccx_leads_settings')));
             }
+            if (isset($data['ccx_leads_ordering_settings'])) {
+                update_option('ccx_leads_ordering_settings', $data['ccx_leads_ordering_settings']);
+                set_alert('success', _l('updated_successfully', _l('ccx_leads_settings')));
+            }
             redirect(admin_url('ccx_leads/settings'));
         }
 
@@ -220,6 +233,13 @@ class Ccx_leads extends AdminController
             $data['ccx_leads_fields'] = $default_fields;
         } else {
             $data['ccx_leads_fields'] = json_decode($settings, true);
+        }
+
+        $ordering_settings = get_option('ccx_leads_ordering_settings');
+        if (!empty($ordering_settings)) {
+            $data['ccx_leads_ordering_settings'] = json_decode($ordering_settings, true);
+        } else {
+            $data['ccx_leads_ordering_settings'] = [];
         }
 
         // Fetch Custom Fields
