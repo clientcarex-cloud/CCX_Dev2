@@ -90,9 +90,9 @@ class Ccx_leads extends AdminController
             $data = $this->input->post();
             $insert_id = $this->ccx_leads_model->add_call_log($data);
             if ($insert_id) {
-                echo json_encode(['success' => true, 'message' => _l('added_successfully', 'Call Log')]);
+                echo json_encode(['success' => true, 'message' => _l('added_successfully', _l('ccx_leads_call_log'))]);
             } else {
-                echo json_encode(['success' => false, 'message' => _l('problem_adding', 'Call Log')]);
+                echo json_encode(['success' => false, 'message' => _l('problem_adding', _l('ccx_leads_call_log'))]);
             }
         }
     }

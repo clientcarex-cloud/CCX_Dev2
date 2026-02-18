@@ -16,14 +16,14 @@
                         <hr class="hr-panel-heading" />
                         <div class="clearfix"></div>
                         <?php render_datatable([
-                            _l('id'),
-                            _l('name'),
-                            _l('phonenumber'),
-                            _l('email'),
-                            _l('status'),
-                            _l('assigned'),
-                            _l('dateadded'),
-                            _l('options'),
+                            _l('ccx_leads_id'),
+                            _l('ccx_leads_name'),
+                            _l('ccx_leads_phonenumber'),
+                            _l('ccx_leads_email'),
+                            _l('ccx_leads_status'),
+                            _l('ccx_leads_assigned'),
+                            _l('ccx_leads_dateadded'),
+                            _l('ccx_leads_options'),
                         ], 'ccx-leads'); ?>
                     </div>
                 </div>
@@ -43,22 +43,22 @@
             <?php echo form_open(admin_url('ccx_leads/lead'), ['id' => 'ccx-lead-modal-form']); ?>
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="name" class="control-label"><?php echo _l('name'); ?></label>
+                    <label for="name" class="control-label"><?php echo _l('ccx_leads_name'); ?></label>
                     <input type="text" id="name" name="name" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label for="phonenumber" class="control-label"><?php echo _l('phonenumber'); ?></label>
+                    <label for="phonenumber" class="control-label"><?php echo _l('ccx_leads_phonenumber'); ?></label>
                     <input type="text" id="phonenumber" name="phonenumber" class="form-control">
                 </div>
                 <div class="form-group">
-                    <label for="email" class="control-label"><?php echo _l('email'); ?></label>
+                    <label for="email" class="control-label"><?php echo _l('ccx_leads_email'); ?></label>
                     <input type="email" id="email" name="email" class="form-control">
                 </div>
                 <!-- Add other fields as needed (source, status, assigned) -->
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal"><?php echo _l('close'); ?></button>
-                <button type="submit" class="btn btn-info"><?php echo _l('save'); ?></button>
+                <button type="button" class="btn btn-default" data-dismiss="modal"><?php echo _l('ccx_leads_close'); ?></button>
+                <button type="submit" class="btn btn-info"><?php echo _l('ccx_leads_save'); ?></button>
             </div>
             <?php echo form_close(); ?>
         </div>

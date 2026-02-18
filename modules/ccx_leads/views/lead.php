@@ -16,25 +16,20 @@
                         <?php echo form_open($this->uri->uri_string(), ['id' => 'ccx-lead-form']); ?>
 
                         <div class="form-group">
-                            <label for="name" class="control-label">
-                                <?php echo _l('name'); ?>
-                            </label>
+                            <label for="name" class="control-label"><?php echo _l('ccx_leads_name'); ?></label>
                             <input type="text" id="name" name="name" class="form-control"
                                 value="<?php echo (isset($lead) ? $lead->name : ''); ?>" required>
                         </div>
 
                         <div class="form-group">
-                            <label for="phonenumber" class="control-label">
-                                <?php echo _l('phonenumber'); ?>
-                            </label>
+                            <label for="phonenumber"
+                                class="control-label"><?php echo _l('ccx_leads_phonenumber'); ?></label>
                             <input type="text" id="phonenumber" name="phonenumber" class="form-control"
                                 value="<?php echo (isset($lead) ? $lead->phonenumber : ''); ?>">
                         </div>
 
                         <div class="form-group">
-                            <label for="email" class="control-label">
-                                <?php echo _l('email'); ?>
-                            </label>
+                            <label for="email" class="control-label"><?php echo _l('ccx_leads_email'); ?></label>
                             <input type="email" id="email" name="email" class="form-control"
                                 value="<?php echo (isset($lead) ? $lead->email : ''); ?>">
                         </div>
@@ -50,7 +45,7 @@
                         </div>
 
                         <button type="submit" class="btn btn-info pull-right">
-                            <?php echo _l('submit'); ?>
+                            <?php echo _l('ccx_leads_submit'); ?>
                         </button>
                         <?php echo form_close(); ?>
                     </div>
@@ -62,19 +57,14 @@
                 <div class="col-md-6">
                     <div class="panel_s">
                         <div class="panel-heading">
-                            <span class="font-bold">
-                                <?php echo _l('call_logs'); ?>
-                            </span>
-                            <a href="#" onclick="new_call_log(); return false;" class="btn btn-info btn-xs pull-right">
-                                <?php echo _l('new_call_log'); ?>
-                            </a>
+                            <span class="font-bold"><?php echo _l('ccx_leads_call_logs'); ?></span>
+                            <a href="#" onclick="new_call_log(); return false;"
+                                class="btn btn-info btn-xs pull-right"><?php echo _l('ccx_leads_new_call_log'); ?></a>
                         </div>
                         <div class="panel-body">
                             <div id="call_logs_container">
                                 <?php if (empty($call_logs)) { ?>
-                                    <p class="text-muted">
-                                        <?php echo _l('no_call_logs_found'); ?>
-                                    </p>
+                                    <p class="text-muted"><?php echo _l('ccx_leads_no_call_logs_found'); ?></p>
                                 <?php } else { ?>
                                     <ul class="list-group">
                                         <?php foreach ($call_logs as $log) { ?>
@@ -94,7 +84,7 @@
                                                         </p>
                                                         <hr class="hr-10" />
                                                         <span class="label label-default">
-                                                            <?php echo _l('duration'); ?>:
+                                                            <?php echo _l('ccx_leads_duration'); ?>:
                                                             <?php echo $log['duration']; ?>
                                                         </span>
                                                     </div>
@@ -120,32 +110,26 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">
-                    <?php echo _l('new_call_log'); ?>
-                </h4>
+                <h4 class="modal-title"><?php echo _l('ccx_leads_new_call_log'); ?></h4>
             </div>
             <?php echo form_open(admin_url('ccx_leads/save_call_log'), ['id' => 'call-log-form']); ?>
             <div class="modal-body">
                 <input type="hidden" name="lead_id" value="<?php echo (isset($lead) ? $lead->id : ''); ?>">
                 <div class="form-group">
-                    <label for="content" class="control-label">
-                        <?php echo _l('call_summary'); ?>
-                    </label>
+                    <label for="content" class="control-label"><?php echo _l('ccx_leads_call_summary'); ?></label>
                     <textarea id="content" name="content" class="form-control" rows="4" required></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="duration" class="control-label">
-                        <?php echo _l('duration'); ?>
-                    </label>
+                    <label for="duration" class="control-label"><?php echo _l('ccx_leads_duration'); ?></label>
                     <input type="text" id="duration" name="duration" class="form-control" placeholder="e.g. 5 mins">
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">
-                    <?php echo _l('close'); ?>
+                    <?php echo _l('ccx_leads_close'); ?>
                 </button>
                 <button type="submit" class="btn btn-info">
-                    <?php echo _l('save'); ?>
+                    <?php echo _l('ccx_leads_save'); ?>
                 </button>
             </div>
             <?php echo form_close(); ?>

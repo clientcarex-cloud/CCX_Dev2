@@ -1,0 +1,29 @@
+<?php
+
+# Version 1.0.0
+
+$lang['ccx_leads'] = 'CCX Leads';
+$lang['ccx_lead'] = 'Lead';
+$lang['new_ccx_lead'] = 'New Lead';
+$lang['ccx_leads_list'] = 'Leads List';
+$lang['ccx_leads_id'] = 'ID';
+$lang['ccx_leads_name'] = 'Name';
+$lang['ccx_leads_company'] = 'Company';
+$lang['ccx_leads_phonenumber'] = 'Phone Number';
+$lang['ccx_leads_email'] = 'Email';
+$lang['ccx_leads_status'] = 'Status';
+$lang['ccx_leads_assigned'] = 'Assigned To';
+$lang['ccx_leads_dateadded'] = 'Date Added';
+$lang['ccx_leads_options'] = 'Options';
+
+$lang['ccx_leads_call_logs'] = 'Call Logs';
+$lang['ccx_leads_new_call_log'] = 'New Call Log';
+$lang['ccx_leads_no_call_logs_found'] = 'No Call Logs Found';
+$lang['ccx_leads_duration'] = 'Duration';
+$lang['ccx_leads_call_summary'] = 'Call Summary';
+$lang['ccx_leads_save'] = 'Save';
+$lang['ccx_leads_close'] = 'Close';
+$lang['ccx_leads_submit'] = 'Submit';
+$lang['ccx_leads_view'] = 'View';
+$lang['ccx_leads_delete'] = 'Delete';
+$lang['ccx_leads_call_log'] = 'Call Log';

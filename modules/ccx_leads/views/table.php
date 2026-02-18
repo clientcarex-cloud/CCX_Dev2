@@ -29,8 +29,8 @@ foreach ($rResult as $aRow) {
 
     $name = '<a href="' . admin_url('ccx_leads/lead/' . $aRow['id']) . '">' . $aRow['name'] . '</a>';
     $name .= '<div class="row-options">';
-    $name .= '<a href="' . admin_url('ccx_leads/lead/' . $aRow['id']) . '">' . _l('view') . '</a>';
-    $name .= ' | <a href="' . admin_url('ccx_leads/delete/' . $aRow['id']) . '" class="text-danger _delete">' . _l('delete') . '</a>';
+    $name .= '<a href="' . admin_url('ccx_leads/lead/' . $aRow['id']) . '">' . _l('ccx_leads_view') . '</a>';
+    $name .= ' | <a href="' . admin_url('ccx_leads/delete/' . $aRow['id']) . '" class="text-danger _delete">' . _l('ccx_leads_delete') . '</a>';
     $name .= '</div>';
 
     $row[] = $name;
