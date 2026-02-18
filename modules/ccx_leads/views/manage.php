@@ -46,9 +46,11 @@
                     <label for="name" class="control-label"><?php echo _l('ccx_leads_name'); ?></label>
                     <input type="text" id="name" name="name" class="form-control" required>
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="phone_group">
                     <label for="phonenumber" class="control-label"><?php echo _l('ccx_leads_phonenumber'); ?></label>
                     <input type="text" id="phonenumber" name="phonenumber" class="form-control">
+                    <span id="phone_counter" class="text-muted small pull-right" style="display:none;"></span>
+                    <span id="phone_duplicate_error" class="text-danger small" style="display:none;"></span>
                 </div>
                 <div class="form-group">
                     <label for="email" class="control-label"><?php echo _l('ccx_leads_email'); ?></label>
@@ -98,13 +100,62 @@
         setTimeout(function () {
             var input = document.querySelector("#phonenumber");
             if (!input.classList.contains("iti-enabled")) {
-                window.intlTelInput(input, {
+                var iti = window.intlTelInput(input, {
                     utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
                     separateDialCode: true,
+                    autoPlaceholder: "aggressive"
                 });
                 input.classList.add("iti-enabled");
+
+                input.addEventListener("countrychange", function () {
+                    var placeholder = iti.promise.then(function () {
+                        var mask = input.getAttribute("placeholder");
+                        if (mask) {
+                            // replace all non-digits with nothing to count length
+                            var len = mask.replace(/\D/g, '').length;
+                            input.setAttribute("maxLength", len + 5); // Add buffer for spaces/dashes
+                            input.setAttribute("data-max-digits", len);
+                            updatePhoneCounter(input, len);
+                        }
+                    });
+                });
+
+                input.addEventListener("input", function () {
+                    var max = input.getAttribute("data-max-digits");
+                    if (max) updatePhoneCounter(input, max);
+                    $('#phone_duplicate_error').hide();
+                    $('#phone_group').removeClass('has-error');
+                    $('button[type="submit"]').prop('disabled', false);
+                });
+
+                input.addEventListener("blur", function () {
+                    var val = input.value.trim();
+                    if (val) {
+                        $.post(admin_url + 'ccx_leads/check_duplicate_phone', {
+                            phone: val
+                        }, function (response) {
+                            response = JSON.parse(response);
+                            if (response.exists) {
+                                $('#phone_group').addClass('has-error');
+                                $('#phone_duplicate_error').text(response.message).show();
+                                $('button[type="submit"]').prop('disabled', true);
+                            }
+                        });
+                    }
+                });
             }
         }, 500);
+    }
+
+    function updatePhoneCounter(input, max) {
+        var val = input.value.replace(/\D/g, '');
+        var len = val.length;
+        $('#phone_counter').text(len + ' / ' + max).show();
+        if (len > max) {
+            $('#phone_counter').addClass('text-danger');
+        } else {
+            $('#phone_counter').removeClass('text-danger');
+        }
     }
 </script>
 </body>

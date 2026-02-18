@@ -27,3 +27,4 @@ $lang['ccx_leads_submit'] = 'Submit';
 $lang['ccx_leads_view'] = 'View';
 $lang['ccx_leads_delete'] = 'Delete';
 $lang['ccx_leads_call_log'] = 'Call Log';
+$lang['ccx_leads_phone_exists'] = 'Phone number already exists.';

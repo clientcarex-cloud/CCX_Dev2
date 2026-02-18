@@ -115,4 +115,21 @@ class Ccx_leads extends AdminController
         }
         redirect(admin_url('ccx_leads'));
     }
+
+    /* Check if phone number exists */
+    public function check_duplicate_phone()
+    {
+        if ($this->input->is_ajax_request()) {
+            $phone = $this->input->post('phone');
+            $id = $this->input->post('id'); // ID to exclude (for edit mode)
+
+            $this->db->where('phonenumber', $phone);
+            if ($id) {
+                $this->db->where('id !=', $id);
+            }
+            $exists = $this->db->count_all_results('tblccx_leads') > 0;
+
+            echo json_encode(['exists' => $exists, 'message' => _l('ccx_leads_phone_exists')]);
+        }
+    }
 }
