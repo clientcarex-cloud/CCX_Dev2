@@ -202,46 +202,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <script>
-                                    function new_custom_field() {
-                                        $('#custom_field_modal input[name="id"]').val('');
-                                        $('#custom_field_modal input[name="name"]').val('');
-                                        $('#custom_field_modal select[name="type"]').val('text').change();
-                                        $('#custom_field_modal textarea[name="options"]').val('');
-                                        $('#custom_field_modal input[name="mandatory"]').prop('checked', false);
-                                        $('#custom_field_modal').modal('show');
-                                    }
-                                    function edit_custom_field(id) {
-                                        $.get(admin_url + 'ccx_leads/get_custom_field/' + id, function (response) {
-                                            if (typeof response === 'string') {
-                                                response = JSON.parse(response);
-                                            }
-                                            $('#custom_field_modal input[name="id"]').val(response.id);
-                                            $('#custom_field_modal input[name="name"]').val(response.name);
-                                            // Trigger change after setting value to ensure visibility update
-                                            $('#custom_field_modal select[name="type"]').val(response.type).change();
-                                            $('#custom_field_modal textarea[name="options"]').val(response.options);
-                                            $('#custom_field_modal input[name="mandatory"]').prop('checked', response.mandatory == 1);
-                                            $('#custom_field_modal').modal('show');
-                                        });
-                                    }
-                                    $(function () {
-                                        // Robust change listener for both native and bootstrap-select
-                                        $('body').on('change changed.bs.select', '#custom_field_modal select[name="type"]', function () {
-                                            var val = $(this).val();
-                                            if (val == 'select' || val == 'multiselect') {
-                                                $('#options_wrapper').removeClass('hide');
-                                            } else {
-                                                $('#options_wrapper').addClass('hide');
-                                            }
-                                        });
 
-                                        // Trigger check on modal show (in case of re-opening or pre-filled data)
-                                        $('#custom_field_modal').on('shown.bs.modal', function () {
-                                            $('#custom_field_modal select[name="type"]').trigger('change');
-                                        });
-                                    });
-                                </script>
                             </div>
                             <div role="tabpanel" class="tab-pane" id="ordering">
                                 <p>Ordering settings coming soon...</p>
@@ -272,3 +233,45 @@
     </div>
 </div>
 <?php init_tail(); ?>
+<script>
+    function new_custom_field() {
+        $('#custom_field_modal input[name="id"]').val('');
+        $('#custom_field_modal input[name="name"]').val('');
+        $('#custom_field_modal select[name="type"]').val('text').change();
+        $('#custom_field_modal textarea[name="options"]').val('');
+        $('#custom_field_modal input[name="mandatory"]').prop('checked', false);
+        $('#custom_field_modal').modal('show');
+    }
+
+    function edit_custom_field(id) {
+        $.get(admin_url + 'ccx_leads/get_custom_field/' + id, function (response) {
+            if (typeof response === 'string') {
+                response = JSON.parse(response);
+            }
+            $('#custom_field_modal input[name="id"]').val(response.id);
+            $('#custom_field_modal input[name="name"]').val(response.name);
+            // Trigger change after setting value to ensure visibility update
+            $('#custom_field_modal select[name="type"]').val(response.type).change();
+            $('#custom_field_modal textarea[name="options"]').val(response.options);
+            $('#custom_field_modal input[name="mandatory"]').prop('checked', response.mandatory == 1);
+            $('#custom_field_modal').modal('show');
+        });
+    }
+
+    $(function () {
+        // Robust change listener for both native and bootstrap-select
+        $('body').on('change changed.bs.select', '#custom_field_modal select[name="type"]', function () {
+            var val = $(this).val();
+            if (val == 'select' || val == 'multiselect') {
+                $('#options_wrapper').removeClass('hide').show();
+            } else {
+                $('#options_wrapper').addClass('hide').hide();
+            }
+        });
+
+        // Trigger check on modal show (in case of re-opening or pre-filled data)
+        $('#custom_field_modal').on('shown.bs.modal', function () {
+            $('#custom_field_modal select[name="type"]').trigger('change');
+        });
+    });
+</script>
