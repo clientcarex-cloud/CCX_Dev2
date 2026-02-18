@@ -184,7 +184,7 @@
                                                 ], ['id', 'name'], 'Type'); ?>
 
                                                 <div id="options_wrapper" class="hide">
-                                                    <?php echo render_textarea('options', 'Options (one per line or comma separated)', '', ['rows' => 5]); ?>
+                                                    <?php echo render_textarea('options', 'Predefined Options (one per line)', '', ['rows' => 5, 'placeholder' => "Option 1\nOption 2\nOption 3"]); ?>
                                                 </div>
 
                                                 <div class="checkbox checkbox-primary">
@@ -215,6 +215,7 @@
                                             response = JSON.parse(response);
                                             $('#custom_field_modal input[name="id"]').val(response.id);
                                             $('#custom_field_modal input[name="name"]').val(response.name);
+                                            // Trigger change after setting value to ensure visibility update
                                             $('#custom_field_modal select[name="type"]').val(response.type).change();
                                             $('#custom_field_modal textarea[name="options"]').val(response.options);
                                             $('#custom_field_modal input[name="mandatory"]').prop('checked', response.mandatory == 1);
@@ -222,17 +223,19 @@
                                         });
                                     }
                                     $(function () {
-                                        $('body').on('change', 'select[name="type"]', function () {
-                                            if ($(this).val() == 'select') {
+                                        // Robust change listener for both native and bootstrap-select
+                                        $('body').on('change changed.bs.select', '#custom_field_modal select[name="type"]', function () {
+                                            var val = $(this).val();
+                                            if (val == 'select') {
                                                 $('#options_wrapper').removeClass('hide');
                                             } else {
                                                 $('#options_wrapper').addClass('hide');
                                             }
                                         });
 
-                                        // Trigger change on modal show to set initial state
+                                        // Trigger check on modal show (in case of re-opening or pre-filled data)
                                         $('#custom_field_modal').on('shown.bs.modal', function () {
-                                            $('select[name="type"]').trigger('change');
+                                            $('#custom_field_modal select[name="type"]').trigger('change');
                                         });
                                     });
                                 </script>
