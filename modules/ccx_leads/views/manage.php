@@ -126,7 +126,7 @@
                 </div>
                  <div class="row">
                     <div class="col-md-6">
-                        <?php echo render_select('assigned', $staff_members, array('staffid', array('firstname', 'lastname')), 'ccx_leads_assigned', (isset($lead) ? $lead->assigned : '')); ?>
+                        <?php echo render_select('assigned', $staff_members, array('staffid', array('firstname', 'lastname')), 'ccx_leads_assigned', (isset($lead) ? $lead->assigned : get_staff_user_id())); ?>
                     </div>
                      <div class="col-md-6">
                          <?php echo render_input('lead_value', 'ccx_leads_value', (isset($lead) ? $lead->lead_value : ''), 'number'); ?>
