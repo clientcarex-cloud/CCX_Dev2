@@ -15,8 +15,19 @@ $aColumns = [
 $sIndexColumn = 'id';
 $sTable = db_prefix() . 'ccx_leads';
 
-$result = data_tables_init($aColumns, $sIndexColumn, $sTable, [], [], [
+$result = data_tables_init($aColumns, $sIndexColumn, $sTable, [
+    db_prefix() . 'leads_status',
+    db_prefix() . 'staff',
+], [
     'addedfrom',
+    db_prefix() . 'leads_status.name as status_name',
+    db_prefix() . 'leads_status.color as status_color',
+    db_prefix() . 'staff.firstname',
+    db_prefix() . 'staff.lastname',
+    'staffid',
+], [
+    'LEFT JOIN ' . db_prefix() . 'leads_status ON ' . db_prefix() . 'leads_status.id = ' . db_prefix() . 'ccx_leads.status',
+    'LEFT JOIN ' . db_prefix() . 'staff ON ' . db_prefix() . 'staff.staffid = ' . db_prefix() . 'ccx_leads.assigned',
 ]);
 
 $output = $result['output'];
@@ -38,28 +49,28 @@ foreach ($rResult as $aRow) {
     $row[] = '<a href="mailto:' . $aRow['email'] . '">' . $aRow['email'] . '</a>';
 
     // Status
-    $status_name = '';
-    if ($aRow['status'] == 1) {
-        $status_name = '<span class="label label-info">New</span>';
+    $status_name = $aRow['status_name'];
+    $status_color = $aRow['status_color'];
+    if ($status_name) {
+        $status_name = '<span class="label label-default" style="color:' . $status_color . ';border:1px solid ' . $status_color . ';background:transparent;">' . $status_name . '</span>';
     } else {
-        $status_name = '<span class="label label-default">Unknown</span>';
+        $status_name = '<span class="label label-default">' . _l('unknown') . '</span>';
     }
-    // You can extend this with actual status names if you have a statuses table or array
     $row[] = $status_name;
 
     // Assigned
     $assigned_name = '';
     if ($aRow['assigned'] != 0) {
-        $staff = get_staff($aRow['assigned']);
-        if ($staff) {
-            $assigned_name = $staff->firstname . ' ' . $staff->lastname;
-        }
+        $assigned_name = '<a href="' . admin_url('profile/' . $aRow['assigned']) . '">' . staff_profile_image($aRow['assigned'], [
+            'staff-profile-image-small',
+        ]) . '</a>';
+        $assigned_name .= ' <a href="' . admin_url('profile/' . $aRow['assigned']) . '">' . $aRow['firstname'] . ' ' . $aRow['lastname'] . '</a>';
     }
     $row[] = $assigned_name;
 
     $row[] = time_ago($aRow['dateadded']) . '<br><span class="text-muted small">' . _dt($aRow['dateadded']) . '</span>';
 
-    $options = icon_btn('ccx_leads/lead/' . $aRow['id'], 'pencil-square-o');
+    $options = icon_btn('ccx_leads/lead/' . $aRow['id'], 'pencil-square-o', 'btn-default');
     $options .= icon_btn('ccx_leads/delete/' . $aRow['id'], 'remove', 'btn-danger _delete');
     $row[] = $options;
 
