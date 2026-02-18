@@ -76,6 +76,23 @@ if (!$CI->db->table_exists(db_prefix() . 'ccx_leads_custom_fields')) {
   ) ENGINE=InnoDB DEFAULT CHARSET=' . $CI->db->char_set . ';');
 }
 
+/* Add columns if they don't exist (for custom fields updates) */
+$custom_fields_columns = [
+  'name' => 'VARCHAR(150) NOT NULL',
+  'slug' => 'VARCHAR(150) NOT NULL',
+  'type' => 'VARCHAR(50) NOT NULL',
+  'options' => 'TEXT NULL DEFAULT NULL',
+  'mandatory' => 'INT(11) DEFAULT 0',
+  'status' => 'INT(11) DEFAULT 1',
+  'field_order' => 'INT(11) DEFAULT 0',
+];
+
+foreach ($custom_fields_columns as $column => $definition) {
+  if (!$CI->db->field_exists($column, db_prefix() . 'ccx_leads_custom_fields')) {
+    $CI->db->query("ALTER TABLE `" . db_prefix() . "ccx_leads_custom_fields` ADD `" . $column . "` " . $definition);
+  }
+}
+
 if (!$CI->db->table_exists(db_prefix() . 'ccx_leads_custom_values')) {
   $CI->db->query('CREATE TABLE `' . db_prefix() . 'ccx_leads_custom_values` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
