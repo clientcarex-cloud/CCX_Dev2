@@ -7,6 +7,18 @@
                 <div class="panel_s">
                     <div class="panel-body">
                         <style>
+                            /* Full page view overrides */
+                            .content {
+                                padding: 0 !important;
+                            }
+
+                            .panel_s {
+                                margin: 0 !important;
+                                border: none !important;
+                                border-radius: 0 !important;
+                                box-shadow: none !important;
+                            }
+
                             .ccx-status-filter {
                                 display: inline-flex;
                                 background: #f3f4f6;
@@ -181,7 +193,7 @@
         });
 
         // Status Filter Logic
-        $('body').on('click', '.ccx-status-filter-item', function() {
+        $('body').on('click', '.ccx-status-filter-item', function () {
             // Update UI
             $('.ccx-status-filter-item').removeClass('active');
             $(this).addClass('active');
