@@ -55,7 +55,8 @@ foreach ($rResult as $aRow) {
         $assignedOutput = '<a href="' . admin_url('profile/' . $aRow['assigned']) . '">' . staff_profile_image($aRow['assigned'], [
             'staff-profile-image-small',
         ]) . '</a>';
-        $assignedOutput .= ' <a href="' . admin_url('profile/' . $aRow['assigned']) . '">' . $full_name . '</a>';
+        // Add line break for split view
+        $assignedOutput .= '<br /><a href="' . admin_url('profile/' . $aRow['assigned']) . '">' . $full_name . '</a>';
     }
     $row[] = $assignedOutput;
 
@@ -71,9 +72,9 @@ foreach ($rResult as $aRow) {
     }
     $row[] = $statusOutput;
 
-    $row[] = ($aRow['lastcontact'] ? time_ago($aRow['lastcontact']) . ' <span class="text-has-action" data-toggle="tooltip" data-title="' . _dt($aRow['lastcontact']) . '">' . _dt($aRow['lastcontact']) . '</span>' : '');
+    $row[] = ($aRow['lastcontact'] ? '<span class="text-has-action" data-toggle="tooltip" data-title="' . _dt($aRow['lastcontact']) . '">' . time_ago($aRow['lastcontact']) . '</span><br /><span class="text-muted">' . _dt($aRow['lastcontact']) . '</span>' : '');
 
-    $row[] = ($aRow['dateadded'] ? time_ago($aRow['dateadded']) . ' <span class="text-has-action" data-toggle="tooltip" data-title="' . _dt($aRow['dateadded']) . '">' . _dt($aRow['dateadded']) . '</span>' : '');
+    $row[] = ($aRow['dateadded'] ? '<span class="text-has-action" data-toggle="tooltip" data-title="' . _dt($aRow['dateadded']) . '">' . time_ago($aRow['dateadded']) . '</span><br /><span class="text-muted">' . _dt($aRow['dateadded']) . '</span>' : '');
 
     $output['aaData'][] = $row;
 }
