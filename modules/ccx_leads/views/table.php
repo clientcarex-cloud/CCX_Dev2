@@ -22,7 +22,6 @@ $result = data_tables_init($aColumns, $sIndexColumn, $sTable, [], [], [
     // Additional columns to fetch but not display
     'junk',
     'lost',
-    'color',
     'source'
 ]);
 
