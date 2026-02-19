@@ -16,18 +16,15 @@ $sIndexColumn = 'id';
 $sTable = db_prefix() . 'ccx_leads';
 
 $result = data_tables_init($aColumns, $sIndexColumn, $sTable, [
-    db_prefix() . 'leads_status',
-    db_prefix() . 'staff',
-], [
+    'LEFT JOIN ' . db_prefix() . 'leads_status ON ' . db_prefix() . 'leads_status.id = ' . db_prefix() . 'ccx_leads.status',
+    'LEFT JOIN ' . db_prefix() . 'staff ON ' . db_prefix() . 'staff.staffid = ' . db_prefix() . 'ccx_leads.assigned',
+], [], [
     'addedfrom',
     db_prefix() . 'leads_status.name as status_name',
     db_prefix() . 'leads_status.color as status_color',
     db_prefix() . 'staff.firstname',
     db_prefix() . 'staff.lastname',
     'staffid',
-], [
-    'LEFT JOIN ' . db_prefix() . 'leads_status ON ' . db_prefix() . 'leads_status.id = ' . db_prefix() . 'ccx_leads.status',
-    'LEFT JOIN ' . db_prefix() . 'staff ON ' . db_prefix() . 'staff.staffid = ' . db_prefix() . 'ccx_leads.assigned',
 ]);
 
 $output = $result['output'];
