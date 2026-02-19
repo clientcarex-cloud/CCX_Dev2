@@ -46,7 +46,7 @@ class Ccx_leads_model extends App_Model
 
     public function get_status_summary()
     {
-        $this->db->select('status as id, count(id) as total');
+        $this->db->select('status, junk, lost, count(*) as total');
         $this->db->from(db_prefix() . 'leads');
 
         if (!is_admin()) {
@@ -57,7 +57,42 @@ class Ccx_leads_model extends App_Model
             $this->db->group_end();
         }
 
-        $this->db->group_by('status');
-        return $this->db->get()->result_array();
+        $this->db->group_by('status, junk, lost');
+        $results = $this->db->get()->result_array();
+
+        // Process results to separate Junk and Lost
+        $summary = [];
+        $junk_count = 0;
+        $lost_count = 0;
+
+        foreach ($results as $row) {
+            if ($row['junk'] == 1) {
+                $junk_count += $row['total'];
+            } elseif ($row['lost'] == 1) {
+                $lost_count += $row['total'];
+            } else {
+                // Regular status
+                $found = false;
+                foreach ($summary as &$s) {
+                    if ($s['id'] == $row['status']) {
+                        $s['total'] += $row['total'];
+                        $found = true;
+                        break;
+                    }
+                }
+                if (!$found) {
+                    $summary[] = [
+                        'id' => $row['status'],
+                        'total' => $row['total']
+                    ];
+                }
+            }
+        }
+
+        // Add Junk and Lost to summary with special IDs
+        $summary[] = ['id' => 'junk', 'total' => $junk_count, 'name' => _l('leads_junk')];
+        $summary[] = ['id' => 'lost', 'total' => $lost_count, 'name' => _l('leads_lost')];
+
+        return $summary;
     }
 }

@@ -135,6 +135,24 @@
                                         <span class="ccx-status-count"><?php echo $count; ?></span>
                                     </div>
                                 <?php } ?>
+                                
+                                <!-- Junk and Lost Tabs -->
+                                <?php
+                                $junk_count = 0;
+                                $lost_count = 0;
+                                foreach($summary as $s){
+                                    if($s['id'] == 'junk') $junk_count = $s['total'];
+                                    if($s['id'] == 'lost') $lost_count = $s['total'];
+                                }
+                                ?>
+                                <div class="ccx-status-filter-item" data-status="junk">
+                                    <?php echo _l('leads_junk'); ?>
+                                    <span class="ccx-status-count"><?php echo $junk_count; ?></span>
+                                </div>
+                                <div class="ccx-status-filter-item" data-status="lost">
+                                    <?php echo _l('leads_lost'); ?>
+                                    <span class="ccx-status-count"><?php echo $lost_count; ?></span>
+                                </div>
                             </div>
 
                             <div class="ccx-actions" style="display:flex; gap:10px; align-items:center;">

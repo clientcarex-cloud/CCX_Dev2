@@ -19,12 +19,24 @@ $sTable = db_prefix() . 'leads';
 
 $where = [];
 
-if ($this->ci->input->post('custom_view') && $this->ci->input->post('custom_view') != 'all') {
-    $status = $this->ci->input->post('custom_view');
-    // Ensure numeric to prevent injection, though CodeIgniter/DataTables driver usually handles binding
-    if (is_numeric($status)) {
-        array_push($where, 'AND ' . db_prefix() . 'leads.status = ' . $status);
+if ($this->ci->input->post('custom_view')) {
+    $custom_view = $this->ci->input->post('custom_view');
+
+    if ($custom_view == 'junk') {
+        array_push($where, 'AND junk = 1');
+    } elseif ($custom_view == 'lost') {
+        array_push($where, 'AND lost = 1');
+    } elseif (is_numeric($custom_view)) {
+        array_push($where, 'AND ' . db_prefix() . 'leads.status = ' . $custom_view);
+        // Exclude junk and lost when filtering by a specific status
+        array_push($where, 'AND junk = 0 AND lost = 0');
+    } elseif ($custom_view == 'all' || $custom_view == '') {
+        // Default "All" behaviour: show all leads EXCEPT junk and lost
+        array_push($where, 'AND junk = 0 AND lost = 0');
     }
+} else {
+    // Initial load default: exclude junk and lost
+    array_push($where, 'AND junk = 0 AND lost = 0');
 }
 
 $result = data_tables_init($aColumns, $sIndexColumn, $sTable, [], $where, [
