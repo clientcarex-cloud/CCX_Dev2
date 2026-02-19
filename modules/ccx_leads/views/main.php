@@ -53,7 +53,7 @@
                                 <?php
                                 $table_data = array();
                                 $_table_data = array(
-                                    '<span class="hide"> - </span><div class="checkbox mass_select_all_wrap"><input type="checkbox" id="mass_select_all" data-to-table="leads"><label></label></div>',
+                                    '<span class="hide"> - </span><div class="checkbox mass_select_all_wrap"><input type="checkbox" id="mass_select_all" data-to-table="ccx-leads"><label></label></div>',
                                     '#',
                                     _l('leads_dt_name'),
                                     _l('lead_company'),
@@ -67,7 +67,7 @@
                                 foreach ($_table_data as $_t) {
                                     array_push($table_data, $_t);
                                 }
-                                render_datatable($table_data, 'leads');
+                                render_datatable($table_data, 'ccx-leads');
                                 ?>
                             </div>
                         </div>
@@ -93,8 +93,16 @@
 <?php init_tail(); ?>
 <script>
     var CcxLeadsServerParams = {};
+    var ccx_leads_table;
     $(function () {
-        initDataTable('.table-leads', admin_url + 'ccx_leads/table', [0], [0], CcxLeadsServerParams, [9, 'desc']);
+        ccx_leads_table = initDataTable('.table-ccx-leads', admin_url + 'ccx_leads/table', [0], [0], CcxLeadsServerParams, [9, 'desc']);
+
+        // Refresh list view table when the core lead modal closes after add/edit
+        $('body').on('hidden.bs.modal', '#lead-modal', function () {
+            if ($.fn.DataTable.isDataTable('.table-ccx-leads')) {
+                ccx_leads_table.ajax.reload(null, false);
+            }
+        });
     });
 </script>
 </body>
