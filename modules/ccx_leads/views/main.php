@@ -6,6 +6,54 @@
             <div class="col-md-12">
                 <div class="panel_s">
                     <div class="panel-body">
+                        <style>
+                            .ccx-status-filter {
+                                display: inline-flex;
+                                background: #f3f4f6;
+                                padding: 5px;
+                                border-radius: 20px;
+                                margin-bottom: 15px;
+                                flex-wrap: wrap;
+                            }
+
+                            .ccx-status-filter-item {
+                                padding: 6px 16px;
+                                border-radius: 15px;
+                                cursor: pointer;
+                                font-weight: 500;
+                                color: #4b5563;
+                                transition: all 0.2s;
+                                margin-right: 5px;
+                                font-size: 13px;
+                            }
+
+                            .ccx-status-filter-item:last-child {
+                                margin-right: 0;
+                            }
+
+                            .ccx-status-filter-item:hover {
+                                background: rgba(0, 0, 0, 0.05);
+                            }
+
+                            .ccx-status-filter-item.active {
+                                background: #fff;
+                                color: #1f2937;
+                                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+                                font-weight: 600;
+                            }
+                        </style>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="ccx-status-filter">
+                                    <div class="ccx-status-filter-item active" data-status="all">All</div>
+                                    <?php foreach ($statuses as $status) { ?>
+                                        <div class="ccx-status-filter-item" data-status="<?php echo $status['id']; ?>">
+                                            <?php echo $status['name']; ?>
+                                        </div>
+                                    <?php } ?>
+                                </div>
+                            </div>
+                        </div>
                         <div class="_buttons">
                             <a href="#" onclick="ccx_leads_new_lead(); return false;"
                                 class="btn btn-info mright5 test pull-left display-block">
@@ -100,6 +148,22 @@
         $('body').on('hidden.bs.modal', '#lead-modal', function () {
             if ($.fn.DataTable.isDataTable('.table-ccx-leads')) {
                 ccx_leads_table.ajax.reload(null, false);
+            }
+        });
+
+        // Status Filter Logic
+        $('body').on('click', '.ccx-status-filter-item', function () {
+            // Update UI
+            $('.ccx-status-filter-item').removeClass('active');
+            $(this).addClass('active');
+
+            // Update Param
+            var status = $(this).data('status');
+            CcxLeadsServerParams['status'] = status;
+
+            // Reload Table
+            if ($.fn.DataTable.isDataTable('.table-ccx-leads')) {
+                ccx_leads_table.ajax.reload();
             }
         });
     });

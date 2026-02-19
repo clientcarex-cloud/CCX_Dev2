@@ -17,7 +17,17 @@ $aColumns = [
 $sIndexColumn = 'id';
 $sTable = db_prefix() . 'leads';
 
-$result = data_tables_init($aColumns, $sIndexColumn, $sTable, [], [], [
+$where = [];
+
+if ($this->ci->input->post('status') && $this->ci->input->post('status') != 'all') {
+    $status = $this->ci->input->post('status');
+    // Ensure numeric to prevent injection, though CodeIgniter/DataTables driver usually handles binding
+    if (is_numeric($status)) {
+        array_push($where, 'AND ' . db_prefix() . 'leads.status = ' . $status);
+    }
+}
+
+$result = data_tables_init($aColumns, $sIndexColumn, $sTable, [], $where, [
     // Additional columns to fetch but not display
     'junk',
     'lost',
