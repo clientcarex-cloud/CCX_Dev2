@@ -61,7 +61,8 @@ foreach ($rResult as $aRow) {
 
     // Status
     // Status
-    $status = $this->leads_model->get_status($aRow['status']);
+    $CI = &get_instance();
+    $status = $CI->leads_model->get_status($aRow['status']);
     $statusOutput = '';
     if ($status) {
         $statusOutput = '<span class="label label-default inline-block" style="color:' . $status->color . ';border:1px solid ' . $status->color . '">' . $status->name . '</span>';
