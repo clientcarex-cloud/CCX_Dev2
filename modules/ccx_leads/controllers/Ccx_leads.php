@@ -8,7 +8,9 @@ class Ccx_leads extends AdminController
     {
         parent::__construct();
         $this->load->model('ccx_leads_model');
-        $this->load->model('leads_model'); // Load core model as well
+        $this->load->model('leads_model');
+        $this->load->model('staff_model');
+        $this->load->model('misc_model');
     }
 
     /* List all leads */
@@ -84,7 +86,7 @@ class Ccx_leads extends AdminController
         $data['lead'] = $lead;
         $data['check_permission'] = true; // For activity log
         $data['activity_log'] = $this->leads_model->get_lead_activity_log($id);
-        $data['notes'] = $this->leads_model->get_lead_notes($id);
+        $data['notes'] = $this->misc_model->get_notes_rel($id, 'lead');
         $data['attachments'] = $this->leads_model->get_lead_attachments($id);
 
         $this->load->view('ccx_leads/lead_panel', $data);

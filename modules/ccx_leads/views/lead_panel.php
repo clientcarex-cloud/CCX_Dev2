@@ -58,8 +58,7 @@
                             <td>
                                 <?php
                                 if ($lead->assigned != 0) {
-                                    $staff = _get_staff($lead->assigned);
-                                    echo $staff->firstname . ' ' . $staff->lastname;
+                                    echo get_staff_full_name($lead->assigned);
                                 } else {
                                     echo '-';
                                 }
