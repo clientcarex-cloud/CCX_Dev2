@@ -49,10 +49,11 @@ foreach ($rResult as $aRow) {
 
     // Assigned
     $assigned_name = '';
-    if ($aRow['assigned'] != 0) {
+    if (!empty($aRow['assigned'])) {
         $staff = get_staff($aRow['assigned']);
         if ($staff) {
-            $assigned_name = $staff->firstname . ' ' . $staff->lastname;
+            $img = staff_profile_image($aRow['assigned'], ['staff-profile-image'], 'small', ['width' => '25', 'height' => '25', 'style' => 'border-radius:50%;margin-right:6px;vertical-align:middle;']);
+            $assigned_name = $img . e($staff->firstname . ' ' . $staff->lastname);
         }
     }
     $row[] = $assigned_name;
