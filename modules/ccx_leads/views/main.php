@@ -11,9 +11,11 @@
                             .content {
                                 padding: 0 !important;
                             }
+
                             .panel-body {
                                 padding: 0 !important;
                             }
+
                             .panel_s {
                                 margin: 0 !important;
                                 border: none !important;
@@ -39,7 +41,7 @@
                                 padding: 4px;
                                 border-radius: 20px;
                                 flex-wrap: wrap;
-                                margin-bottom: 0; 
+                                margin-bottom: 0;
                             }
 
                             .ccx-status-filter-item {
@@ -81,8 +83,13 @@
                                 background: rgba(0, 0, 0, 0.1);
                                 color: #1f2937;
                             }
+
+                            /* Ensure table content aligns with header padding */
+                            #ccx_leads_view_wrapper {
+                                padding: 0 15px 15px 15px;
+                            }
                         </style>
-                        
+
                         <div class="ccx-header-container">
                             <div class="ccx-status-filter">
                                 <div class="ccx-status-filter-item active" data-status="">
@@ -104,38 +111,45 @@
                                     </div>
                                 <?php } ?>
                             </div>
-                            
+
                             <div class="ccx-actions" style="display:flex; gap:10px; align-items:center;">
                                 <a href="#" onclick="ccx_leads_new_lead(); return false;" class="btn btn-info">
                                     <?php echo _l('new_lead'); ?>
                                 </a>
-                                
-                                <div class="btn-group btn-with-tooltip-group _filter_data" data-toggle="tooltip" data-title="<?php echo _l('filter_by'); ?>">
-                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                                <div class="btn-group btn-with-tooltip-group _filter_data" data-toggle="tooltip"
+                                    data-title="<?php echo _l('filter_by'); ?>">
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                                        aria-haspopup="true" aria-expanded="false">
                                         <i class="fa fa-filter" aria-hidden="true"></i>
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-right" style="width:300px;">
-                                        <li class="active"><a href="#" data-cview="all" onclick="dt_custom_view('','.table-leads',''); return false;">
-                                            <?php echo _l('leads_all'); ?>
-                                        </a></li>
-                                        <?php foreach ($sources as $source) { ?>
-                                            <li><a href="#" data-cview="source_<?php echo $source['id']; ?>" onclick="dt_custom_view('source_<?php echo $source['id']; ?>','.table-leads','source_<?php echo $source['id']; ?>'); return false;">
-                                                <?php echo $source['name']; ?>
+                                        <li class="active"><a href="#" data-cview="all"
+                                                onclick="dt_custom_view('','.table-leads',''); return false;">
+                                                <?php echo _l('leads_all'); ?>
                                             </a></li>
+                                        <?php foreach ($sources as $source) { ?>
+                                            <li><a href="#" data-cview="source_<?php echo $source['id']; ?>"
+                                                    onclick="dt_custom_view('source_<?php echo $source['id']; ?>','.table-leads','source_<?php echo $source['id']; ?>'); return false;">
+                                                    <?php echo $source['name']; ?>
+                                                </a></li>
                                         <?php } ?>
                                     </ul>
                                 </div>
-                                
-                                <div class="btn-group" data-toggle="tooltip" title="<?php echo _l('leads_view_mode'); ?>">
-                                    <button type="button" class="btn btn-default" onclick="ccx_switch_view('list')"><i class="fa fa-list"></i></button>
-                                    <button type="button" class="btn btn-default" onclick="ccx_switch_view('kanban')"><i class="fa fa-th-large"></i></button>
+
+                                <div class="btn-group" data-toggle="tooltip"
+                                    title="<?php echo _l('leads_view_mode'); ?>">
+                                    <button type="button" class="btn btn-default" onclick="ccx_switch_view('list')"><i
+                                            class="fa fa-list"></i></button>
+                                    <button type="button" class="btn btn-default" onclick="ccx_switch_view('kanban')"><i
+                                            class="fa fa-th-large"></i></button>
                                 </div>
                                 <?php echo form_hidden('custom_view'); ?>
                             </div>
                         </div>
 
                         <div class="clearfix"></div>
-                        
+
                         <div id="ccx_leads_view_wrapper" class="">
                             <!-- Content loaded via JS or default to Kanban/List -->
                             <div id="ccx_kanban_view" class="hide">
