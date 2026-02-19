@@ -8,6 +8,9 @@
                     <div class="panel-body">
                         <h4 class="no-margin">
                             <?php echo $title; ?>
+                            <a href="<?php echo admin_url('ccx_leads'); ?>" class="btn btn-default pull-right">
+                                <?php echo _l('back'); ?>
+                            </a>
                         </h4>
                         <hr class="hr-panel-heading" />
 
