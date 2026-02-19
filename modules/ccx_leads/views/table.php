@@ -19,8 +19,8 @@ $sTable = db_prefix() . 'leads';
 
 $where = [];
 
-if ($this->ci->input->post('status') && $this->ci->input->post('status') != 'all') {
-    $status = $this->ci->input->post('status');
+if ($this->ci->input->post('custom_view') && $this->ci->input->post('custom_view') != 'all') {
+    $status = $this->ci->input->post('custom_view');
     // Ensure numeric to prevent injection, though CodeIgniter/DataTables driver usually handles binding
     if (is_numeric($status)) {
         array_push($where, 'AND ' . db_prefix() . 'leads.status = ' . $status);

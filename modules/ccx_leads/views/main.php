@@ -41,17 +41,44 @@
                                 box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
                                 font-weight: 600;
                             }
+
+                            .ccx-status-count {
+                                display: inline-block;
+                                background: rgba(0, 0, 0, 0.08);
+                                padding: 0 6px;
+                                border-radius: 10px;
+                                font-size: 11px;
+                                margin-left: 5px;
+                            }
+
+                            .ccx-status-filter-item.active .ccx-status-count {
+                                background: rgba(0, 0, 0, 0.1);
+                                color: #1f2937;
+                            }
                         </style>
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="ccx-status-filter">
-                                    <div class="ccx-status-filter-item active" data-status="all">All</div>
-                                    <?php foreach ($statuses as $status) { ?>
+                                    <div class="ccx-status-filter-item active" data-status="">
+                                        All
+                                    </div>
+                                    <?php
+                                    foreach ($statuses as $status) {
+                                        $count = 0;
+                                        foreach ($summary as $s) {
+                                            if ($s['id'] == $status['id']) {
+                                                $count = $s['total'];
+                                                break;
+                                            }
+                                        }
+                                        ?>
                                         <div class="ccx-status-filter-item" data-status="<?php echo $status['id']; ?>">
                                             <?php echo $status['name']; ?>
+                                            <span class="ccx-status-count"><?php echo $count; ?></span>
                                         </div>
                                     <?php } ?>
                                 </div>
+                                <?php echo form_hidden('custom_view'); ?>
                             </div>
                         </div>
                         <div class="_buttons">
@@ -139,7 +166,9 @@
 
 <?php init_tail(); ?>
 <script>
-    var CcxLeadsServerParams = {};
+    var CcxLeadsServerParams = {
+        "custom_view": "[name='custom_view']"
+    };
     var ccx_leads_table;
     $(function () {
         ccx_leads_table = initDataTable('.table-ccx-leads', admin_url + 'ccx_leads/table', [0], [0], CcxLeadsServerParams, [8, 'desc']);
@@ -152,14 +181,14 @@
         });
 
         // Status Filter Logic
-        $('body').on('click', '.ccx-status-filter-item', function () {
+        $('body').on('click', '.ccx-status-filter-item', function() {
             // Update UI
             $('.ccx-status-filter-item').removeClass('active');
             $(this).addClass('active');
 
-            // Update Param
+            // Update Param using hidden input (standard perfex way)
             var status = $(this).data('status');
-            CcxLeadsServerParams['status'] = status;
+            $('input[name="custom_view"]').val(status);
 
             // Reload Table
             if ($.fn.DataTable.isDataTable('.table-ccx-leads')) {
