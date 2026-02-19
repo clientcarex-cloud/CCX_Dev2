@@ -50,13 +50,13 @@ foreach ($rResult as $aRow) {
 
     // Assigned
     $assignedOutput = '';
-    /* if ($aRow['assigned'] != 0) {
+    if ($aRow['assigned'] != 0) {
         $full_name = get_staff_full_name($aRow['assigned']);
         $assignedOutput = '<a href="' . admin_url('profile/' . $aRow['assigned']) . '">' . staff_profile_image($aRow['assigned'], [
             'staff-profile-image-small',
         ]) . '</a>';
         $assignedOutput .= ' <a href="' . admin_url('profile/' . $aRow['assigned']) . '">' . $full_name . '</a>';
-    } */
+    }
     $row[] = $assignedOutput;
 
     // Status
@@ -70,10 +70,9 @@ foreach ($rResult as $aRow) {
     $row[] = $statusOutput; */
     $row[] = $aRow['status'];
 
-    // $row[] = ($aRow['lastcontact'] ? time_ago($aRow['lastcontact']) : 'Never');
-    $row[] = $aRow['lastcontact'];
+    $row[] = ($aRow['lastcontact'] ? time_ago($aRow['lastcontact']) . ' <span class="text-has-action" data-toggle="tooltip" data-title="' . _dt($aRow['lastcontact']) . '">' . _dt($aRow['lastcontact']) . '</span>' : '');
 
-    $row[] = _dt($aRow['dateadded']);
+    $row[] = ($aRow['dateadded'] ? time_ago($aRow['dateadded']) . ' <span class="text-has-action" data-toggle="tooltip" data-title="' . _dt($aRow['dateadded']) . '">' . _dt($aRow['dateadded']) . '</span>' : '');
 
     $output['aaData'][] = $row;
 }
