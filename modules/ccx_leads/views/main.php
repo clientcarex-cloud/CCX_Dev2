@@ -94,7 +94,7 @@
     var CcxLeadsServerParams = {};
     var ccx_leads_table;
     $(function () {
-        ccx_leads_table = initDataTable('.table-ccx-leads', admin_url + 'ccx_leads/table', [0], [0], CcxLeadsServerParams, [9, 'desc']);
+        ccx_leads_table = initDataTable('.table-ccx-leads', admin_url + 'ccx_leads/table', [0], [0], CcxLeadsServerParams, [8, 'desc']);
 
         // Refresh list view table when the core lead modal closes after add/edit
         $('body').on('hidden.bs.modal', '#lead-modal', function () {
