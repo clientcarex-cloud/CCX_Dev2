@@ -3,9 +3,15 @@ function ccx_switch_view(view) {
     if (view === 'list') {
         $('#ccx_kanban_view').addClass('hide');
         $('#ccx_list_view').removeClass('hide');
+
+        $('#btn-list-view').addClass('active');
+        $('#btn-kanban-view').removeClass('active');
     } else {
         $('#ccx_list_view').addClass('hide');
         $('#ccx_kanban_view').removeClass('hide');
+
+        $('#btn-kanban-view').addClass('active');
+        $('#btn-list-view').removeClass('active');
     }
 }
 

@@ -8,7 +8,8 @@
     bottom: 0;
     left: 0;
     z-index: 9999;
-    display: none; /* Hidden by default */
+    display: none;
+    /* Hidden by default */
 }
 
 .ccx-slideover.open {
@@ -30,11 +31,13 @@
     position: absolute;
     top: 0;
     right: 0;
-    width: 600px; /* Adjust width as needed */
+    width: 600px;
+    /* Adjust width as needed */
     height: 100%;
     background: #fff;
-    box-shadow: -5px 0 15px rgba(0,0,0,0.1);
-    transform: translateX(100%); /* Start off-screen */
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+    transform: translateX(100%);
+    /* Start off-screen */
     transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     overflow-y: auto;
     display: flex;
@@ -83,13 +86,13 @@
     border-radius: 6px;
     padding: 12px;
     margin-bottom: 10px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     transition: box-shadow 0.2s, transform 0.1s;
     cursor: pointer;
 }
 
 .kanban-card:hover {
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
 }
 
@@ -114,4 +117,45 @@
     height: 24px;
     border-radius: 50%;
     border: 2px solid #fff;
+}
+
+/* View Switcher */
+.ccx-view-switcher {
+    background: #e4e6eb;
+    /* Gray track */
+    border-radius: 8px;
+    padding: 3px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.ccx-view-switcher .btn {
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    color: #5f6368;
+    transition: all 0.2s ease;
+    margin: 0;
+}
+
+.ccx-view-switcher .btn:hover {
+    color: #202124;
+}
+
+.ccx-view-switcher .btn.active {
+    background: #fff;
+    color: #1a73e8;
+    /* Google Blue or similar primary */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    font-weight: 600;
+}
+
+.ccx-view-switcher .btn:focus,
+.ccx-view-switcher .btn:active:focus,
+.ccx-view-switcher .btn.active:focus {
+    outline: none;
+    background-color: #fff;
+    /* Keep white on focus */
 }

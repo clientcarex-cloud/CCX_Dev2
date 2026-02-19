@@ -33,12 +33,12 @@
                                     <?php } ?>
                                 </ul>
                             </div>
-                            <div class="btn-group pull-right mleft4" data-toggle="tooltip"
+                            <div class="ccx-view-switcher pull-right mleft10" data-toggle="tooltip"
                                 title="<?php echo _l('leads_view_mode'); ?>">
-                                <button type="button" class="btn btn-default" onclick="ccx_switch_view('list')"><i
-                                        class="fa fa-list"></i></button>
-                                <button type="button" class="btn btn-default" onclick="ccx_switch_view('kanban')"><i
-                                        class="fa fa-th-large"></i></button>
+                                <button type="button" id="btn-list-view" class="btn btn-default"
+                                    onclick="ccx_switch_view('list')"><i class="fa fa-list"></i></button>
+                                <button type="button" id="btn-kanban-view" class="btn btn-default active"
+                                    onclick="ccx_switch_view('kanban')"><i class="fa fa-th-large"></i></button>
                             </div>
                         </div>
                         <div class="clearfix"></div>
