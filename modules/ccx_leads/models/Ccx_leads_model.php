@@ -43,4 +43,21 @@ class Ccx_leads_model extends App_Model
 
         return $this->db->get()->result_array();
     }
+
+    public function get_status_summary()
+    {
+        $this->db->select('status as id, count(id) as total');
+        $this->db->from(db_prefix() . 'leads');
+
+        if (!is_admin()) {
+            $this->db->group_start();
+            $this->db->where('assigned', get_staff_user_id());
+            $this->db->or_where('addedfrom', get_staff_user_id());
+            $this->db->or_where('is_public', 1);
+            $this->db->group_end();
+        }
+
+        $this->db->group_by('status');
+        return $this->db->get()->result_array();
+    }
 }
