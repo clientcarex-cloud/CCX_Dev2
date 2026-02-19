@@ -88,6 +88,31 @@
                             #ccx_leads_view_wrapper {
                                 padding: 0 15px 15px 15px;
                             }
+
+                            .ccx-floating-settings-btn {
+                                position: fixed;
+                                bottom: 30px;
+                                right: 30px;
+                                width: 50px;
+                                height: 50px;
+                                background: #fff;
+                                border-radius: 50%;
+                                box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                font-size: 20px;
+                                color: #4b5563;
+                                z-index: 999;
+                                transition: all 0.3s ease;
+                                border: 1px solid #e5e7eb;
+                            }
+
+                            .ccx-floating-settings-btn:hover {
+                                transform: translateY(-2px);
+                                box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+                                color: #2563eb;
+                            }
                         </style>
 
                         <div class="ccx-header-container">
@@ -194,6 +219,10 @@
         </div>
     </div>
 </div>
+
+<a href="<?php echo admin_url('ccx_leads/settings'); ?>" class="ccx-floating-settings-btn" data-toggle="tooltip" title="Settings">
+    <i class="fa fa-cog"></i>
+</a>
 
 <?php init_tail(); ?>
 <script>
