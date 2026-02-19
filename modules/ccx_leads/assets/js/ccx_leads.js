@@ -22,9 +22,11 @@ function ccx_lead_profile(id) {
         );
     }
     // Load module's own lead modal — completely independent from core Perfex CRM
-    $.get(admin_url + 'ccx_leads/lead_modal/' + id, function (html) {
+    requestGet('ccx_leads/lead_modal/' + id).done(function (html) {
         $('#ccx-lead-modal .modal-content').html(html);
         $('#ccx-lead-modal').modal('show');
+    }).fail(function (error) {
+        alert_float('danger', error.responseText || 'Failed to load lead data.');
     });
 }
 
