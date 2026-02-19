@@ -11,7 +11,6 @@
                             .content {
                                 padding: 0 !important;
                             }
-
                             .panel_s {
                                 margin: 0 !important;
                                 border: none !important;
@@ -19,13 +18,25 @@
                                 box-shadow: none !important;
                             }
 
+                            .ccx-header-container {
+                                display: flex;
+                                align-items: center;
+                                justify-content: space-between;
+                                flex-wrap: wrap;
+                                gap: 10px;
+                                margin-bottom: 15px;
+                                background: #fff;
+                                padding: 10px 20px;
+                                border-bottom: 1px solid #ebECF0;
+                            }
+
                             .ccx-status-filter {
                                 display: inline-flex;
                                 background: #f3f4f6;
                                 padding: 5px;
                                 border-radius: 20px;
-                                margin-bottom: 15px;
                                 flex-wrap: wrap;
+                                margin-bottom: 0; 
                             }
 
                             .ccx-status-filter-item {
@@ -68,66 +79,58 @@
                                 color: #1f2937;
                             }
                         </style>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="ccx-status-filter">
-                                    <div class="ccx-status-filter-item active" data-status="">
-                                        All
-                                    </div>
-                                    <?php
-                                    foreach ($statuses as $status) {
-                                        $count = 0;
-                                        foreach ($summary as $s) {
-                                            if ($s['id'] == $status['id']) {
-                                                $count = $s['total'];
-                                                break;
-                                            }
+                        
+                        <div class="ccx-header-container">
+                            <div class="ccx-status-filter">
+                                <div class="ccx-status-filter-item active" data-status="">
+                                    All
+                                </div>
+                                <?php
+                                foreach ($statuses as $status) {
+                                    $count = 0;
+                                    foreach ($summary as $s) {
+                                        if ($s['id'] == $status['id']) {
+                                            $count = $s['total'];
+                                            break;
                                         }
-                                        ?>
-                                        <div class="ccx-status-filter-item" data-status="<?php echo $status['id']; ?>">
-                                            <?php echo $status['name']; ?>
-                                            <span class="ccx-status-count"><?php echo $count; ?></span>
-                                        </div>
-                                    <?php } ?>
+                                    }
+                                    ?>
+                                    <div class="ccx-status-filter-item" data-status="<?php echo $status['id']; ?>">
+                                        <?php echo $status['name']; ?>
+                                        <span class="ccx-status-count"><?php echo $count; ?></span>
+                                    </div>
+                                <?php } ?>
+                            </div>
+                            
+                            <div class="ccx-actions" style="display:flex; gap:10px; align-items:center;">
+                                <a href="#" onclick="ccx_leads_new_lead(); return false;" class="btn btn-info">
+                                    <?php echo _l('new_lead'); ?>
+                                </a>
+                                
+                                <div class="btn-group btn-with-tooltip-group _filter_data" data-toggle="tooltip" data-title="<?php echo _l('filter_by'); ?>">
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fa fa-filter" aria-hidden="true"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-right" style="width:300px;">
+                                        <li class="active"><a href="#" data-cview="all" onclick="dt_custom_view('','.table-leads',''); return false;">
+                                            <?php echo _l('leads_all'); ?>
+                                        </a></li>
+                                        <?php foreach ($sources as $source) { ?>
+                                            <li><a href="#" data-cview="source_<?php echo $source['id']; ?>" onclick="dt_custom_view('source_<?php echo $source['id']; ?>','.table-leads','source_<?php echo $source['id']; ?>'); return false;">
+                                                <?php echo $source['name']; ?>
+                                            </a></li>
+                                        <?php } ?>
+                                    </ul>
+                                </div>
+                                
+                                <div class="btn-group" data-toggle="tooltip" title="<?php echo _l('leads_view_mode'); ?>">
+                                    <button type="button" class="btn btn-default" onclick="ccx_switch_view('list')"><i class="fa fa-list"></i></button>
+                                    <button type="button" class="btn btn-default" onclick="ccx_switch_view('kanban')"><i class="fa fa-th-large"></i></button>
                                 </div>
                                 <?php echo form_hidden('custom_view'); ?>
                             </div>
                         </div>
-                        <div class="_buttons">
-                            <a href="#" onclick="ccx_leads_new_lead(); return false;"
-                                class="btn btn-info mright5 test pull-left display-block">
-                                <?php echo _l('new_lead'); ?>
-                            </a>
-                            <div class="visible-xs">
-                                <div class="clearfix"></div>
-                            </div>
-                            <div class="btn-group pull-right mleft4 btn-with-tooltip-group _filter_data"
-                                data-toggle="tooltip" data-title="<?php echo _l('filter_by'); ?>">
-                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-                                    aria-haspopup="true" aria-expanded="false">
-                                    <i class="fa fa-filter" aria-hidden="true"></i>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-right" style="width:300px;">
-                                    <li class="active"><a href="#" data-cview="all"
-                                            onclick="dt_custom_view('','.table-leads',''); return false;">
-                                            <?php echo _l('leads_all'); ?>
-                                        </a></li>
-                                    <?php foreach ($sources as $source) { ?>
-                                        <li><a href="#" data-cview="source_<?php echo $source['id']; ?>"
-                                                onclick="dt_custom_view('source_<?php echo $source['id']; ?>','.table-leads','source_<?php echo $source['id']; ?>'); return false;">
-                                                <?php echo $source['name']; ?>
-                                            </a></li>
-                                    <?php } ?>
-                                </ul>
-                            </div>
-                            <div class="btn-group pull-right mleft4" data-toggle="tooltip"
-                                title="<?php echo _l('leads_view_mode'); ?>">
-                                <button type="button" class="btn btn-default" onclick="ccx_switch_view('list')"><i
-                                        class="fa fa-list"></i></button>
-                                <button type="button" class="btn btn-default" onclick="ccx_switch_view('kanban')"><i
-                                        class="fa fa-th-large"></i></button>
-                            </div>
-                        </div>
+
                         <div class="clearfix"></div>
                         <hr class="hr-panel-heading" />
 
