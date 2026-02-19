@@ -49,4 +49,32 @@ $(function () {
             ccx_lead_profile(id);
         }
     });
+
+    // Auto-populate Company field from Name field and hide Company field
+    $('body').on('shown.bs.modal', '#lead-modal', function (e) {
+        // Check if we are in the CCX Leads module context (or just apply globally if acceptable, 
+        // but safest to check if the table exists or we are on the page)
+        if ($('.table-ccx-leads').length > 0 || $('#ccx_leads_view_wrapper').length > 0) {
+            var $companyInput = $('#lead-modal input[name="company"]');
+            var $nameInput = $('#lead-modal input[name="name"]');
+
+            if ($companyInput.length > 0) {
+                // Hide the company input wrapper (usually .form-group)
+                $companyInput.closest('.form-group').addClass('hide');
+
+                // If creating new lead (company might be empty), sync it with name
+                if ($nameInput.length > 0) {
+                    // Initial sync if name already has value
+                    if ($nameInput.val() && !$companyInput.val()) {
+                        $companyInput.val($nameInput.val());
+                    }
+
+                    // Sync on change
+                    $nameInput.on('input blur change', function () {
+                        $companyInput.val($(this).val());
+                    });
+                }
+            }
+        }
+    });
 });

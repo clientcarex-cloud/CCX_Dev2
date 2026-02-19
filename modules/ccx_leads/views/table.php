@@ -6,7 +6,6 @@ $aColumns = [
     '1', // Bulk actions
     db_prefix() . 'leads.id as id',
     db_prefix() . 'leads.name as name',
-    db_prefix() . 'leads.company as company',
     db_prefix() . 'leads.email as email',
     db_prefix() . 'leads.phonenumber as phonenumber',
     db_prefix() . 'leads.assigned as assigned',
@@ -44,7 +43,6 @@ foreach ($rResult as $aRow) {
     $nameRow .= '</div>';
     $row[] = $nameRow;
 
-    $row[] = $aRow['company'];
     $row[] = ($aRow['email'] != '' ? '<a href="mailto:' . $aRow['email'] . '">' . $aRow['email'] . '</a>' : '');
     $row[] = ($aRow['phonenumber'] != '' ? '<a href="tel:' . $aRow['phonenumber'] . '">' . $aRow['phonenumber'] . '</a>' : '');
 

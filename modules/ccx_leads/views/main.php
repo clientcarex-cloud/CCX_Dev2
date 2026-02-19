@@ -47,7 +47,7 @@
                         <div id="ccx_leads_view_wrapper" class="mtop20">
                             <!-- Content loaded via JS or default to Kanban/List -->
                             <div id="ccx_kanban_view" class="hide">
-                                             <?php echo $kanban_content; ?>
+                                <?php echo $kanban_content; ?>
                             </div>
                             <div id="ccx_list_view">
                                 <?php
@@ -56,7 +56,6 @@
                                     '<span class="hide"> - </span><div class="checkbox mass_select_all_wrap"><input type="checkbox" id="mass_select_all" data-to-table="ccx-leads"><label></label></div>',
                                     '#',
                                     _l('leads_dt_name'),
-                                    _l('lead_company'),
                                     _l('leads_dt_email'),
                                     _l('leads_dt_phonenumber'),
                                     _l('leads_dt_assigned'),
