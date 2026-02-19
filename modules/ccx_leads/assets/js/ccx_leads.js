@@ -11,19 +11,20 @@ function ccx_switch_view(view) {
 
 
 function ccx_lead_profile(id) {
-    // Ensure the #lead-modal container exists (normally created by init_lead())
-    if ($('#lead-modal').length === 0) {
+    // Use a unique modal ID (#ccx-lead-modal) so the core Perfex CRM JS
+    // (which owns #lead-modal) cannot intercept or replace our content.
+    if ($('#ccx-lead-modal').length === 0) {
         $('body').append(
-            '<div class="modal fade" id="lead-modal" tabindex="-1" role="dialog">' +
+            '<div class="modal fade" id="ccx-lead-modal" tabindex="-1" role="dialog">' +
             '<div class="modal-dialog modal-lg" role="document">' +
             '<div class="modal-content"></div>' +
             '</div></div>'
         );
     }
-    // Load module's own lead modal — independent from core Perfex CRM
+    // Load module's own lead modal — completely independent from core Perfex CRM
     $.get(admin_url + 'ccx_leads/lead_modal/' + id, function (html) {
-        $('#lead-modal .modal-content').html(html);
-        $('#lead-modal').modal('show');
+        $('#ccx-lead-modal .modal-content').html(html);
+        $('#ccx-lead-modal').modal('show');
     });
 }
 
@@ -64,12 +65,11 @@ $(function () {
     });
 
     // Auto-populate Company field from Name field and hide Company field
-    $('body').on('shown.bs.modal', '#lead-modal', function (e) {
-        // Check if we are in the CCX Leads module context (or just apply globally if acceptable, 
-        // but safest to check if the table exists or we are on the page)
+    $('body').on('shown.bs.modal', '#ccx-lead-modal', function (e) {
+        // Check if we are in the CCX Leads module context
         if ($('.table-ccx-leads').length > 0 || $('#ccx_leads_view_wrapper').length > 0) {
-            var $companyInput = $('#lead-modal input[name="company"]');
-            var $nameInput = $('#lead-modal input[name="name"]');
+            var $companyInput = $('#ccx-lead-modal input[name="company"]');
+            var $nameInput = $('#ccx-lead-modal input[name="name"]');
 
             if ($companyInput.length > 0) {
                 // Hide the company input wrapper (usually .form-group)

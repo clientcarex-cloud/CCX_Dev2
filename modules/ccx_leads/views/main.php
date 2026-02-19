@@ -97,7 +97,7 @@
                                 height: 50px;
                                 background: #fff;
                                 border-radius: 50%;
-                                box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+                                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
                                 display: flex;
                                 align-items: center;
                                 justify-content: center;
@@ -110,7 +110,7 @@
 
                             .ccx-floating-settings-btn:hover {
                                 transform: translateY(-2px);
-                                box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+                                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
                                 color: #2563eb;
                             }
                         </style>
@@ -135,14 +135,16 @@
                                         <span class="ccx-status-count"><?php echo $count; ?></span>
                                     </div>
                                 <?php } ?>
-                                
+
                                 <!-- Junk and Lost Tabs -->
                                 <?php
                                 $junk_count = 0;
                                 $lost_count = 0;
-                                foreach($summary as $s){
-                                    if($s['id'] == 'junk') $junk_count = $s['total'];
-                                    if($s['id'] == 'lost') $lost_count = $s['total'];
+                                foreach ($summary as $s) {
+                                    if ($s['id'] == 'junk')
+                                        $junk_count = $s['total'];
+                                    if ($s['id'] == 'lost')
+                                        $lost_count = $s['total'];
                                 }
                                 ?>
                                 <div class="ccx-status-filter-item" data-status="junk">
@@ -238,7 +240,8 @@
     </div>
 </div>
 
-<a href="<?php echo admin_url('ccx_leads/settings'); ?>" class="ccx-floating-settings-btn" data-toggle="tooltip" title="Settings">
+<a href="<?php echo admin_url('ccx_leads/settings'); ?>" class="ccx-floating-settings-btn" data-toggle="tooltip"
+    title="Settings">
     <i class="fa fa-cog"></i>
 </a>
 
@@ -251,8 +254,8 @@
     $(function () {
         ccx_leads_table = initDataTable('.table-ccx-leads', admin_url + 'ccx_leads/table', [0], [0], CcxLeadsServerParams, [8, 'desc']);
 
-        // Refresh list view table when the core lead modal closes after add/edit
-        $('body').on('hidden.bs.modal', '#lead-modal', function () {
+        // Refresh list view table when the module lead modal closes after add/edit
+        $('body').on('hidden.bs.modal', '#ccx-lead-modal', function () {
             if ($.fn.DataTable.isDataTable('.table-ccx-leads')) {
                 ccx_leads_table.ajax.reload(null, false);
             }
