@@ -97,4 +97,15 @@ class Ccx_leads extends AdminController
 
         $this->load->view('ccx_leads/lead_panel', $data);
     }
+
+    /* Settings page */
+    public function settings()
+    {
+        if (!has_permission('leads', '', 'view')) {
+            access_denied('leads');
+        }
+
+        $data['title'] = 'CCX Leads Settings';
+        $this->load->view('ccx_leads/settings', $data);
+    }
 }
