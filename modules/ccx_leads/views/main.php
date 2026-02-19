@@ -46,10 +46,10 @@
 
                         <div id="ccx_leads_view_wrapper" class="mtop20">
                             <!-- Content loaded via JS or default to Kanban/List -->
-                            <div id="ccx_kanban_view">
-                                <?php echo $kanban_content; ?>
+                            <div id="ccx_kanban_view" class="hide">
+                                             <?php echo $kanban_content; ?>
                             </div>
-                            <div id="ccx_list_view" class="hide">
+                            <div id="ccx_list_view">
                                 <?php
                                 $table_data = array();
                                 $_table_data = array(
