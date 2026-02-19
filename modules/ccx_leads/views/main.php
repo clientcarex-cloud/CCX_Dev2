@@ -11,6 +11,9 @@
                             .content {
                                 padding: 0 !important;
                             }
+                            .panel-body {
+                                padding: 0 !important;
+                            }
                             .panel_s {
                                 margin: 0 !important;
                                 border: none !important;
@@ -26,21 +29,21 @@
                                 gap: 10px;
                                 margin-bottom: 0;
                                 background: transparent;
-                                padding: 10px 20px;
-                                border-bottom: none;
+                                padding: 15px;
+                                border-bottom: 1px solid #f0f0f0;
                             }
 
                             .ccx-status-filter {
                                 display: inline-flex;
                                 background: #f3f4f6;
-                                padding: 5px;
+                                padding: 4px;
                                 border-radius: 20px;
                                 flex-wrap: wrap;
                                 margin-bottom: 0; 
                             }
 
                             .ccx-status-filter-item {
-                                padding: 6px 16px;
+                                padding: 5px 14px;
                                 border-radius: 15px;
                                 cursor: pointer;
                                 font-weight: 500;
@@ -132,9 +135,8 @@
                         </div>
 
                         <div class="clearfix"></div>
-                        <hr class="hr-panel-heading" />
-
-                        <div id="ccx_leads_view_wrapper" class="mtop20">
+                        
+                        <div id="ccx_leads_view_wrapper" class="">
                             <!-- Content loaded via JS or default to Kanban/List -->
                             <div id="ccx_kanban_view" class="hide">
                                 <?php echo $kanban_content; ?>
