@@ -65,6 +65,11 @@ class Ccx_leads extends AdminController
     /* Table view data */
     public function table()
     {
+        $this->load->model('ccx_leads_model');
+        $this->load->model('leads_model');
+        $this->load->model('staff_model');
+        $this->load->model('misc_model');
+
         if (!has_permission('leads', '', 'view')) {
             ajax_access_denied();
         }

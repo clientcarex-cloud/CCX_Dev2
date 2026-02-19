@@ -50,26 +50,28 @@ foreach ($rResult as $aRow) {
 
     // Assigned
     $assignedOutput = '';
-    if ($aRow['assigned'] != 0) {
+    /* if ($aRow['assigned'] != 0) {
         $full_name = get_staff_full_name($aRow['assigned']);
         $assignedOutput = '<a href="' . admin_url('profile/' . $aRow['assigned']) . '">' . staff_profile_image($aRow['assigned'], [
             'staff-profile-image-small',
         ]) . '</a>';
         $assignedOutput .= ' <a href="' . admin_url('profile/' . $aRow['assigned']) . '">' . $full_name . '</a>';
-    }
+    } */
     $row[] = $assignedOutput;
 
     // Status
-    $status = $this->leads_model->get_status($aRow['status']);
+    /* $status = $this->leads_model->get_status($aRow['status']);
     $statusOutput = '';
     if ($status) {
         $statusOutput = '<span class="label label-default inline-block" style="color:' . $status->color . ';border:1px solid ' . $status->color . '">' . $status->name . '</span>';
     } else {
         $statusOutput = $aRow['status'];
     }
-    $row[] = $statusOutput;
+    $row[] = $statusOutput; */
+    $row[] = $aRow['status'];
 
-    $row[] = ($aRow['lastcontact'] ? time_ago($aRow['lastcontact']) : 'Never');
+    // $row[] = ($aRow['lastcontact'] ? time_ago($aRow['lastcontact']) : 'Never');
+    $row[] = $aRow['lastcontact'];
 
     $row[] = _dt($aRow['dateadded']);
 
