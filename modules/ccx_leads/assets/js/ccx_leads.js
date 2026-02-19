@@ -11,8 +11,17 @@ function ccx_switch_view(view) {
 
 
 function ccx_lead_profile(id) {
-    // Use module's own lead modal — independent from core Perfex CRM
-    $.get(admin_url + 'ccx_leads/lead_modal/' + id, function(html) {
+    // Ensure the #lead-modal container exists (normally created by init_lead())
+    if ($('#lead-modal').length === 0) {
+        $('body').append(
+            '<div class="modal fade" id="lead-modal" tabindex="-1" role="dialog">' +
+            '<div class="modal-dialog modal-lg" role="document">' +
+            '<div class="modal-content"></div>' +
+            '</div></div>'
+        );
+    }
+    // Load module's own lead modal — independent from core Perfex CRM
+    $.get(admin_url + 'ccx_leads/lead_modal/' + id, function (html) {
         $('#lead-modal .modal-content').html(html);
         $('#lead-modal').modal('show');
     });
