@@ -105,7 +105,7 @@ class Ccx_leads extends AdminController
             access_denied('leads');
         }
 
-        $data['title'] = 'CCX Leads Settings';
+        $data['title'] = _l('ccx_leads_settings');
         $this->load->view('ccx_leads/settings', $data);
     }
 }
