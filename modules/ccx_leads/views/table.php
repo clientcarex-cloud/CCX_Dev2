@@ -60,15 +60,15 @@ foreach ($rResult as $aRow) {
     $row[] = $assignedOutput;
 
     // Status
-    /* $status = $this->leads_model->get_status($aRow['status']);
+    // Status
+    $status = $this->leads_model->get_status($aRow['status']);
     $statusOutput = '';
     if ($status) {
         $statusOutput = '<span class="label label-default inline-block" style="color:' . $status->color . ';border:1px solid ' . $status->color . '">' . $status->name . '</span>';
     } else {
         $statusOutput = $aRow['status'];
     }
-    $row[] = $statusOutput; */
-    $row[] = $aRow['status'];
+    $row[] = $statusOutput;
 
     $row[] = ($aRow['lastcontact'] ? time_ago($aRow['lastcontact']) . ' <span class="text-has-action" data-toggle="tooltip" data-title="' . _dt($aRow['lastcontact']) . '">' . _dt($aRow['lastcontact']) . '</span>' : '');
 
