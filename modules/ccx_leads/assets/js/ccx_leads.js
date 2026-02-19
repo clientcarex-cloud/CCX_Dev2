@@ -9,9 +9,13 @@ function ccx_switch_view(view) {
     }
 }
 
+
 function ccx_lead_profile(id) {
-    // Use core Perfex CRM lead modal (init_lead is in main.js globally)
-    init_lead(id);
+    // Use module's own lead modal — independent from core Perfex CRM
+    $.get(admin_url + 'ccx_leads/lead_modal/' + id, function(html) {
+        $('#lead-modal .modal-content').html(html);
+        $('#lead-modal').modal('show');
+    });
 }
 
 function ccx_close_slideover() {

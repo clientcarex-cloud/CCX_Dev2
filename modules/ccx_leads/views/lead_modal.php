@@ -22,15 +22,6 @@
                 <?= _l('add_new', _l('lead_lowercase')); ?>
             <?php } ?>
         </h4>
-
-        <?php if (isset($lead)) { ?>
-        <a href="#"
-            class="lead-print-btn tw-text-neutral-500 hover:tw-text-neutral-800 focus:tw-text-neutral-800 tw-mt-1 tw-space-x-1.5 tw-mx-4"
-            onclick="print_lead_information(); return false;">
-            <i class="fa-solid fa-print"></i>
-            <span><?= _l('print'); ?></span>
-        </a>
-        <?php } ?>
     </div>
 
 </div>
@@ -65,30 +56,6 @@
                                             </a>
                                         </li>
                                     <?php } ?>
-                                    <li role="presentation">
-                                        <a href="#tab_proposals_leads"
-                                            onclick="initDataTable('.table-proposals-lead', admin_url + 'proposals/proposal_relations/' + <?= e($lead->id); ?> + '/lead','undefined', 'undefined','undefined',[6,'desc']);"
-                                            aria-controls="tab_proposals_leads" role="tab" data-toggle="tab">
-                                            <i class="fa-regular fa-file-lines menu-icon"></i>
-                                            <?= _l('proposals');
-                                            if ($total_proposals > 0) {
-                                                echo ' <span class="badge">' . $total_proposals . '</span>';
-                                            }
-                                            ?>
-                                        </a>
-                                    </li>
-                                    <li role="presentation">
-                                        <a href="#tab_tasks_leads"
-                                            onclick="init_rel_tasks_table(<?= e($lead->id); ?>,'lead','.table-rel-tasks-leads');"
-                                            aria-controls="tab_tasks_leads" role="tab" data-toggle="tab">
-                                            <i class="fa-regular fa-circle-check menu-icon"></i>
-                                            <?= _l('tasks');
-                                            if ($total_tasks > 0) {
-                                                echo ' <span class="badge">' . $total_tasks . '</span>';
-                                            }
-                                            ?>
-                                        </a>
-                                    </li>
                                     <li role="presentation">
                                         <a href="#attachments" aria-controls="attachments" role="tab" data-toggle="tab">
                                             <i class="fa-solid fa-paperclip menu-icon"></i>
@@ -146,7 +113,7 @@
             <div class="tab-content">
                 <!-- from leads modal -->
                 <div role="tabpanel" class="tab-pane active" id="tab_lead_profile">
-                    <?php $this->load->view('admin/leads/profile'); ?>
+                    <?php $this->load->view('ccx_leads/lead_profile'); ?>
                 </div>
                 <?php if (isset($lead)) { ?>
                     <?php if (count($mail_activity) > 0 || isset($show_email_activity) && $show_email_activity) { ?>
@@ -251,45 +218,6 @@
                             <div class="clearfix"></div>
                         </div>
                     </div>
-                    <div role="tabpanel" class="tab-pane" id="tab_proposals_leads">
-                        <?php if (staff_can('create', 'proposals')) { ?>
-                            <a href="<?= admin_url('proposals/proposal?rel_type=lead&rel_id=' . $lead->id); ?>"
-                                class="btn btn-primary mbot25"><?= _l('new_proposal'); ?></a>
-                        <?php } ?>
-                        <?php if (total_rows(db_prefix() . 'proposals', ['rel_type' => 'lead', 'rel_id' => $lead->id]) > 0 && (staff_can('create', 'proposals') || staff_can('edit', 'proposals'))) { ?>
-                            <a href="#" class="btn btn-primary mbot25" data-toggle="modal"
-                                data-target="#sync_data_proposal_data"><?= _l('sync_data'); ?></a>
-                            <?php $this->load->view('admin/proposals/sync_data', ['related' => $lead, 'rel_id' => $lead->id, 'rel_type' => 'lead']); ?>
-                        <?php } ?>
-                        <?php
-                        $table_data = [
-                            _l('proposal') . ' #',
-                            _l('proposal_subject'),
-                            _l('proposal_total'),
-                            _l('proposal_date'),
-                            _l('proposal_open_till'),
-                            _l('tags'),
-                            _l('proposal_date_created'),
-                            _l('proposal_status'),
-                        ];
-                        $custom_fields = get_custom_fields('proposal', ['show_on_table' => 1]);
-
-                        foreach ($custom_fields as $field) {
-                            array_push($table_data, [
-                                'name' => $field['name'],
-                                'th_attrs' => ['data-type' => $field['type'], 'data-custom-field' => 1],
-                            ]);
-                        }
-                        $table_data = hooks()->apply_filters('proposals_relation_table_columns', $table_data);
-                        render_datatable($table_data, 'proposals-lead', [], [
-                            'data-last-order-identifier' => 'proposals-relation',
-                            'data-default-order' => get_table_last_order('proposals-relation'),
-                        ]);
-                        ?>
-                    </div>
-                    <div role="tabpanel" class="tab-pane" id="tab_tasks_leads">
-                        <?php init_relation_tasks_table(['data-new-rel-id' => $lead->id, 'data-new-rel-type' => 'lead'], 'tasksFilters'); ?>
-                    </div>
                     <div role="tabpanel" class="tab-pane" id="lead_reminders">
                         <a href="#" data-toggle="modal" class="btn btn-primary"
                             data-target=".reminder-modal-lead-<?= e($lead->id); ?>"><i class="fa-regular fa-bell"></i>
@@ -321,7 +249,7 @@
                         <?php } ?>
                         <?php if (count($lead->attachments) > 0) { ?>
                             <div class="mtop20" id="lead_attachments">
-                                <?php $this->load->view('admin/leads/leads_attachments_template', ['attachments' => $lead->attachments]); ?>
+                                <?php $this->load->view('ccx_leads/leads_attachments_template', ['attachments' => $lead->attachments]); ?>
                             </div>
                         <?php } ?>
                     </div>

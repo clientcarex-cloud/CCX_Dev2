@@ -98,6 +98,37 @@ class Ccx_leads extends AdminController
         $this->load->view('ccx_leads/lead_panel', $data);
     }
 
+    /* Module's own lead modal — independent from core */
+    public function lead_modal($id)
+    {
+        if (!has_permission('leads', '', 'view')) {
+            ajax_access_denied();
+        }
+
+        $lead = $this->leads_model->get($id);
+        if (!$lead) {
+            show_404();
+        }
+
+        $this->load->model('currencies_model');
+
+        $data['lead'] = $lead;
+        $data['activity_log'] = $this->leads_model->get_lead_activity_log($id);
+        $data['notes'] = $this->misc_model->get_notes_rel($id, 'lead');
+        $data['mail_activity'] = $this->leads_model->get_lead_email_activity($id);
+        $data['statuses'] = $this->leads_model->get_status();
+        $data['sources'] = $this->leads_model->get_source();
+        $data['members'] = $this->staff_model->get('', ['active' => 1]);
+        $data['total_notes'] = count($data['notes']);
+        $data['total_reminders'] = total_rows(db_prefix() . 'reminders', ['rel_id' => $id, 'rel_type' => 'lead']);
+        $data['total_attachments'] = count($lead->attachments);
+        $data['openEdit'] = false;
+        $data['lead_locked'] = false;
+        $data['base_currency'] = $this->currencies_model->get_base_currency();
+
+        $this->load->view('ccx_leads/lead_modal', $data);
+    }
+
     /* Settings page */
     public function settings()
     {
