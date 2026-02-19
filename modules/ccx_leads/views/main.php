@@ -24,10 +24,10 @@
                                 justify-content: space-between;
                                 flex-wrap: wrap;
                                 gap: 10px;
-                                margin-bottom: 15px;
-                                background: #fff;
+                                margin-bottom: 0;
+                                background: transparent;
                                 padding: 10px 20px;
-                                border-bottom: 1px solid #ebECF0;
+                                border-bottom: none;
                             }
 
                             .ccx-status-filter {
