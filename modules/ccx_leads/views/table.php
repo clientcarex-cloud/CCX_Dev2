@@ -61,7 +61,7 @@ foreach ($rResult as $aRow) {
     $nameRow = '<a href="#" onclick="ccx_lead_profile(' . $aRow['id'] . '); return false;">' . $aRow['name'] . '</a>';
     $nameRow .= '<div class="row-options">';
     $nameRow .= '<a href="#" onclick="ccx_lead_profile(' . $aRow['id'] . '); return false;">' . _l('view') . '</a>';
-    $nameRow .= ' | <a href="' . admin_url('leads/index/' . $aRow['id']) . '">' . _l('edit') . '</a>';
+    $nameRow .= ' | <a href="#" onclick="ccx_lead_profile(' . $aRow['id'] . '); return false;">' . _l('edit') . '</a>';
     $nameRow .= '</div>';
     $row[] = $nameRow;
 
