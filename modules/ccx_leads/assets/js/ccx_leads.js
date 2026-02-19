@@ -66,6 +66,30 @@ $(function () {
         }
     });
 
+    // Custom edit toggle for CCX lead modal (replaces core [lead-edit] handler)
+    $('body').on('click', '[ccx-lead-edit]', function (e) {
+        e.preventDefault();
+        var $modal = $('#ccx-lead-modal');
+        var $leadEdit = $modal.find('.lead-edit');
+        $modal.find('.lead-view').toggleClass('hide');
+        $leadEdit.toggleClass('hide');
+
+        // Initialize UI components when entering edit mode
+        if (!$leadEdit.hasClass('hide')) {
+            init_selectpicker();
+            init_datepicker();
+            init_tags_inputs();
+            init_color_pickers();
+            validate_lead_form();
+            var $address = $modal.find('#address');
+            if ($address.length > 0 && $address.is('textarea')) {
+                var scrollHeight = $address[0].scrollHeight;
+                $address.height(0).height(scrollHeight - 15);
+                $address.css('padding-top', '9px');
+            }
+        }
+    });
+
     // Auto-populate Company field from Name field and hide Company field
     $('body').on('shown.bs.modal', '#ccx-lead-modal', function (e) {
         // Check if we are in the CCX Leads module context
@@ -91,5 +115,11 @@ $(function () {
                 }
             }
         }
+
+        // Initialize Perfex UI components for the loaded modal content
+        init_selectpicker();
+        init_datepicker();
+        init_tags_inputs();
+        init_color_pickers();
     });
 });

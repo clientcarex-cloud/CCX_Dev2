@@ -46,7 +46,7 @@
 
         <div
             class="<?= $lead_locked == true ? ' hide' : ''; ?>">
-            <a href="#" lead-edit data-toggle="tooltip"
+            <a href="#" ccx-lead-edit data-toggle="tooltip"
                 data-title="<?= _l('edit'); ?>"
                 class="btn btn-default lead-top-btn !tw-px-3">
 
