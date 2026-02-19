@@ -6,9 +6,14 @@
             <div class="col-md-12">
                 <div class="panel_s">
                     <div class="panel-body">
-                        <h4 class="no-margin">
-                            <?php echo $title; ?>
-                        </h4>
+                        <div class="flex align-items-center">
+                            <a href="<?php echo admin_url('ccx_leads'); ?>" class="btn btn-default btn-sm mright10">
+                                <i class="fa fa-arrow-left"></i> <?php echo _l('go_back'); ?>
+                            </a>
+                            <h4 class="no-margin">
+                                <?php echo $title; ?>
+                            </h4>
+                        </div>
                         <hr class="hr-panel-heading" />
                         <div class="horizontal-scrollable-tabs panel-full-width-tabs">
                             <div class="scroller arrow-left"><i class="fa fa-angle-left"></i></div>
