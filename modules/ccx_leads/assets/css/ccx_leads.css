@@ -1,0 +1,117 @@
+/* CCX Leads Modern UI Styles */
+
+/* Slide Over Panel */
+.ccx-slideover {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 9999;
+    display: none; /* Hidden by default */
+}
+
+.ccx-slideover.open {
+    display: block;
+}
+
+.ccx-slideover-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    transition: opacity 0.3s ease;
+}
+
+.ccx-slideover-content {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 600px; /* Adjust width as needed */
+    height: 100%;
+    background: #fff;
+    box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+    transform: translateX(100%); /* Start off-screen */
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.ccx-slideover.open .ccx-slideover-content {
+    transform: translateX(0);
+}
+
+.close-slideover {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 24px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #666;
+    z-index: 10;
+}
+
+.close-slideover:hover {
+    color: #000;
+}
+
+#ccx_slideover_body {
+    padding: 20px;
+    flex: 1;
+}
+
+/* Kanban Improvements */
+
+.kanban-column {
+    background: #f4f5f7;
+    border-radius: 8px;
+    padding: 10px;
+    margin-right: 15px;
+    min-width: 300px;
+    max-width: 300px;
+}
+
+.kanban-card {
+    background: #fff;
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    transition: box-shadow 0.2s, transform 0.1s;
+    cursor: pointer;
+}
+
+.kanban-card:hover {
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.kanban-card-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.kanban-card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: #777;
+    margin-top: 10px;
+}
+
+.kanban-card-assigned img {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+}
