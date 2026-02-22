@@ -175,10 +175,12 @@
     </div>
 </div>
 
-<a href="<?php echo admin_url('ccx_leads/settings'); ?>" class="ccx-floating-settings-btn" data-toggle="tooltip"
-    title="Settings" aria-label="Settings">
-    <i class="fa fa-cog"></i>
-</a>
+<?php if (function_exists('is_admin') && is_admin()) { ?>
+    <a href="<?php echo admin_url('ccx_leads/settings'); ?>" class="ccx-floating-settings-btn" data-toggle="tooltip"
+        title="Settings" aria-label="Settings">
+        <i class="fa fa-cog"></i>
+    </a>
+<?php } ?>
 
 <?php init_tail(); ?>
 <script>
