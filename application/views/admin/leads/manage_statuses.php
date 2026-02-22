@@ -1,5 +1,17 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
 <?php init_head(); ?>
+<style>
+    /* Small color swatch next to status name */
+    .lead-status-swatch {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        margin-right: 8px;
+        vertical-align: middle;
+        border: 1px solid rgba(0,0,0,0.08);
+    }
+</style>
 <div id="wrapper">
     <div class="content">
         <div class="row">
@@ -30,11 +42,16 @@
                                         <?= e($status['id']); ?>
                                     </td>
                                     <td>
+                                        <?php $color = ($status['color'] ? $status['color'] : '#757575'); ?>
                                         <a href="#" class="tw-font-medium"
                                             onclick="edit_status(this,<?= e($status['id']); ?>);return false;"
                                             data-color="<?= e($status['color']); ?>"
                                             data-name="<?= e($status['name']); ?>"
-                                            data-order="<?= e($status['statusorder']); ?>"><?= e($status['name']); ?></a><br />
+                                            data-order="<?= e($status['statusorder']); ?>">
+                                            <span class="lead-status-swatch" style="background: <?= e($color); ?>;"
+                                                  aria-hidden="true"></span>
+                                            <span class="lead-status-name"><?= e($status['name']); ?></span>
+                                        </a><br />
                                         <span class="text-muted">
                                             <?= _l('leads_table_total', total_rows(db_prefix() . 'leads', ['status' => $status['id']])); ?></span>
                                     </td>
