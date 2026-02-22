@@ -3,9 +3,15 @@ function ccx_switch_view(view) {
     if (view === 'list') {
         $('#ccx_kanban_view').addClass('hide');
         $('#ccx_list_view').removeClass('hide');
+        // Update ARIA on view buttons
+        $('.btn-group[aria-label="View mode"] button[aria-label="List view"]').attr('aria-pressed', 'true');
+        $('.btn-group[aria-label="View mode"] button[aria-label="Kanban view"]').attr('aria-pressed', 'false');
     } else {
         $('#ccx_list_view').addClass('hide');
         $('#ccx_kanban_view').removeClass('hide');
+        // Update ARIA on view buttons
+        $('.btn-group[aria-label="View mode"] button[aria-label="List view"]').attr('aria-pressed', 'false');
+        $('.btn-group[aria-label="View mode"] button[aria-label="Kanban view"]').attr('aria-pressed', 'true');
     }
 }
 
@@ -121,5 +127,13 @@ $(function () {
         init_datepicker();
         init_tags_inputs();
         init_color_pickers();
+    });
+
+    // Keyboard support for status filter (Enter / Space)
+    $('body').on('keydown', '.ccx-status-filter-item', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            $(this).trigger('click');
+        }
     });
 });

@@ -6,118 +6,11 @@
             <div class="col-md-12">
                 <div class="panel_s">
                     <div class="panel-body">
-                        <style>
-                            /* Full page view overrides */
-                            .content {
-                                padding: 0 !important;
-                            }
-
-                            .panel-body {
-                                padding: 0 !important;
-                            }
-
-                            .panel_s {
-                                margin: 0 !important;
-                                border: none !important;
-                                border-radius: 0 !important;
-                                box-shadow: none !important;
-                            }
-
-                            .ccx-header-container {
-                                display: flex;
-                                align-items: center;
-                                justify-content: space-between;
-                                flex-wrap: wrap;
-                                gap: 10px;
-                                margin-bottom: 0;
-                                background: transparent;
-                                padding: 15px;
-                                border-bottom: 1px solid #f0f0f0;
-                            }
-
-                            .ccx-status-filter {
-                                display: inline-flex;
-                                background: #f3f4f6;
-                                padding: 4px;
-                                border-radius: 20px;
-                                flex-wrap: wrap;
-                                margin-bottom: 0;
-                            }
-
-                            .ccx-status-filter-item {
-                                padding: 5px 14px;
-                                border-radius: 15px;
-                                cursor: pointer;
-                                font-weight: 500;
-                                color: #4b5563;
-                                transition: all 0.2s;
-                                margin-right: 5px;
-                                font-size: 13px;
-                            }
-
-                            .ccx-status-filter-item:last-child {
-                                margin-right: 0;
-                            }
-
-                            .ccx-status-filter-item:hover {
-                                background: rgba(0, 0, 0, 0.05);
-                            }
-
-                            .ccx-status-filter-item.active {
-                                background: #fff;
-                                color: #1f2937;
-                                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-                                font-weight: 600;
-                            }
-
-                            .ccx-status-count {
-                                display: inline-block;
-                                background: rgba(0, 0, 0, 0.08);
-                                padding: 0 6px;
-                                border-radius: 10px;
-                                font-size: 11px;
-                                margin-left: 5px;
-                            }
-
-                            .ccx-status-filter-item.active .ccx-status-count {
-                                background: rgba(0, 0, 0, 0.1);
-                                color: #1f2937;
-                            }
-
-                            /* Ensure table content aligns with header padding */
-                            #ccx_leads_view_wrapper {
-                                padding: 0 15px 15px 15px;
-                            }
-
-                            .ccx-floating-settings-btn {
-                                position: fixed;
-                                bottom: 30px;
-                                right: 30px;
-                                width: 50px;
-                                height: 50px;
-                                background: #fff;
-                                border-radius: 50%;
-                                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                font-size: 20px;
-                                color: #4b5563;
-                                z-index: 999;
-                                transition: all 0.3s ease;
-                                border: 1px solid #e5e7eb;
-                            }
-
-                            .ccx-floating-settings-btn:hover {
-                                transform: translateY(-2px);
-                                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-                                color: #2563eb;
-                            }
-                        </style>
+                        <!-- Styles moved to module CSS for maintainability -->
 
                         <div class="ccx-header-container">
-                            <div class="ccx-status-filter">
-                                <div class="ccx-status-filter-item active" data-status="">
+                            <nav class="ccx-status-filter" aria-label="Lead status filter">
+                                <div class="ccx-status-filter-item active" data-status="" tabindex="0" role="button" aria-pressed="true">
                                     All
                                 </div>
                                 <?php
@@ -130,7 +23,7 @@
                                         }
                                     }
                                     ?>
-                                    <div class="ccx-status-filter-item" data-status="<?php echo $status['id']; ?>">
+                                    <div class="ccx-status-filter-item" data-status="<?php echo $status['id']; ?>" tabindex="0" role="button" aria-pressed="false">
                                         <?php echo $status['name']; ?>
                                         <span class="ccx-status-count"><?php echo $count; ?></span>
                                     </div>
@@ -147,18 +40,18 @@
                                         $lost_count = $s['total'];
                                 }
                                 ?>
-                                <div class="ccx-status-filter-item" data-status="junk">
+                                <div class="ccx-status-filter-item" data-status="junk" tabindex="0" role="button" aria-pressed="false">
                                     <?php echo _l('leads_junk'); ?>
                                     <span class="ccx-status-count"><?php echo $junk_count; ?></span>
                                 </div>
-                                <div class="ccx-status-filter-item" data-status="lost">
+                                <div class="ccx-status-filter-item" data-status="lost" tabindex="0" role="button" aria-pressed="false">
                                     <?php echo _l('leads_lost'); ?>
                                     <span class="ccx-status-count"><?php echo $lost_count; ?></span>
                                 </div>
-                            </div>
+                            </nav>
 
                             <div class="ccx-actions" style="display:flex; gap:10px; align-items:center;">
-                                <a href="#" onclick="ccx_leads_new_lead(); return false;" class="btn btn-info">
+                                <a href="#" onclick="ccx_leads_new_lead(); return false;" class="btn btn-info" aria-label="Create new lead">
                                     <?php echo _l('new_lead'); ?>
                                 </a>
 
@@ -182,13 +75,13 @@
                                     </ul>
                                 </div>
 
-                                <div class="btn-group" data-toggle="tooltip"
-                                    title="<?php echo _l('leads_view_mode'); ?>">
-                                    <button type="button" class="btn btn-default" onclick="ccx_switch_view('list')"><i
-                                            class="fa fa-list"></i></button>
-                                    <button type="button" class="btn btn-default" onclick="ccx_switch_view('kanban')"><i
-                                            class="fa fa-th-large"></i></button>
-                                </div>
+                <div class="btn-group" data-toggle="tooltip"
+                    title="<?php echo _l('leads_view_mode'); ?>" role="group" aria-label="View mode">
+                    <button type="button" class="btn btn-default" onclick="ccx_switch_view('list')" aria-pressed="false" aria-label="List view"><i
+                        class="fa fa-list"></i></button>
+                    <button type="button" class="btn btn-default" onclick="ccx_switch_view('kanban')" aria-pressed="false" aria-label="Kanban view"><i
+                        class="fa fa-th-large"></i></button>
+                </div>
                                 <?php echo form_hidden('custom_view'); ?>
                             </div>
                         </div>
@@ -241,7 +134,7 @@
 </div>
 
 <a href="<?php echo admin_url('ccx_leads/settings'); ?>" class="ccx-floating-settings-btn" data-toggle="tooltip"
-    title="Settings">
+    title="Settings" aria-label="Settings">
     <i class="fa fa-cog"></i>
 </a>
 
@@ -264,8 +157,8 @@
         // Status Filter Logic
         $('body').on('click', '.ccx-status-filter-item', function () {
             // Update UI
-            $('.ccx-status-filter-item').removeClass('active');
-            $(this).addClass('active');
+            $('.ccx-status-filter-item').removeClass('active').attr('aria-pressed', 'false');
+            $(this).addClass('active').attr('aria-pressed', 'true');
 
             // Update Param using hidden input (standard perfex way)
             var status = $(this).data('status');
