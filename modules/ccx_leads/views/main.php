@@ -65,10 +65,12 @@
                                         }
                                     }
                                     ?>
-                                    <div class="ccx-status-filter-item" data-status="<?php echo $status['id']; ?>" tabindex="0" role="button" aria-pressed="false">
-                                        <?php echo $status['name']; ?>
-                                        <span class="ccx-status-count"><?php echo $count; ?></span>
-                                    </div>
+                                        <?php $color = isset($status['color']) && $status['color'] ? $status['color'] : '#757575'; ?>
+                                        <div class="ccx-status-filter-item" data-status="<?php echo $status['id']; ?>" tabindex="0" role="button" aria-pressed="false">
+                                            <span class="ccx-status-swatch" style="background: <?php echo $color; ?>;" aria-hidden="true"></span>
+                                            <?php echo $status['name']; ?>
+                                            <span class="ccx-status-count" style="background: <?php echo $color; ?>; color: #fff; opacity:0.95"><?php echo $count; ?></span>
+                                        </div>
                                 <?php } ?>
 
                                 <!-- Junk and Lost Tabs -->
@@ -82,13 +84,16 @@
                                         $lost_count = $s['total'];
                                 }
                                 ?>
+                                <?php $junk_color = '#9CA3AF'; $lost_color = '#EF4444'; ?>
                                 <div class="ccx-status-filter-item" data-status="junk" tabindex="0" role="button" aria-pressed="false">
+                                    <span class="ccx-status-swatch" style="background: <?php echo $junk_color; ?>;" aria-hidden="true"></span>
                                     <?php echo _l('leads_junk'); ?>
-                                    <span class="ccx-status-count"><?php echo $junk_count; ?></span>
+                                    <span class="ccx-status-count" style="background: <?php echo $junk_color; ?>; color:#fff; opacity:0.95"><?php echo $junk_count; ?></span>
                                 </div>
                                 <div class="ccx-status-filter-item" data-status="lost" tabindex="0" role="button" aria-pressed="false">
+                                    <span class="ccx-status-swatch" style="background: <?php echo $lost_color; ?>;" aria-hidden="true"></span>
                                     <?php echo _l('leads_lost'); ?>
-                                    <span class="ccx-status-count"><?php echo $lost_count; ?></span>
+                                    <span class="ccx-status-count" style="background: <?php echo $lost_color; ?>; color:#fff; opacity:0.95"><?php echo $lost_count; ?></span>
                                 </div>
                             </nav>
 

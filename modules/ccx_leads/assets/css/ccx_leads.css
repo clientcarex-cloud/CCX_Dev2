@@ -175,6 +175,22 @@
     margin-left: 8px;
 }
 
+/* small circular swatch used in status pills */
+.ccx-status-swatch {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+    border: 1px solid rgba(0,0,0,0.06);
+}
+
+/* when status pill is active, make count slightly darker */
+.ccx-status-filter-item.active .ccx-status-count {
+    opacity: 0.95;
+}
+
 .ccx-actions .btn {
     min-height: 36px;
 }
