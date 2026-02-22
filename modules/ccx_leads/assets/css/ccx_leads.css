@@ -167,12 +167,19 @@
 }
 
 .ccx-status-count {
-    display: inline-block;
-    background: rgba(0, 0, 0, 0.06);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
     padding: 0 6px;
-    border-radius: 10px;
+    border-radius: 999px; /* pill for >2 digits, circular for 1 digit */
     font-size: 11px;
     margin-left: 8px;
+    line-height: 1;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(2,6,23,0.06);
+    border: 1px solid rgba(0,0,0,0.06);
 }
 
 /* small circular swatch used in status pills */
@@ -188,7 +195,15 @@
 
 /* when status pill is active, make count slightly darker */
 .ccx-status-filter-item.active .ccx-status-count {
-    opacity: 0.95;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(2,6,23,0.08);
+}
+
+/* Improve spacing for the status pill content */
+.ccx-status-filter-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .ccx-actions .btn {
