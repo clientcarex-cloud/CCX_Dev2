@@ -6,7 +6,49 @@
             <div class="col-md-12">
                 <div class="panel_s">
                     <div class="panel-body">
-                        <!-- Styles moved to module CSS for maintainability -->
+                        <!-- Minimal inline styles to ensure header/filter layout (keeps safe fallback if module CSS fails to load) -->
+                        <style>
+                            .ccx-header-container {
+                                display: flex;
+                                align-items: center;
+                                justify-content: space-between;
+                                flex-wrap: wrap;
+                                gap: 10px;
+                                margin-bottom: 0;
+                                background: transparent;
+                                padding: 15px;
+                                border-bottom: 1px solid #f0f0f0;
+                            }
+
+                            .ccx-status-filter {
+                                display: inline-flex;
+                                background: #f3f4f6;
+                                padding: 6px;
+                                border-radius: 20px;
+                                flex-wrap: wrap;
+                                margin-bottom: 0;
+                                gap: 6px;
+                            }
+
+                            .ccx-status-filter-item {
+                                padding: 6px 12px;
+                                border-radius: 16px;
+                                cursor: pointer;
+                                font-weight: 500;
+                                color: #374151;
+                                font-size: 13px;
+                                background: transparent;
+                                border: 1px solid transparent;
+                            }
+
+                            .ccx-status-filter-item.active {
+                                background: #fff;
+                                color: #111827;
+                                box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+                            }
+
+                            .ccx-status-count { margin-left: 8px; font-size:11px; color:#374151; }
+                        </style>
 
                         <div class="ccx-header-container">
                             <nav class="ccx-status-filter" aria-label="Lead status filter">
