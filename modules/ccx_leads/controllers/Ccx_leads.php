@@ -137,6 +137,9 @@ class Ccx_leads extends AdminController
         }
 
         $data['title'] = _l('ccx_leads_settings');
+        // Provide leads statuses so the module settings can manage status colors inline
+        $this->load->model('leads_model');
+        $data['statuses'] = $this->leads_model->get_status();
         $this->load->view('ccx_leads/settings', $data);
     }
 }
