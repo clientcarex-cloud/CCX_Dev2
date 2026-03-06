@@ -80,8 +80,8 @@
                                     </li>
                                     <li role="presentation">
                                         <a href="#lead_notes" aria-controls="lead_notes" role="tab" data-toggle="tab">
-                                            <i class="fa-regular fa-note-sticky menu-icon"></i>
-                                            <?= _l('lead_add_edit_notes');
+                                            <i class="fa-solid fa-phone menu-icon"></i>
+                                            Call Logs<?php
                                             if ($total_notes > 0) {
                                                 echo ' <span class="badge">' . $total_notes . '</span>';
                                             }
