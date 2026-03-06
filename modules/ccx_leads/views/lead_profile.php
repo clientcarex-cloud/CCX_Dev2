@@ -4,44 +4,6 @@
     <?php if (isset($lead)) { ?>
     <div class="tw-flex tw-items-center tw-justify-end tw-space-x-1.5">
 
-        <?php
-                       $client                  = false;
-        $convert_to_client_tooltip_email_exists = '';
-        if (total_rows(db_prefix() . 'contacts', ['email' => $lead->email]) > 0 && total_rows(db_prefix() . 'clients', ['leadid' => $lead->id]) == 0) {
-            $convert_to_client_tooltip_email_exists = _l('lead_email_already_exists');
-            $text                                   = _l('lead_convert_to_client');
-        } elseif (total_rows(db_prefix() . 'clients', ['leadid' => $lead->id])) {
-            $client = true;
-        } else {
-            $text = _l('lead_convert_to_client');
-        }
-        ?>
-
-        <?php if ($lead_locked == false) { ?>
-        <div
-            class="lead-edit<?= isset($lead) ? ' hide' : ''; ?>">
-            <button type="button" class="btn btn-primary lead-top-btn lead-save-btn"
-                onclick="document.getElementById('lead-form-submit').click();">
-                <?= _l('submit'); ?>
-            </button>
-        </div>
-        <?php } ?>
-        <?php if ($client && (staff_can('view', 'customers') || is_customer_admin(get_client_id_by_lead_id($lead->id)))) { ?>
-        <a data-toggle="tooltip" class="btn btn-primary lead-top-btn lead-view" data-placement="top"
-            title="<?= _l('lead_converted_edit_client_profile'); ?>"
-            href="<?= admin_url('clients/client/' . get_client_id_by_lead_id($lead->id)); ?>">
-            <i class="fa-regular fa-user"></i>
-        </a>
-        <?php } ?>
-        <?php if (total_rows(db_prefix() . 'clients', ['leadid' => $lead->id]) == 0) { ?>
-        <a href="#" data-toggle="tooltip"
-            data-title="<?= e($convert_to_client_tooltip_email_exists); ?>"
-            class="btn btn-primary lead-convert-to-customer lead-top-btn lead-view"
-            onclick="convert_lead_to_customer(<?= e($lead->id); ?>); return false;">
-            <i class="fa-regular fa-user"></i>
-            <?= e($text); ?>
-        </a>
-        <?php } ?>
 
         <div
             class="<?= $lead_locked == true ? ' hide' : ''; ?>">
