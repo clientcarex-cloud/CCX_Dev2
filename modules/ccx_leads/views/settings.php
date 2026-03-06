@@ -138,7 +138,7 @@
                                             $.ajax({
                                                 url: admin_url + 'ccx_leads/save_field_settings',
                                                 type: 'POST',
-                                                data: $('#ccx-field-settings-form').serialize(),
+                                                data: $('#ccx-field-settings-form').serialize() + '&' + csrfData.token_name + '=' + csrfData.hash,
                                                 dataType: 'json',
                                                 success: function (response) {
                                                     if (response.success) {

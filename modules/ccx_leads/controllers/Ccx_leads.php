@@ -141,7 +141,7 @@ class Ccx_leads extends AdminController
     /* AJAX: Save field settings */
     public function save_field_settings()
     {
-        if (!has_permission('leads', '', 'view') || !is_admin()) {
+        if (!has_permission('leads', '', 'view')) {
             ajax_access_denied();
         }
 
