@@ -119,6 +119,7 @@ class Ccx_leads extends AdminController
         $data['openEdit'] = false;
         $data['lead_locked'] = false;
         $data['base_currency'] = $this->currencies_model->get_base_currency();
+        $data['field_settings'] = $this->ccx_leads_model->get_field_settings_map();
 
         $this->load->view('ccx_leads/lead_modal', $data);
     }
@@ -131,9 +132,40 @@ class Ccx_leads extends AdminController
         }
 
         $data['title'] = _l('ccx_leads_settings');
-        // Provide leads statuses so the module settings can manage status colors inline
         $this->load->model('leads_model');
         $data['statuses'] = $this->leads_model->get_status();
+        $data['field_settings'] = $this->ccx_leads_model->get_field_settings();
         $this->load->view('ccx_leads/settings', $data);
+    }
+
+    /* AJAX: Save field settings */
+    public function save_field_settings()
+    {
+        if (!has_permission('leads', '', 'view') || !is_admin()) {
+            ajax_access_denied();
+        }
+
+        $fields = $this->input->post('fields');
+        if (!$fields || !is_array($fields)) {
+            echo json_encode(['success' => false, 'message' => 'No data received']);
+            die;
+        }
+
+        foreach ($fields as $field) {
+            $id = intval($field['id']);
+            if ($id <= 0)
+                continue;
+
+            $update = [
+                'label' => trim($field['label']),
+                'active' => isset($field['active']) ? 1 : 0,
+                'required' => isset($field['required']) ? 1 : 0,
+            ];
+
+            $this->ccx_leads_model->update_field_setting($id, $update);
+        }
+
+        echo json_encode(['success' => true, 'message' => 'Field settings saved successfully']);
+        die;
     }
 }

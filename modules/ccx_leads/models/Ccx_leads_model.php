@@ -8,6 +8,85 @@ class Ccx_leads_model extends App_Model
     {
         parent::__construct();
         $this->load->model('leads_model');
+        $this->_ensure_field_settings_table();
+    }
+
+    /**
+     * Self-healing: ensure the field settings table exists and is seeded
+     */
+    private function _ensure_field_settings_table()
+    {
+        if (!$this->db->table_exists(db_prefix() . 'ccx_lead_field_settings')) {
+            $CI = &get_instance();
+            require_once(module_dir_path('ccx_leads') . 'install.php');
+        } elseif ($this->db->count_all(db_prefix() . 'ccx_lead_field_settings') == 0) {
+            $this->seed_default_fields();
+        }
+    }
+
+    /**
+     * Get all field settings ordered by field_order
+     */
+    public function get_field_settings()
+    {
+        $this->db->order_by('field_order', 'asc');
+        return $this->db->get(db_prefix() . 'ccx_lead_field_settings')->result_array();
+    }
+
+    /**
+     * Get field settings as slug => settings map for quick lookup
+     */
+    public function get_field_settings_map()
+    {
+        $fields = $this->get_field_settings();
+        $map = [];
+        foreach ($fields as $f) {
+            $map[$f['slug']] = $f;
+        }
+        return $map;
+    }
+
+    /**
+     * Update a single field setting
+     */
+    public function update_field_setting($id, $data)
+    {
+        $this->db->where('id', $id);
+        return $this->db->update(db_prefix() . 'ccx_lead_field_settings', $data);
+    }
+
+    /**
+     * Seed default fields into the table
+     */
+    public function seed_default_fields()
+    {
+        $defaults = [
+            ['slug' => 'name', 'label' => 'Name', 'active' => 1, 'required' => 1, 'field_order' => 1],
+            ['slug' => 'title', 'label' => 'Title', 'active' => 1, 'required' => 0, 'field_order' => 2],
+            ['slug' => 'email', 'label' => 'Email', 'active' => 1, 'required' => 0, 'field_order' => 3],
+            ['slug' => 'phonenumber', 'label' => 'Phone', 'active' => 1, 'required' => 0, 'field_order' => 4],
+            ['slug' => 'website', 'label' => 'Website', 'active' => 1, 'required' => 0, 'field_order' => 5],
+            ['slug' => 'lead_value', 'label' => 'Lead Value', 'active' => 1, 'required' => 0, 'field_order' => 6],
+            ['slug' => 'company', 'label' => 'Company', 'active' => 1, 'required' => 0, 'field_order' => 7],
+            ['slug' => 'address', 'label' => 'Address', 'active' => 1, 'required' => 0, 'field_order' => 8],
+            ['slug' => 'city', 'label' => 'City', 'active' => 1, 'required' => 0, 'field_order' => 9],
+            ['slug' => 'state', 'label' => 'State', 'active' => 1, 'required' => 0, 'field_order' => 10],
+            ['slug' => 'country', 'label' => 'Country', 'active' => 1, 'required' => 0, 'field_order' => 11],
+            ['slug' => 'zip', 'label' => 'Zip Code', 'active' => 1, 'required' => 0, 'field_order' => 12],
+            ['slug' => 'description', 'label' => 'Description', 'active' => 1, 'required' => 0, 'field_order' => 13],
+            ['slug' => 'status', 'label' => 'Status', 'active' => 1, 'required' => 1, 'field_order' => 14],
+            ['slug' => 'source', 'label' => 'Source', 'active' => 1, 'required' => 0, 'field_order' => 15],
+            ['slug' => 'assigned', 'label' => 'Assigned', 'active' => 1, 'required' => 0, 'field_order' => 16],
+            ['slug' => 'tags', 'label' => 'Tags', 'active' => 1, 'required' => 0, 'field_order' => 17],
+            ['slug' => 'is_public', 'label' => 'Public', 'active' => 1, 'required' => 0, 'field_order' => 18],
+        ];
+
+        foreach ($defaults as $field) {
+            // Only insert if slug not already present
+            if ($this->db->where('slug', $field['slug'])->count_all_results(db_prefix() . 'ccx_lead_field_settings') == 0) {
+                $this->db->insert(db_prefix() . 'ccx_lead_field_settings', $field);
+            }
+        }
     }
 
     public function do_kanban_query($status, $search = '', $page = 1, $sort = [], $count = false)
