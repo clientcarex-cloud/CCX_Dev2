@@ -266,22 +266,7 @@ if (!function_exists('ccx_field_required')) {
                             <?= isset($lead) && $lead->assigned != 0 ? e(get_staff_full_name($lead->assigned)) : '-' ?>
                         </dd>
                     <?php } ?>
-                    <?php if (ccx_field_active('tags')) { ?>
-                        <dt class="lead-field-heading tw-font-normal tw-text-neutral-500">
-                            <?= ccx_field_label('tags', _l('tags')); ?>
-                        </dt>
-                        <dd class="tw-text-neutral-900 tw-mt-1 mbot10">
-                            <?php if (isset($lead)) {
-                                $tags = get_tags_in($lead->id, 'lead');
-                                if (count($tags) > 0) {
-                                    echo render_tags($tags);
-                                    echo '<div class="clearfix"></div>';
-                                } else {
-                                    echo '-';
-                                }
-                            } ?>
-                        </dd>
-                    <?php } ?>
+
                     <dt class="lead-field-heading tw-font-normal tw-text-neutral-500">
                         <?= _l('leads_dt_datecreated'); ?>
                     </dt>
@@ -392,20 +377,6 @@ if (!function_exists('ccx_field_required')) {
             </div>
         <?php } ?>
         <div class="clearfix"></div>
-        <hr class="mtop5 mbot10" />
-        <?php if (ccx_field_active('tags')) { ?>
-            <div class="col-md-12">
-                <div class="form-group no-mbot" id="inputTagsWrapper">
-                    <label for="tags" class="control-label"><i class="fa fa-tag" aria-hidden="true"></i>
-                        <?= ccx_field_label('tags', _l('tags')); ?></label>
-                    <input type="text" class="tagsinput" id="tags" name="tags"
-                        value="<?= isset($lead) ? prep_tags_input(get_tags_in($lead->id, 'lead')) : ''; ?>"
-                        data-role="tagsinput">
-                </div>
-            </div>
-        <?php } ?>
-        <div class="clearfix"></div>
-        <hr class="no-mtop mbot15" />
         <div class="col-md-6">
             <?php if (ccx_field_active('name')) { ?>
                 <?php $value = (isset($lead) ? $lead->name : ''); ?>
