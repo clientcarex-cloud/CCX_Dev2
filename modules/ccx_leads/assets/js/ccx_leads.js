@@ -46,6 +46,18 @@ function ccx_close_slideover() {
 function ccx_leads_new_lead() {
     // Use the core Perfex CRM lead modal
     init_lead();
+
+    // Hide the Tags section from the core lead modal when opened from CCX Leads
+    $(document).off('shown.bs.modal.ccx_hide_tags').on('shown.bs.modal.ccx_hide_tags', '#lead-modal', function () {
+        var $modal = $(this);
+        // Hide the tags wrapper and its surrounding <hr> separators
+        $modal.find('#inputTagsWrapper').closest('.col-md-12').hide();
+        // Hide the <hr> before and after the tags section
+        $modal.find('#inputTagsWrapper').closest('.col-md-12').prev('hr').hide();
+        $modal.find('#inputTagsWrapper').closest('.col-md-12').next('.clearfix').next('hr').hide();
+        // Unbind after first use so it doesn't affect other contexts
+        $(document).off('shown.bs.modal.ccx_hide_tags');
+    });
 }
 
 function delete_lead(id) {
