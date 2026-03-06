@@ -115,7 +115,7 @@ class Ccx_leads extends AdminController
         $data['lead'] = $lead;
         $data['activity_log'] = $this->leads_model->get_lead_activity_log($id);
         $data['notes'] = $this->misc_model->get_notes_rel($id, 'lead');
-        $data['mail_activity'] = $this->leads_model->get_lead_email_activity($id);
+        $data['mail_activity'] = $this->leads_model->get_mail_activity($id);
         $data['statuses'] = $this->leads_model->get_status();
         $data['sources'] = $this->leads_model->get_source();
         $data['members'] = $this->staff_model->get('', ['active' => 1]);
