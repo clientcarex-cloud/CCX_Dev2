@@ -47,21 +47,12 @@
                                     </a>
                                 </li>
                                 <?php if (isset($lead)) { ?>
-                                    <?php if (count($mail_activity) > 0 || isset($show_email_activity) && $show_email_activity) { ?>
-                                        <li role="presentation">
-                                            <a href="#tab_email_activity" aria-controls="tab_email_activity" role="tab"
-                                                data-toggle="tab">
-                                                <i class="fa-regular fa-envelope menu-icon"></i>
-                                                <?= hooks()->apply_filters('lead_email_activity_subject', _l('lead_email_activity')); ?>
-                                            </a>
-                                        </li>
-                                    <?php } ?>
                                     <li role="presentation">
-                                        <a href="#attachments" aria-controls="attachments" role="tab" data-toggle="tab">
-                                            <i class="fa-solid fa-paperclip menu-icon"></i>
-                                            <?= _l('lead_attachments');
-                                            if ($total_attachments > 0) {
-                                                echo ' <span class="badge">' . $total_attachments . '</span>';
+                                        <a href="#lead_notes" aria-controls="lead_notes" role="tab" data-toggle="tab">
+                                            <i class="fa-solid fa-phone menu-icon"></i>
+                                            Call Logs<?php
+                                            if ($total_notes > 0) {
+                                                echo ' <span class="badge">' . $total_notes . '</span>';
                                             }
                                             ?>
                                         </a>
@@ -79,11 +70,11 @@
                                         </a>
                                     </li>
                                     <li role="presentation">
-                                        <a href="#lead_notes" aria-controls="lead_notes" role="tab" data-toggle="tab">
-                                            <i class="fa-solid fa-phone menu-icon"></i>
-                                            Call Logs<?php
-                                            if ($total_notes > 0) {
-                                                echo ' <span class="badge">' . $total_notes . '</span>';
+                                        <a href="#attachments" aria-controls="attachments" role="tab" data-toggle="tab">
+                                            <i class="fa-solid fa-paperclip menu-icon"></i>
+                                            <?= _l('lead_attachments');
+                                            if ($total_attachments > 0) {
+                                                echo ' <span class="badge">' . $total_attachments . '</span>';
                                             }
                                             ?>
                                         </a>
@@ -94,6 +85,15 @@
                                             <?= _l('lead_add_edit_activity'); ?>
                                         </a>
                                     </li>
+                                    <?php if (count($mail_activity) > 0 || isset($show_email_activity) && $show_email_activity) { ?>
+                                        <li role="presentation">
+                                            <a href="#tab_email_activity" aria-controls="tab_email_activity" role="tab"
+                                                data-toggle="tab">
+                                                <i class="fa-regular fa-envelope menu-icon"></i>
+                                                <?= hooks()->apply_filters('lead_email_activity_subject', _l('lead_email_activity')); ?>
+                                            </a>
+                                        </li>
+                                    <?php } ?>
                                     <?php if (is_gdpr() && (get_option('gdpr_enable_lead_public_form') == '1' || get_option('gdpr_enable_consent_for_leads') == '1')) { ?>
                                         <li role="presentation">
                                             <a href="#gdpr" aria-controls="gdpr" role="tab" data-toggle="tab">
@@ -116,143 +116,6 @@
                     <?php $this->load->view('ccx_leads/lead_profile'); ?>
                 </div>
                 <?php if (isset($lead)) { ?>
-                    <?php if (count($mail_activity) > 0 || isset($show_email_activity) && $show_email_activity) { ?>
-                        <div role="tabpanel" class="tab-pane" id="tab_email_activity">
-                            <?php hooks()->do_action('before_lead_email_activity', ['lead' => $lead, 'email_activity' => $mail_activity]); ?>
-                            <?php foreach ($mail_activity as $_mail_activity) { ?>
-                                <div class="lead-email-activity">
-                                    <div class="media-left">
-                                        <i class="fa-regular fa-envelope"></i>
-                                    </div>
-                                    <div class="media-body">
-                                        <h4 class="bold no-margin lead-mail-activity-subject">
-                                            <?= e($_mail_activity['subject']); ?>
-                                            <br />
-                                            <small
-                                                class="text-muted display-block mtop5 font-medium-xs"><?= e(_dt($_mail_activity['dateadded'])); ?></small>
-                                        </h4>
-                                        <div class="lead-mail-activity-body">
-                                            <hr />
-                                            <?= process_text_content_for_display($_mail_activity['body']); ?>
-                                        </div>
-                                        <hr />
-                                    </div>
-                                </div>
-                                <div class="clearfix"></div>
-                            <?php } ?>
-                            <?php hooks()->do_action('after_lead_email_activity', ['lead_id' => $lead->id, 'emails' => $mail_activity]); ?>
-                        </div>
-                    <?php } ?>
-                    <?php if (is_gdpr() && (get_option('gdpr_enable_lead_public_form') == '1' || get_option('gdpr_enable_consent_for_leads') == '1' || (get_option('gdpr_data_portability_leads') == '1') && is_admin())) { ?>
-                        <div role="tabpanel" class="tab-pane" id="gdpr">
-                            <?php if (get_option('gdpr_enable_lead_public_form') == '1') { ?>
-                                <a href="<?= e($lead->public_url); ?>" target="_blank" class="mtop5">
-                                    <?= _l('view_public_form'); ?>
-                                </a>
-                            <?php } ?>
-                            <?php if (get_option('gdpr_data_portability_leads') == '1' && is_admin()) { ?>
-                                <?php
-                                if (get_option('gdpr_enable_lead_public_form') == '1') {
-                                    echo ' | ';
-                                }
-                                ?>
-                                <a href="<?= admin_url('leads/export/' . $lead->id); ?>">
-                                    <?= _l('dt_button_export'); ?>
-                                </a>
-                            <?php } ?>
-                            <?php if (get_option('gdpr_enable_lead_public_form') == '1' || (get_option('gdpr_data_portability_leads') == '1' && is_admin())) { ?>
-                                <hr class="-tw-mx-3.5" />
-                            <?php } ?>
-                            <?php if (get_option('gdpr_enable_consent_for_leads') == '1') { ?>
-                                <h4 class="no-mbot">
-                                    <?= _l('gdpr_consent'); ?>
-                                </h4>
-                                <?php $this->load->view('admin/gdpr/lead_consent'); ?>
-                                <hr />
-                            <?php } ?>
-                        </div>
-                    <?php } ?>
-                    <div role="tabpanel" class="tab-pane" id="lead_activity">
-                        <div>
-                            <div class="activity-feed">
-                                <?php foreach ($activity_log as $log) { ?>
-                                    <div class="feed-item">
-                                        <div class="date">
-                                            <span class="text-has-action" data-toggle="tooltip"
-                                                data-title="<?= e(_dt($log['date'])); ?>">
-                                                <?= e(time_ago($log['date'])); ?>
-                                            </span>
-                                        </div>
-                                        <div class="text">
-                                            <?php if ($log['staffid'] != 0) { ?>
-                                                <a href="<?= admin_url('profile/' . $log['staffid']); ?>">
-                                                    <?= staff_profile_image($log['staffid'], ['staff-profile-xs-image pull-left mright5']);
-                                                    ?>
-                                                </a>
-                                                <?php
-                                            }
-                                            $additional_data = '';
-                                            if (!empty($log['additional_data'])) {
-                                                $additional_data = unserialize($log['additional_data']);
-                                                echo ($log['staffid'] == 0) ? _l($log['description'], $additional_data) : e($log['full_name']) . ' - ' . _l($log['description'], $additional_data);
-                                            } else {
-                                                echo e($log['full_name']) . ' - ';
-
-                                                if ($log['custom_activity'] == 0) {
-                                                    echo e(_l($log['description']));
-                                                } else {
-                                                    echo process_text_content_for_display(_l($log['description'], '', false));
-                                                }
-                                            }
-                                            ?>
-                                        </div>
-                                    </div>
-                                <?php } ?>
-                            </div>
-                            <div class="col-md-12">
-                                <?= render_textarea('lead_activity_textarea', '', '', ['placeholder' => _l('enter_activity')], [], 'mtop15'); ?>
-                                <div class="text-right">
-                                    <button id="lead_enter_activity" class="btn btn-primary"><?= _l('submit'); ?></button>
-                                </div>
-                            </div>
-                            <div class="clearfix"></div>
-                        </div>
-                    </div>
-                    <div role="tabpanel" class="tab-pane" id="lead_reminders">
-                        <a href="#" data-toggle="modal" class="btn btn-primary"
-                            data-target=".reminder-modal-lead-<?= e($lead->id); ?>"><i class="fa-regular fa-bell"></i>
-                            <?= _l('lead_set_reminder_title'); ?></a>
-                        <hr />
-                        <?php render_datatable([_l('reminder_description'), _l('reminder_date'), _l('reminder_staff'), _l('reminder_is_notified')], 'reminders-leads'); ?>
-                    </div>
-                    <div role="tabpanel" class="tab-pane" id="attachments">
-                        <?= form_open('admin/leads/add_lead_attachment', ['class' => 'dropzone mtop15 mbot15', 'id' => 'lead-attachment-upload']); ?>
-                        <?= form_close(); ?>
-                        <?php if (get_option('dropbox_app_key') != '') { ?>
-                            <hr />
-                            <div class=" pull-left">
-                                <?php if (count($lead->attachments) > 0) { ?>
-                                    <a href="<?= admin_url('leads/download_files/' . $lead->id); ?>" class="bold">
-                                        <?= _l('download_all'); ?>
-                                        (.zip)
-                                    </a>
-                                <?php } ?>
-                            </div>
-                            <div class="tw-flex tw-justify-end tw-items-center tw-space-x-2">
-                                <button class="gpicker">
-                                    <i class="fa-brands fa-google" aria-hidden="true"></i>
-                                    <?= _l('choose_from_google_drive'); ?>
-                                </button>
-                                <div id="dropbox-chooser-lead"></div>
-                            </div>
-                            <div class=" clearfix"></div>
-                        <?php } ?>
-                        <?php if (count($lead->attachments) > 0) { ?>
-                            <div class="mtop20" id="lead_attachments">
-                                <?php $this->load->view('ccx_leads/leads_attachments_template', ['attachments' => $lead->attachments]); ?>
-                            </div>
-                        <?php } ?>
-                    </div>
                     <div role="tabpanel" class="tab-pane" id="lead_notes">
                         <?= form_open(admin_url('leads/add_note/' . $lead->id), ['id' => 'lead-notes']); ?>
                         <div class="form-group">
@@ -337,6 +200,143 @@
                             <?php $i++;
                         } ?>
                     </div>
+                    <div role="tabpanel" class="tab-pane" id="lead_reminders">
+                        <a href="#" data-toggle="modal" class="btn btn-primary"
+                            data-target=".reminder-modal-lead-<?= e($lead->id); ?>"><i class="fa-regular fa-bell"></i>
+                            <?= _l('lead_set_reminder_title'); ?></a>
+                        <hr />
+                        <?php render_datatable([_l('reminder_description'), _l('reminder_date'), _l('reminder_staff'), _l('reminder_is_notified')], 'reminders-leads'); ?>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="attachments">
+                        <?= form_open('admin/leads/add_lead_attachment', ['class' => 'dropzone mtop15 mbot15', 'id' => 'lead-attachment-upload']); ?>
+                        <?= form_close(); ?>
+                        <?php if (get_option('dropbox_app_key') != '') { ?>
+                            <hr />
+                            <div class=" pull-left">
+                                <?php if (count($lead->attachments) > 0) { ?>
+                                    <a href="<?= admin_url('leads/download_files/' . $lead->id); ?>" class="bold">
+                                        <?= _l('download_all'); ?>
+                                        (.zip)
+                                    </a>
+                                <?php } ?>
+                            </div>
+                            <div class="tw-flex tw-justify-end tw-items-center tw-space-x-2">
+                                <button class="gpicker">
+                                    <i class="fa-brands fa-google" aria-hidden="true"></i>
+                                    <?= _l('choose_from_google_drive'); ?>
+                                </button>
+                                <div id="dropbox-chooser-lead"></div>
+                            </div>
+                            <div class=" clearfix"></div>
+                        <?php } ?>
+                        <?php if (count($lead->attachments) > 0) { ?>
+                            <div class="mtop20" id="lead_attachments">
+                                <?php $this->load->view('ccx_leads/leads_attachments_template', ['attachments' => $lead->attachments]); ?>
+                            </div>
+                        <?php } ?>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="lead_activity">
+                        <div>
+                            <div class="activity-feed">
+                                <?php foreach ($activity_log as $log) { ?>
+                                    <div class="feed-item">
+                                        <div class="date">
+                                            <span class="text-has-action" data-toggle="tooltip"
+                                                data-title="<?= e(_dt($log['date'])); ?>">
+                                                <?= e(time_ago($log['date'])); ?>
+                                            </span>
+                                        </div>
+                                        <div class="text">
+                                            <?php if ($log['staffid'] != 0) { ?>
+                                                <a href="<?= admin_url('profile/' . $log['staffid']); ?>">
+                                                    <?= staff_profile_image($log['staffid'], ['staff-profile-xs-image pull-left mright5']);
+                                                    ?>
+                                                </a>
+                                                <?php
+                                            }
+                                            $additional_data = '';
+                                            if (!empty($log['additional_data'])) {
+                                                $additional_data = unserialize($log['additional_data']);
+                                                echo ($log['staffid'] == 0) ? _l($log['description'], $additional_data) : e($log['full_name']) . ' - ' . _l($log['description'], $additional_data);
+                                            } else {
+                                                echo e($log['full_name']) . ' - ';
+
+                                                if ($log['custom_activity'] == 0) {
+                                                    echo e(_l($log['description']));
+                                                } else {
+                                                    echo process_text_content_for_display(_l($log['description'], '', false));
+                                                }
+                                            }
+                                            ?>
+                                        </div>
+                                    </div>
+                                <?php } ?>
+                            </div>
+                            <div class="col-md-12">
+                                <?= render_textarea('lead_activity_textarea', '', '', ['placeholder' => _l('enter_activity')], [], 'mtop15'); ?>
+                                <div class="text-right">
+                                    <button id="lead_enter_activity" class="btn btn-primary"><?= _l('submit'); ?></button>
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                    <?php if (count($mail_activity) > 0 || isset($show_email_activity) && $show_email_activity) { ?>
+                        <div role="tabpanel" class="tab-pane" id="tab_email_activity">
+                            <?php hooks()->do_action('before_lead_email_activity', ['lead' => $lead, 'email_activity' => $mail_activity]); ?>
+                            <?php foreach ($mail_activity as $_mail_activity) { ?>
+                                <div class="lead-email-activity">
+                                    <div class="media-left">
+                                        <i class="fa-regular fa-envelope"></i>
+                                    </div>
+                                    <div class="media-body">
+                                        <h4 class="bold no-margin lead-mail-activity-subject">
+                                            <?= e($_mail_activity['subject']); ?>
+                                            <br />
+                                            <small
+                                                class="text-muted display-block mtop5 font-medium-xs"><?= e(_dt($_mail_activity['dateadded'])); ?></small>
+                                        </h4>
+                                        <div class="lead-mail-activity-body">
+                                            <hr />
+                                            <?= process_text_content_for_display($_mail_activity['body']); ?>
+                                        </div>
+                                        <hr />
+                                    </div>
+                                </div>
+                                <div class="clearfix"></div>
+                            <?php } ?>
+                            <?php hooks()->do_action('after_lead_email_activity', ['lead_id' => $lead->id, 'emails' => $mail_activity]); ?>
+                        </div>
+                    <?php } ?>
+                    <?php if (is_gdpr() && (get_option('gdpr_enable_lead_public_form') == '1' || get_option('gdpr_enable_consent_for_leads') == '1' || (get_option('gdpr_data_portability_leads') == '1') && is_admin())) { ?>
+                        <div role="tabpanel" class="tab-pane" id="gdpr">
+                            <?php if (get_option('gdpr_enable_lead_public_form') == '1') { ?>
+                                <a href="<?= e($lead->public_url); ?>" target="_blank" class="mtop5">
+                                    <?= _l('view_public_form'); ?>
+                                </a>
+                            <?php } ?>
+                            <?php if (get_option('gdpr_data_portability_leads') == '1' && is_admin()) { ?>
+                                <?php
+                                if (get_option('gdpr_enable_lead_public_form') == '1') {
+                                    echo ' | ';
+                                }
+                                ?>
+                                <a href="<?= admin_url('leads/export/' . $lead->id); ?>">
+                                    <?= _l('dt_button_export'); ?>
+                                </a>
+                            <?php } ?>
+                            <?php if (get_option('gdpr_enable_lead_public_form') == '1' || (get_option('gdpr_data_portability_leads') == '1' && is_admin())) { ?>
+                                <hr class="-tw-mx-3.5" />
+                            <?php } ?>
+                            <?php if (get_option('gdpr_enable_consent_for_leads') == '1') { ?>
+                                <h4 class="no-mbot">
+                                    <?= _l('gdpr_consent'); ?>
+                                </h4>
+                                <?php $this->load->view('admin/gdpr/lead_consent'); ?>
+                                <hr />
+                            <?php } ?>
+                        </div>
+                    <?php } ?>
                 <?php } ?>
                 <?php hooks()->do_action('after_lead_tabs_content', $lead ?? null); ?>
             </div>
