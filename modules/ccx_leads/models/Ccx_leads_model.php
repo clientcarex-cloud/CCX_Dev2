@@ -21,6 +21,8 @@ class Ccx_leads_model extends App_Model
         $this->db->select('*');
         $this->db->from(db_prefix() . 'leads');
         $this->db->where('status', $status);
+        $this->db->where('junk', 0);
+        $this->db->where('lost', 0);
 
         if (!is_admin()) {
             $this->db->group_start();

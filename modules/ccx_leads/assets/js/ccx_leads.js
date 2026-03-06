@@ -44,8 +44,8 @@ function ccx_close_slideover() {
 }
 
 function ccx_leads_new_lead() {
-    // Use the core Perfex CRM lead modal
-    init_lead();
+    // Use our custom modal instead of Perfex core
+    ccx_lead_profile('');
 }
 
 function delete_lead(id) {

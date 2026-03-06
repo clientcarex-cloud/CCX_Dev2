@@ -4,14 +4,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 $aColumns = [
     '1', // Bulk actions
-    db_prefix() . 'leads.id as id',
-    db_prefix() . 'leads.name as name',
-    db_prefix() . 'leads.email as email',
-    db_prefix() . 'leads.phonenumber as phonenumber',
-    db_prefix() . 'leads.assigned as assigned',
-    db_prefix() . 'leads.status as status',
-    db_prefix() . 'leads.lastcontact as lastcontact',
-    db_prefix() . 'leads.dateadded as dateadded',
+    db_prefix() . 'leads.id',
+    db_prefix() . 'leads.name',
+    db_prefix() . 'leads.email',
+    db_prefix() . 'leads.phonenumber',
+    db_prefix() . 'leads.assigned',
+    db_prefix() . 'leads.status',
+    db_prefix() . 'leads.lastcontact',
+    db_prefix() . 'leads.dateadded',
 ];
 
 $sIndexColumn = 'id';

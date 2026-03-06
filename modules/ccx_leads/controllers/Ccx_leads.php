@@ -7,7 +7,7 @@ class Ccx_leads extends AdminController
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('ccx_leads_model');
+        $this->load->model('ccx_leads/ccx_leads_model');
         $this->load->model('leads_model');
         $this->load->model('staff_model');
         $this->load->model('misc_model');
@@ -49,7 +49,7 @@ class Ccx_leads extends AdminController
         $status = $this->input->get('status');
         $page = $this->input->get('page');
 
-        $this->load->model('ccx_leads_model');
+        $this->load->model('ccx_leads/ccx_leads_model');
         $leads = $this->ccx_leads_model->do_kanban_query($status, '', $page);
 
         foreach ($leads as $lead) {
@@ -60,7 +60,7 @@ class Ccx_leads extends AdminController
     /* Table view data */
     public function table()
     {
-        $this->load->model('ccx_leads_model');
+        $this->load->model('ccx_leads/ccx_leads_model');
         $this->load->model('leads_model');
         $this->load->model('staff_model');
         $this->load->model('misc_model');
@@ -86,37 +86,40 @@ class Ccx_leads extends AdminController
         $data['lead'] = $lead;
         $data['check_permission'] = true; // For activity log
         $data['activity_log'] = $this->leads_model->get_lead_activity_log($id);
-        $data['notes'] = $this->misc_model->get_notes_rel($id, 'lead');
+        $data['notes'] = $this->misc_model->get_notes($id, 'lead');
         $data['attachments'] = $this->leads_model->get_lead_attachments($id);
 
         $this->load->view('ccx_leads/lead_panel', $data);
     }
 
     /* Module's own lead modal — independent from core */
-    public function lead_modal($id)
+    public function lead_modal($id = '')
     {
         if (!has_permission('leads', '', 'view')) {
             ajax_access_denied();
         }
 
-        $lead = $this->leads_model->get($id);
-        if (!$lead) {
-            show_404();
+        $lead = null;
+        if ($id !== '') {
+            $lead = $this->leads_model->get($id);
+            if (!$lead) {
+                show_404();
+            }
         }
 
         $this->load->model('currencies_model');
 
         $data['lead'] = $lead;
-        $data['activity_log'] = $this->leads_model->get_lead_activity_log($id);
-        $data['notes'] = $this->misc_model->get_notes_rel($id, 'lead');
-        $data['mail_activity'] = $this->leads_model->get_mail_activity($id);
+        $data['activity_log'] = $id !== '' ? $this->leads_model->get_lead_activity_log($id) : [];
+        $data['notes'] = $id !== '' ? $this->misc_model->get_notes($id, 'lead') : [];
+        $data['mail_activity'] = $id !== '' ? $this->leads_model->get_mail_activity($id) : [];
         $data['statuses'] = $this->leads_model->get_status();
         $data['sources'] = $this->leads_model->get_source();
         $data['members'] = $this->staff_model->get('', ['active' => 1]);
         $data['total_notes'] = count($data['notes']);
-        $data['total_reminders'] = total_rows(db_prefix() . 'reminders', ['rel_id' => $id, 'rel_type' => 'lead']);
-        $data['total_attachments'] = count($lead->attachments);
-        $data['openEdit'] = false;
+        $data['total_reminders'] = $id !== '' ? total_rows(db_prefix() . 'reminders', ['rel_id' => $id, 'rel_type' => 'lead']) : 0;
+        $data['total_attachments'] = $id !== '' ? count($lead->attachments) : 0;
+        $data['openEdit'] = $id === '' ? true : false;
         $data['lead_locked'] = false;
         $data['base_currency'] = $this->currencies_model->get_base_currency();
 
