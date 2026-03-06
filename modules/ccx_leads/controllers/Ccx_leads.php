@@ -39,12 +39,6 @@ class Ccx_leads extends AdminController
 
     public function kanban()
     {
-        if (!is_admin()) {
-            $this->db->where('assigned', get_staff_user_id());
-            $this->db->or_where('addedfrom', get_staff_user_id());
-            $this->db->or_where('is_public', 1);
-        }
-
         $data['statuses'] = $this->leads_model->get_status();
 
         return $this->load->view('ccx_leads/kanban', $data, true);

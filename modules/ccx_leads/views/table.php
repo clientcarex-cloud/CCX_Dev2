@@ -26,6 +26,10 @@ if ($this->ci->input->post('custom_view')) {
         array_push($where, 'AND junk = 1');
     } elseif ($custom_view == 'lost') {
         array_push($where, 'AND lost = 1');
+    } elseif (strpos($custom_view, 'source_') === 0) {
+        $source_id = intval(str_replace('source_', '', $custom_view));
+        array_push($where, 'AND ' . db_prefix() . 'leads.source = ' . $source_id);
+        array_push($where, 'AND junk = 0 AND lost = 0');
     } elseif (is_numeric($custom_view)) {
         array_push($where, 'AND ' . db_prefix() . 'leads.status = ' . $custom_view);
         // Exclude junk and lost when filtering by a specific status

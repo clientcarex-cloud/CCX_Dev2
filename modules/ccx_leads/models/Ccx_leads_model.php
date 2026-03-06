@@ -22,6 +22,14 @@ class Ccx_leads_model extends App_Model
         $this->db->from(db_prefix() . 'leads');
         $this->db->where('status', $status);
 
+        if (!is_admin()) {
+            $this->db->group_start();
+            $this->db->where('assigned', get_staff_user_id());
+            $this->db->or_where('addedfrom', get_staff_user_id());
+            $this->db->or_where('is_public', 1);
+            $this->db->group_end();
+        }
+
         if ($search != '') {
             $this->db->group_start();
             $this->db->like('name', $search);

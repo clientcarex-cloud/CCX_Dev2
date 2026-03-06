@@ -40,7 +40,11 @@
                             <td>
                                 <?php
                                 $status = $this->leads_model->get_status($lead->status);
-                                echo '<span class="label" style="background:' . $status->color . '">' . $status->name . '</span>';
+                                if ($status) {
+                                    echo '<span class="label" style="background:' . $status->color . '">' . $status->name . '</span>';
+                                } else {
+                                    echo '<span class="label label-default">Unknown</span>';
+                                }
                                 ?>
                             </td>
                         </tr>

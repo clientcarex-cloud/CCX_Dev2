@@ -1,6 +1,5 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
-<div class="lead-wrapper<?= $openEdit == true ? ' open-edit' : ''; ?>"
-    <?= isset($lead) && ($lead->junk == 1 || $lead->lost == 1) ? 'lead-is-just-or-lost' : ''; ?>>
+<div class="lead-wrapper<?= $openEdit == true ? ' open-edit' : ''; ?><?= isset($lead) && ($lead->junk == 1 || $lead->lost == 1) ? ' lead-is-junk-or-lost' : ''; ?>">
 
     <?php if (isset($lead)) { ?>
     <div class="tw-flex tw-items-center tw-justify-end tw-space-x-1.5">
