@@ -44,15 +44,20 @@
                             .ccx-status-filter-item.active {
                                 background: #fff;
                                 color: #111827;
-                                box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+                                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
                             }
 
-                            .ccx-status-count { margin-left: 8px; font-size:11px; color:#374151; }
+                            .ccx-status-count {
+                                margin-left: 8px;
+                                font-size: 11px;
+                                color: #374151;
+                            }
                         </style>
 
                         <div class="ccx-header-container">
                             <nav class="ccx-status-filter" aria-label="Lead status filter">
-                                <div class="ccx-status-filter-item active" data-status="" tabindex="0" role="button" aria-pressed="true">
+                                <div class="ccx-status-filter-item active" data-status="" tabindex="0" role="button"
+                                    aria-pressed="true">
                                     All
                                 </div>
                                 <?php
@@ -65,12 +70,13 @@
                                         }
                                     }
                                     ?>
-                                        <?php $color = isset($status['color']) && $status['color'] ? $status['color'] : '#757575'; ?>
-                                        <div class="ccx-status-filter-item" data-status="<?php echo $status['id']; ?>" tabindex="0" role="button" aria-pressed="false">
-                                            <span class="ccx-status-swatch" style="background: <?php echo $color; ?>;" aria-hidden="true"></span>
-                                            <?php echo $status['name']; ?>
-                                            <span class="ccx-status-count" style="background: <?php echo $color; ?>; color: #fff; opacity:0.95"><?php echo $count; ?></span>
-                                        </div>
+                                    <?php $color = isset($status['color']) && $status['color'] ? $status['color'] : '#757575'; ?>
+                                    <div class="ccx-status-filter-item" data-status="<?php echo $status['id']; ?>"
+                                        tabindex="0" role="button" aria-pressed="false">
+                                        <?php echo $status['name']; ?>
+                                        <span class="ccx-status-count"
+                                            style="background: <?php echo $color; ?>; color: #fff; opacity:0.95"><?php echo $count; ?></span>
+                                    </div>
                                 <?php } ?>
 
                                 <!-- Junk and Lost Tabs -->
@@ -84,21 +90,25 @@
                                         $lost_count = $s['total'];
                                 }
                                 ?>
-                                <?php $junk_color = '#9CA3AF'; $lost_color = '#EF4444'; ?>
-                                <div class="ccx-status-filter-item" data-status="junk" tabindex="0" role="button" aria-pressed="false">
-                                    <span class="ccx-status-swatch" style="background: <?php echo $junk_color; ?>;" aria-hidden="true"></span>
+                                <?php $junk_color = '#9CA3AF';
+                                $lost_color = '#EF4444'; ?>
+                                <div class="ccx-status-filter-item" data-status="junk" tabindex="0" role="button"
+                                    aria-pressed="false">
                                     <?php echo _l('leads_junk'); ?>
-                                    <span class="ccx-status-count" style="background: <?php echo $junk_color; ?>; color:#fff; opacity:0.95"><?php echo $junk_count; ?></span>
+                                    <span class="ccx-status-count"
+                                        style="background: <?php echo $junk_color; ?>; color:#fff; opacity:0.95"><?php echo $junk_count; ?></span>
                                 </div>
-                                <div class="ccx-status-filter-item" data-status="lost" tabindex="0" role="button" aria-pressed="false">
-                                    <span class="ccx-status-swatch" style="background: <?php echo $lost_color; ?>;" aria-hidden="true"></span>
+                                <div class="ccx-status-filter-item" data-status="lost" tabindex="0" role="button"
+                                    aria-pressed="false">
                                     <?php echo _l('leads_lost'); ?>
-                                    <span class="ccx-status-count" style="background: <?php echo $lost_color; ?>; color:#fff; opacity:0.95"><?php echo $lost_count; ?></span>
+                                    <span class="ccx-status-count"
+                                        style="background: <?php echo $lost_color; ?>; color:#fff; opacity:0.95"><?php echo $lost_count; ?></span>
                                 </div>
                             </nav>
 
                             <div class="ccx-actions" style="display:flex; gap:10px; align-items:center;">
-                                <a href="#" onclick="ccx_leads_new_lead(); return false;" class="btn btn-info" aria-label="Create new lead">
+                                <a href="#" onclick="ccx_leads_new_lead(); return false;" class="btn btn-info"
+                                    aria-label="Create new lead">
                                     <?php echo _l('new_lead'); ?>
                                 </a>
 
@@ -122,13 +132,14 @@
                                     </ul>
                                 </div>
 
-                <div class="btn-group" data-toggle="tooltip"
-                    title="<?php echo _l('leads_view_mode'); ?>" role="group" aria-label="View mode">
-                    <button type="button" class="btn btn-default" onclick="ccx_switch_view('list')" aria-pressed="false" aria-label="List view"><i
-                        class="fa fa-list"></i></button>
-                    <button type="button" class="btn btn-default" onclick="ccx_switch_view('kanban')" aria-pressed="false" aria-label="Kanban view"><i
-                        class="fa fa-th-large"></i></button>
-                </div>
+                                <div class="btn-group" data-toggle="tooltip"
+                                    title="<?php echo _l('leads_view_mode'); ?>" role="group" aria-label="View mode">
+                                    <button type="button" class="btn btn-default" onclick="ccx_switch_view('list')"
+                                        aria-pressed="false" aria-label="List view"><i class="fa fa-list"></i></button>
+                                    <button type="button" class="btn btn-default" onclick="ccx_switch_view('kanban')"
+                                        aria-pressed="false" aria-label="Kanban view"><i
+                                            class="fa fa-th-large"></i></button>
+                                </div>
                                 <?php echo form_hidden('custom_view'); ?>
                             </div>
                         </div>
