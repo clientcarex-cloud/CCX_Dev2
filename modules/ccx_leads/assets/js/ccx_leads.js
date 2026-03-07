@@ -44,118 +44,56 @@ function ccx_close_slideover() {
 }
 
 function ccx_leads_new_lead() {
-    // Use the core Perfex CRM lead modal
-    init_lead();
-
-    // The core init_lead() loads modal content via AJAX (requestGetJSON → _lead_init_data).
-    // The form fields don't exist in the DOM until the AJAX response arrives.
-    // We use a short polling interval to wait for the form to appear, then apply settings.
-    var attempts = 0;
-    var maxAttempts = 50; // 50 × 200ms = 10 seconds max
-    var settingsInterval = setInterval(function () {
-        attempts++;
-        var $modal = $('#lead-modal');
-        var $form = $modal.find('#lead_form');
-
-        // Wait until the form is injected into the modal
-        if ($form.length > 0 && $form.find('[name="name"]').length > 0) {
-            clearInterval(settingsInterval);
-            ccx_apply_field_settings($modal);
-        } else if (attempts >= maxAttempts) {
-            clearInterval(settingsInterval);
-        }
-    }, 200);
-}
-
-/**
- * Apply CCX field settings to the lead modal form.
- * Handles: hide inactive fields, set custom labels, mark required fields.
- */
-function ccx_apply_field_settings($modal) {
-    if (typeof ccx_field_settings === 'undefined' || !ccx_field_settings) {
-        return;
+    // Use module's own independent new lead form (not core init_lead)
+    if ($('#ccx-lead-modal').length === 0) {
+        $('body').append(
+            '<div class="modal fade" id="ccx-lead-modal" tabindex="-1" role="dialog">' +
+            '<div class="modal-dialog modal-lg" role="document">' +
+            '<div class="modal-content"></div>' +
+            '</div></div>'
+        );
     }
 
-    $.each(ccx_field_settings, function (slug, setting) {
-        var $container, $label;
+    requestGet('ccx_leads/new_lead').done(function (html) {
+        $('#ccx-lead-modal .modal-content').html(html);
+        $('#ccx-lead-modal').modal('show');
 
-        // Map each slug to the correct DOM container and label
-        if (slug === 'tags') {
-            $container = $modal.find('#inputTagsWrapper').closest('.col-md-12');
-            $label = $modal.find('#inputTagsWrapper label');
-        } else if (slug === 'is_public') {
-            $container = $modal.find('input[name="is_public"]').closest('.checkbox');
-            $label = $container.find('label');
-        } else if (slug === 'status') {
-            $container = $modal.find('select[name="status"]').closest('.col-md-4');
-            $label = $container.find('label');
-        } else if (slug === 'source') {
-            $container = $modal.find('select[name="source"]').closest('.col-md-4');
-            $label = $container.find('label');
-        } else if (slug === 'assigned') {
-            $container = $modal.find('select[name="assigned"]').closest('.col-md-4');
-            $label = $container.find('label');
-        } else if (slug === 'country') {
-            $container = $modal.find('select[name="country"]').closest('.form-group');
-            $label = $container.find('label');
-        } else if (slug === 'address') {
-            $container = $modal.find('textarea[name="address"]').closest('.form-group');
-            $label = $container.find('label');
-        } else if (slug === 'description') {
-            $container = $modal.find('textarea[name="description"]').closest('.form-group');
-            $label = $container.find('label');
-        } else if (slug === 'lead_value') {
-            $container = $modal.find('input[name="lead_value"]').closest('.form-group');
-            $label = $container.find('label');
-        } else {
-            // Standard input fields: name, title, email, phonenumber, website, company, city, state, zip
-            var $field = $modal.find('input[name="' + slug + '"]');
-            if ($field.length === 0) {
-                $field = $modal.find('[name="' + slug + '"]');
-            }
-            $container = $field.closest('.form-group');
-            $label = $container.find('label');
-        }
+        // Initialize Perfex UI components
+        init_selectpicker();
+        init_datepicker();
+        init_color_pickers();
 
-        if (!$container || $container.length === 0) {
-            return; // skip if container not found
-        }
+        // Bind the form submission handler
+        var $form = $('#ccx_new_lead_form');
+        $form.off('submit').on('submit', function (e) {
+            e.preventDefault();
+            var $btn = $form.find('.ccx-new-lead-save-btn');
+            $btn.addClass('disabled').attr('disabled', true);
 
-        // 1. Hide if inactive
-        if (setting.active == 0) {
-            $container.hide();
-            // Also hide surrounding hr separators for tags
-            if (slug === 'tags') {
-                $container.prev('hr').hide();
-                $container.next('.clearfix').next('hr').hide();
-            }
-            return; // No need to change label/required for hidden fields
-        }
+            $.post($form.attr('action'), $form.serialize())
+                .done(function (response) {
+                    response = JSON.parse(response);
+                    if (response.success) {
+                        alert_float('success', response.message);
+                        $('#ccx-lead-modal').modal('hide');
 
-        // 2. Custom label
-        if (setting.label && $label.length > 0) {
-            // Preserve any existing icons inside the label
-            var $icon = $label.find('i, .fa, .fas, .far, .fab');
-            if ($icon.length > 0) {
-                $label.contents().filter(function () {
-                    return this.nodeType === 3; // text nodes only
-                }).first().replaceWith(' ' + setting.label);
-            } else {
-                $label.text(setting.label);
-            }
-        }
-
-        // 3. Required
-        if (setting.required == 1) {
-            var $input = $container.find('input, select, textarea').first();
-            if ($input.length > 0 && !$input.attr('required')) {
-                $input.attr('required', true);
-            }
-            // Add asterisk to label if not already present
-            if ($label.length > 0 && $label.find('.req').length === 0) {
-                $label.append(' <span class="req text-danger">*</span>');
-            }
-        }
+                        // Reload DataTable if visible
+                        if (typeof ccx_leads_table !== 'undefined' && $.fn.DataTable.isDataTable('.table-ccx-leads')) {
+                            ccx_leads_table.ajax.reload(null, false);
+                        }
+                    } else {
+                        alert_float('danger', response.message || 'Failed to create lead.');
+                    }
+                    $btn.removeClass('disabled').attr('disabled', false);
+                })
+                .fail(function (error) {
+                    alert_float('danger', error.responseText || 'An error occurred.');
+                    $btn.removeClass('disabled').attr('disabled', false);
+                });
+            return false;
+        });
+    }).fail(function (error) {
+        alert_float('danger', error.responseText || 'Failed to load new lead form.');
     });
 }
 

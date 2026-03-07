@@ -125,6 +125,46 @@ class Ccx_leads extends AdminController
         $this->load->view('ccx_leads/lead_modal', $data);
     }
 
+    /* AJAX: Serve independent New Lead form */
+    public function new_lead()
+    {
+        if (!has_permission('leads', '', 'view')) {
+            ajax_access_denied();
+        }
+
+        $this->load->model('currencies_model');
+
+        $data['statuses'] = $this->leads_model->get_status();
+        $data['sources'] = $this->leads_model->get_source();
+        $data['members'] = $this->staff_model->get('', ['active' => 1]);
+        $data['base_currency'] = $this->currencies_model->get_base_currency();
+        $data['field_settings'] = $this->ccx_leads_model->get_field_settings_map();
+
+        $this->load->view('ccx_leads/new_lead_form', $data);
+    }
+
+    /* AJAX: Handle new lead form submission */
+    public function save_lead()
+    {
+        if (!has_permission('leads', '', 'view')) {
+            ajax_access_denied();
+        }
+
+        if (!$this->input->post()) {
+            echo json_encode(['success' => false, 'message' => 'No data received']);
+            die;
+        }
+
+        $id = $this->leads_model->add($this->input->post());
+
+        echo json_encode([
+            'success' => $id ? true : false,
+            'id' => $id,
+            'message' => $id ? _l('added_successfully', _l('lead')) : '',
+        ]);
+        die;
+    }
+
     /* Settings page */
     public function settings()
     {
