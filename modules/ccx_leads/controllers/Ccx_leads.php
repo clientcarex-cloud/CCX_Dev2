@@ -134,6 +134,7 @@ class Ccx_leads extends AdminController
         $data['title'] = _l('ccx_leads_settings');
         $this->load->model('leads_model');
         $data['statuses'] = $this->leads_model->get_status();
+        $data['sources'] = $this->leads_model->get_source();
         $data['field_settings'] = $this->ccx_leads_model->get_field_settings();
         $this->load->view('ccx_leads/settings', $data);
     }
