@@ -189,6 +189,10 @@ class Ccx_leads extends AdminController
         // Merged fields list for ordering tab (3 columns)
         $data['field_layout'] = $this->ccx_leads_model->get_field_layout();
 
+        // API tab data
+        $data['api_key'] = get_option('ccx_leads_api_key');
+        $data['api_base_url'] = site_url('ccx_leads_api/');
+
         $this->load->view('ccx_leads/settings', $data);
     }
 
@@ -315,6 +319,20 @@ class Ccx_leads extends AdminController
 
         $this->custom_fields_model->change_custom_field_status($id, $status);
         echo json_encode(['success' => true]);
+        die;
+    }
+
+    /* AJAX: Generate or regenerate API key */
+    public function generate_api_key()
+    {
+        if (!is_admin()) {
+            ajax_access_denied();
+        }
+
+        $key = bin2hex(random_bytes(32)); // 64-char hex key
+        update_option('ccx_leads_api_key', $key);
+
+        echo json_encode(['success' => true, 'api_key' => $key]);
         die;
     }
 }

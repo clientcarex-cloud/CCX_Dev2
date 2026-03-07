@@ -65,6 +65,11 @@
                                             <?php echo _l('Reporting'); ?>
                                         </a>
                                     </li>
+                                    <li role="presentation">
+                                        <a href="#api_tab" aria-controls="api_tab" role="tab" data-toggle="tab">
+                                            <i class="fa-solid fa-plug tw-mr-1"></i> API
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -425,6 +430,212 @@
                             <div role="tabpanel" class="tab-pane" id="reporting">
                                 <p class="text-muted">Reporting settings coming soon...</p>
                             </div>
+
+                            <!-- ==================== API TAB ==================== -->
+                            <div role="tabpanel" class="tab-pane" id="api_tab">
+
+                                <!-- API Key Section -->
+                                <div style="border:1px solid #e5e5e5; border-radius:8px; padding:20px; margin-bottom:20px; background:#fff;">
+                                    <h4 style="margin:0 0 12px 0; font-weight:600;">
+                                        <i class="fa-solid fa-key tw-mr-1 text-warning"></i> API Key
+                                    </h4>
+                                    <p class="text-muted" style="margin-bottom:12px; font-size:13px;">
+                                        Use this key to authenticate API requests. Include it as <code>X-Api-Key</code> header or <code>api_key</code> parameter.
+                                    </p>
+                                    <div class="form-group" style="margin-bottom:10px;">
+                                        <div class="input-group">
+                                            <input type="text" id="ccx-api-key-display" class="form-control" readonly
+                                                value="<?= e(isset($api_key) && $api_key ? $api_key : ''); ?>"
+                                                placeholder="No API key generated yet — click Generate"
+                                                style="font-family:monospace; letter-spacing:0.5px; font-size:13px;">
+                                            <div class="input-group-btn">
+                                                <button type="button" class="btn btn-default" id="ccx-copy-api-key"
+                                                    data-toggle="tooltip" title="Copy to clipboard">
+                                                    <i class="fa-regular fa-copy"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-primary" id="ccx-generate-api-key">
+                                                    <i class="fa-solid fa-rotate tw-mr-1"></i>
+                                                    <?= (isset($api_key) && $api_key) ? 'Regenerate' : 'Generate'; ?>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <?php if (isset($api_key) && $api_key) { ?>
+                                        <div class="alert alert-warning" style="font-size:12px; margin-bottom:0; padding:8px 12px;">
+                                            <i class="fa-solid fa-triangle-exclamation tw-mr-1"></i>
+                                            <strong>Keep this key secret.</strong> Anyone with this key can create leads. Regenerating invalidates the old key.
+                                        </div>
+                                    <?php } ?>
+                                </div>
+
+                                <!-- Base URL -->
+                                <div style="border:1px solid #e5e5e5; border-radius:8px; padding:20px; margin-bottom:20px; background:#fff;">
+                                    <h4 style="margin:0 0 12px 0; font-weight:600;">
+                                        <i class="fa-solid fa-link tw-mr-1 text-primary"></i> Base URL
+                                    </h4>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" readonly id="ccx-api-base-url"
+                                            value="<?= e(isset($api_base_url) ? $api_base_url : site_url('ccx_leads_api/')); ?>"
+                                            style="font-family:monospace; font-size:13px;">
+                                        <div class="input-group-btn">
+                                            <button type="button" class="btn btn-default ccx-copy-btn" data-target="#ccx-api-base-url">
+                                                <i class="fa-regular fa-copy"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Endpoints Reference -->
+                                <div style="border:1px solid #e5e5e5; border-radius:8px; padding:20px; margin-bottom:20px; background:#fff;">
+                                    <h4 style="margin:0 0 12px 0; font-weight:600;">
+                                        <i class="fa-solid fa-list tw-mr-1 text-info"></i> Endpoints
+                                    </h4>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered" style="margin-bottom:0;">
+                                            <thead style="background:#f8f9fa;">
+                                                <tr><th style="width:80px;">Method</th><th>Endpoint</th><th>Description</th></tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td><span class="label label-success">POST</span></td>
+                                                    <td><code>/ccx_leads_api/add_lead</code></td>
+                                                    <td>Create a new lead</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><span class="label label-info">GET</span></td>
+                                                    <td><code>/ccx_leads_api/get_leads</code></td>
+                                                    <td>List leads (params: <code>status</code>, <code>limit</code>, <code>offset</code>)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><span class="label label-info">GET</span></td>
+                                                    <td><code>/ccx_leads_api/get_lead/{id}</code></td>
+                                                    <td>Get a single lead by ID</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!-- Add Lead — Fields & Example -->
+                                <div style="border:1px solid #e5e5e5; border-radius:8px; padding:20px; margin-bottom:20px; background:#fff;">
+                                    <h4 style="margin:0 0 4px 0; font-weight:600;">
+                                        <span class="label label-success">POST</span> Add Lead
+                                    </h4>
+                                    <p class="text-muted" style="font-size:13px; margin-bottom:12px;">Create a new lead. Only <code>name</code> is required.</p>
+
+                                    <h5 style="font-weight:600; margin-bottom:8px;">Request Fields</h5>
+                                    <div class="table-responsive" style="margin-bottom:16px;">
+                                        <table class="table table-bordered table-condensed" style="margin-bottom:0; font-size:12px;">
+                                            <thead style="background:#f8f9fa;"><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+                                            <tbody>
+                                                <tr><td><code>name</code></td><td>string</td><td><span class="text-danger">Yes</span></td><td>Lead name</td></tr>
+                                                <tr><td><code>email</code></td><td>string</td><td>No</td><td>Email address</td></tr>
+                                                <tr><td><code>phonenumber</code></td><td>string</td><td>No</td><td>Phone number</td></tr>
+                                                <tr><td><code>title</code></td><td>string</td><td>No</td><td>Job title</td></tr>
+                                                <tr><td><code>company</code></td><td>string</td><td>No</td><td>Company name</td></tr>
+                                                <tr><td><code>website</code></td><td>string</td><td>No</td><td>Website URL</td></tr>
+                                                <tr><td><code>lead_value</code></td><td>number</td><td>No</td><td>Monetary value</td></tr>
+                                                <tr><td><code>address</code></td><td>string</td><td>No</td><td>Street address</td></tr>
+                                                <tr><td><code>city</code></td><td>string</td><td>No</td><td>City</td></tr>
+                                                <tr><td><code>state</code></td><td>string</td><td>No</td><td>State/Province</td></tr>
+                                                <tr><td><code>country</code></td><td>integer</td><td>No</td><td>Country ID</td></tr>
+                                                <tr><td><code>zip</code></td><td>string</td><td>No</td><td>ZIP/Postal code</td></tr>
+                                                <tr><td><code>description</code></td><td>string</td><td>No</td><td>Description</td></tr>
+                                                <tr><td><code>status</code></td><td>integer</td><td>No</td><td>Status ID (auto-defaults)</td></tr>
+                                                <tr><td><code>source</code></td><td>integer</td><td>No</td><td>Source ID (auto-defaults)</td></tr>
+                                                <tr><td><code>assigned</code></td><td>integer</td><td>No</td><td>Staff member ID</td></tr>
+                                                <tr><td><code>is_public</code></td><td>integer</td><td>No</td><td>1 = public, 0 = private</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <?php $_api_url = isset($api_base_url) ? $api_base_url : site_url('ccx_leads_api/'); ?>
+
+                                    <h5 style="font-weight:600; margin-bottom:8px;">cURL Example</h5>
+                                    <pre style="background:#1e1e2e; color:#cdd6f4; padding:14px 16px; border-radius:6px; font-size:12px; overflow-x:auto; margin-bottom:16px;"><code>curl -X POST "<?= e($_api_url); ?>add_lead" \
+  -H "X-Api-Key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "John Doe",
+    "email": "john@example.com",
+    "phonenumber": "+1234567890",
+    "company": "Acme Inc",
+    "source": 1,
+    "status": 1
+  }'</code></pre>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h5 style="font-weight:600; margin-bottom:8px;">Success Response <span class="label label-success">201</span></h5>
+                                            <pre style="background:#1e1e2e; color:#a6e3a1; padding:12px 14px; border-radius:6px; font-size:12px;"><code>{
+  "success": true,
+  "lead_id": 42,
+  "message": "Lead created successfully."
+}</code></pre>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h5 style="font-weight:600; margin-bottom:8px;">Error Response <span class="label label-danger">401</span></h5>
+                                            <pre style="background:#1e1e2e; color:#f38ba8; padding:12px 14px; border-radius:6px; font-size:12px;"><code>{
+  "success": false,
+  "error": "UNAUTHORIZED",
+  "message": "Invalid or missing API key."
+}</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Code Examples -->
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div style="border:1px solid #e5e5e5; border-radius:8px; padding:20px; background:#fff;">
+                                            <h4 style="margin:0 0 12px 0; font-weight:600;">
+                                                <i class="fa-brands fa-php tw-mr-1" style="color:#777BB3;"></i> PHP
+                                            </h4>
+                                            <pre style="background:#1e1e2e; color:#cdd6f4; padding:12px 14px; border-radius:6px; font-size:11px; overflow-x:auto;"><code>$ch = curl_init('<?= e($_api_url); ?>add_lead');
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
+    'name'  =&gt; 'Jane Smith',
+    'email' =&gt; 'jane@example.com',
+    'phonenumber' =&gt; '9876543210',
+]));
+curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    'Content-Type: application/json',
+    'X-Api-Key: YOUR_API_KEY',
+]);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+$result = json_decode(curl_exec($ch), true);
+curl_close($ch);
+echo $result['lead_id'];</code></pre>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div style="border:1px solid #e5e5e5; border-radius:8px; padding:20px; background:#fff;">
+                                            <h4 style="margin:0 0 12px 0; font-weight:600;">
+                                                <i class="fa-brands fa-js tw-mr-1" style="color:#F7DF1E;"></i> JavaScript
+                                            </h4>
+                                            <pre style="background:#1e1e2e; color:#cdd6f4; padding:12px 14px; border-radius:6px; font-size:11px; overflow-x:auto;"><code>const res = await fetch(
+  '<?= e($_api_url); ?>add_lead',
+  {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Api-Key': 'YOUR_API_KEY'
+    },
+    body: JSON.stringify({
+      name: 'Jane Smith',
+      email: 'jane@example.com',
+      phonenumber: '9876543210'
+    })
+  }
+);
+const data = await res.json();
+console.log(data.lead_id);</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
                         </div>
 
                     </div>
@@ -876,6 +1087,76 @@
         }
         return false;
     }
+
+    // ==================== API TAB JS ====================
+    function ccx_copy_text(text) {
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(text).then(function () {
+                alert_float('success', 'Copied to clipboard!');
+            });
+        } else {
+            var tmp = document.createElement('textarea');
+            tmp.value = text;
+            document.body.appendChild(tmp);
+            tmp.select();
+            document.execCommand('copy');
+            document.body.removeChild(tmp);
+            alert_float('success', 'Copied to clipboard!');
+        }
+    }
+
+    $(document).on('click', '#ccx-copy-api-key', function () {
+        var key = $('#ccx-api-key-display').val();
+        if (key) {
+            ccx_copy_text(key);
+        } else {
+            alert_float('warning', 'No API key to copy. Generate one first.');
+        }
+    });
+
+    $(document).on('click', '.ccx-copy-btn', function () {
+        var target = $(this).data('target');
+        if (target) {
+            ccx_copy_text($(target).val());
+        }
+    });
+
+    $(document).on('click', '#ccx-generate-api-key', function () {
+        var btn = $(this);
+        var existing = $('#ccx-api-key-display').val();
+        if (existing && !confirm('This will invalidate the current API key. All integrations using the old key will stop working. Continue?')) {
+            return;
+        }
+
+        btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin tw-mr-1"></i> Generating...');
+
+        var postData = {};
+        if (typeof csrfData !== 'undefined') {
+            postData[csrfData.token_name] = csrfData.hash;
+        }
+
+        $.ajax({
+            url: admin_url + 'ccx_leads/generate_api_key',
+            type: 'POST',
+            data: postData,
+            dataType: 'json',
+            success: function (response) {
+                if (response.success) {
+                    $('#ccx-api-key-display').val(response.api_key);
+                    btn.html('<i class="fa-solid fa-rotate tw-mr-1"></i> Regenerate');
+                    alert_float('success', 'API key generated successfully!');
+                } else {
+                    alert_float('danger', 'Failed to generate API key');
+                }
+            },
+            error: function () {
+                alert_float('danger', 'An error occurred');
+            },
+            complete: function () {
+                btn.prop('disabled', false);
+            }
+        });
+    });
 
 </script>
 </body>

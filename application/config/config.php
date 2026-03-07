@@ -487,7 +487,7 @@ $config['csrf_token_name'] = defined('APP_CSRF_TOKEN_NAME') ? APP_CSRF_TOKEN_NAM
 $config['csrf_cookie_name'] = defined('APP_CSRF_COOKIE_NAME') ? APP_CSRF_COOKIE_NAME : 'csrf_cookie_name';
 $config['csrf_expire'] = defined('APP_CSRF_EXPIRE') ? APP_CSRF_EXPIRE : 3660;
 $config['csrf_regenerate'] = false;
-$config['csrf_exclude_uris'] = ['admin/medicines', 'forms/wtl/[0-9a-z]+', 'forms/ticket', 'forms/quote/[0-9a-z]+', 'admin/tasks/timer_tracking', 'api\/.+', 'razorpay/success\/.+', 'web_integration/forms/submit/[0-9a-z]+'];
+$config['csrf_exclude_uris'] = ['admin/medicines', 'forms/wtl/[0-9a-z]+', 'forms/ticket', 'forms/quote/[0-9a-z]+', 'admin/tasks/timer_tracking', 'api\/.+', 'razorpay/success\/.+', 'web_integration/forms/submit/[0-9a-z]+', 'ccx_leads_api\/.+'];
 
 if (isset($app_csrf_exclude_uris)) {
     $config['csrf_exclude_uris'] = array_merge($config['csrf_exclude_uris'], $app_csrf_exclude_uris);
