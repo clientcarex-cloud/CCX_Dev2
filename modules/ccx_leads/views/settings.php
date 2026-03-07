@@ -25,7 +25,8 @@
                                         </a>
                                     </li>
                                     <li role="presentation">
-                                        <a href="#custom_fields_tab" aria-controls="custom_fields_tab" role="tab" data-toggle="tab">
+                                        <a href="#custom_fields_tab" aria-controls="custom_fields_tab" role="tab"
+                                            data-toggle="tab">
                                             <?php echo _l('custom_fields'); ?>
                                         </a>
                                     </li>
@@ -151,9 +152,11 @@
                                 <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
                                     <p class="text-muted tw-mb-0">
                                         <i class="fa-solid fa-circle-info tw-mr-1"></i>
-                                        Add custom fields to capture additional lead information beyond the standard fields.
+                                        Add custom fields to capture additional lead information beyond the standard
+                                        fields.
                                     </p>
-                                    <button type="button" class="btn btn-primary" onclick="ccx_open_cf_modal(); return false;">
+                                    <button type="button" class="btn btn-primary"
+                                        onclick="ccx_open_cf_modal(); return false;">
                                         <i class="fa-regular fa-plus tw-mr-1"></i>
                                         Add Custom Field
                                     </button>
@@ -181,21 +184,23 @@
                                                     <td class="tw-align-middle">
                                                         <span class="tw-font-medium"><?= e($cf['name']); ?></span>
                                                         <?php if (!empty($cf['slug'])) { ?>
-                                                            <br><span class="label label-default" style="font-size:11px;"><?= e($cf['slug']); ?></span>
+                                                            <br><span class="label label-default"
+                                                                style="font-size:11px;"><?= e($cf['slug']); ?></span>
                                                         <?php } ?>
                                                     </td>
                                                     <td class="tw-align-middle">
-                                                        <span class="label label-info" style="font-size:12px;"><?= e(ucwords(str_replace('_', ' ', $cf['type']))); ?></span>
+                                                        <span class="label label-info"
+                                                            style="font-size:12px;"><?= e(ucwords(str_replace('_', ' ', $cf['type']))); ?></span>
                                                     </td>
                                                     <td class="tw-align-middle">
                                                         <?= e($cf['field_order']); ?>
                                                     </td>
                                                     <td class="tw-align-middle">
                                                         <div class="onoffswitch">
-                                                            <input type="checkbox" class="onoffswitch-checkbox ccx-cf-active-toggle"
+                                                            <input type="checkbox"
+                                                                class="onoffswitch-checkbox ccx-cf-active-toggle"
                                                                 id="cf_active_<?= e($cf['id']); ?>"
-                                                                data-id="<?= e($cf['id']); ?>"
-                                                                <?= $cf['active'] == 1 ? 'checked' : ''; ?>>
+                                                                data-id="<?= e($cf['id']); ?>" <?= $cf['active'] == 1 ? 'checked' : ''; ?>>
                                                             <label class="onoffswitch-label"
                                                                 for="cf_active_<?= e($cf['id']); ?>"></label>
                                                         </div>
@@ -229,9 +234,11 @@
                                     </table>
                                 <?php } else { ?>
                                     <div class="text-center tw-py-8">
-                                        <i class="fa-solid fa-puzzle-piece fa-3x text-muted tw-mb-3" style="display:block;"></i>
+                                        <i class="fa-solid fa-puzzle-piece fa-3x text-muted tw-mb-3"
+                                            style="display:block;"></i>
                                         <p class="text-muted">No custom fields have been added yet.</p>
-                                        <button type="button" class="btn btn-primary btn-sm" onclick="ccx_open_cf_modal(); return false;">
+                                        <button type="button" class="btn btn-primary btn-sm"
+                                            onclick="ccx_open_cf_modal(); return false;">
                                             <i class="fa-regular fa-plus tw-mr-1"></i>
                                             Add Your First Custom Field
                                         </button>
@@ -244,7 +251,8 @@
                                 <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
                                     <p class="text-muted tw-mb-0">
                                         <i class="fa-solid fa-circle-info tw-mr-1"></i>
-                                        Drag and drop fields between columns to control form layout. Reorder within each column.
+                                        Drag and drop fields between columns to control form layout. Reorder within each
+                                        column.
                                     </p>
                                     <button type="button" class="btn btn-primary" id="ccx-save-field-order">
                                         <i class="fa-regular fa-floppy-disk tw-mr-1"></i>
@@ -263,38 +271,42 @@
                                     foreach (['1', '2', '3'] as $col_num) {
                                         $col_info = $col_labels[$col_num];
                                         $fields_in_col = isset($layout[$col_num]) ? $layout[$col_num] : [];
-                                    ?>
-                                        <div class="col-md-4">
-                                            <div style="background:#f8f9fa; border:1px solid #e5e5e5; border-radius:8px; padding:12px; min-height:300px;">
-                                                <div style="margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid #e0e0e0;">
-                                                    <h5 style="margin:0 0 2px 0; font-weight:600;">
-                                                        <i class="fa-solid <?= $col_info['icon']; ?> tw-mr-1 text-muted"></i>
-                                                        <?= $col_info['title']; ?>
-                                                    </h5>
-                                                    <small class="text-muted"><?= $col_info['desc']; ?></small>
+                                        ?>
+                                            <div class="col-md-4">
+                                                <div
+                                                    style="background:#f8f9fa; border:1px solid #e5e5e5; border-radius:8px; padding:12px; min-height:300px;">
+                                                    <div
+                                                        style="margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid #e0e0e0;">
+                                                        <h5 style="margin:0 0 2px 0; font-weight:600;">
+                                                            <i
+                                                                class="fa-solid <?= $col_info['icon']; ?> tw-mr-1 text-muted"></i>
+                                                            <?= $col_info['title']; ?>
+                                                        </h5>
+                                                        <small class="text-muted"><?= $col_info['desc']; ?></small>
+                                                    </div>
+                                                    <ul class="ccx-col-sortable list-unstyled" data-column="<?= $col_num; ?>"
+                                                        style="min-height:200px; padding:4px 0;">
+                                                        <?php foreach ($fields_in_col as $fo) {
+                                                            $is_custom = ($fo['type'] === 'custom');
+                                                            $badge_class = $is_custom ? 'label-primary' : 'label-default';
+                                                            $badge_text = $is_custom ? 'Custom' : 'Standard';
+                                                            $inactive = ($fo['active'] == 0) ? ' opacity:0.5;' : '';
+                                                            ?>
+                                                                <li class="ccx-field-order-item" data-type="<?= e($fo['type']); ?>"
+                                                                    data-id="<?= e($fo['id']); ?>"
+                                                                    style="padding:8px 10px; margin-bottom:3px; background:#fff; border:1px solid #ddd; border-radius:5px; cursor:grab; display:flex; align-items:center; justify-content:space-between; font-size:13px;<?= $inactive; ?>">
+                                                                    <div style="display:flex; align-items:center; gap:8px;">
+                                                                        <i class="fa-solid fa-grip-vertical text-muted"
+                                                                            style="font-size:12px;"></i>
+                                                                        <span class="tw-font-medium"><?= e($fo['label']); ?></span>
+                                                                    </div>
+                                                                    <span class="label <?= $badge_class; ?>"
+                                                                        style="font-size:10px;"><?= $badge_text; ?></span>
+                                                                </li>
+                                                        <?php } ?>
+                                                    </ul>
                                                 </div>
-                                                <ul class="ccx-col-sortable list-unstyled" data-column="<?= $col_num; ?>"
-                                                    style="min-height:200px; padding:4px 0;">
-                                                    <?php foreach ($fields_in_col as $fo) {
-                                                        $is_custom = ($fo['type'] === 'custom');
-                                                        $badge_class = $is_custom ? 'label-primary' : 'label-default';
-                                                        $badge_text = $is_custom ? 'Custom' : 'Standard';
-                                                        $inactive = ($fo['active'] == 0) ? ' opacity:0.5;' : '';
-                                                    ?>
-                                                        <li class="ccx-field-order-item"
-                                                            data-type="<?= e($fo['type']); ?>"
-                                                            data-id="<?= e($fo['id']); ?>"
-                                                            style="padding:8px 10px; margin-bottom:3px; background:#fff; border:1px solid #ddd; border-radius:5px; cursor:grab; display:flex; align-items:center; justify-content:space-between; font-size:13px;<?= $inactive; ?>">
-                                                            <div style="display:flex; align-items:center; gap:8px;">
-                                                                <i class="fa-solid fa-grip-vertical text-muted" style="font-size:12px;"></i>
-                                                                <span class="tw-font-medium"><?= e($fo['label']); ?></span>
-                                                            </div>
-                                                            <span class="label <?= $badge_class; ?>" style="font-size:10px;"><?= $badge_text; ?></span>
-                                                        </li>
-                                                    <?php } ?>
-                                                </ul>
                                             </div>
-                                        </div>
                                     <?php } ?>
                                 </div>
                             </div>
@@ -309,56 +321,56 @@
                                 </div>
 
                                 <?php if (isset($statuses) && count($statuses) > 0) { ?>
-                                    <table class="table dt-table" data-order-col="1" data-order-type="asc">
-                                        <thead>
-                                            <tr>
-                                                <th><?= _l('id'); ?></th>
-                                                <th><?= _l('leads_status_table_name'); ?></th>
-                                                <th class="options"><?= _l('options'); ?></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php foreach ($statuses as $status) { ?>
+                                        <table class="table dt-table" data-order-col="1" data-order-type="asc">
+                                            <thead>
                                                 <tr>
-                                                    <td><?= e($status['id']); ?></td>
-                                                    <td>
-                                                        <?php $color = ($status['color'] ? $status['color'] : '#757575'); ?>
-                                                        <a href="#"
-                                                            onclick="edit_status(this,<?= e($status['id']); ?>);return false;"
-                                                            data-color="<?= e($status['color']); ?>"
-                                                            data-name="<?= e($status['name']); ?>"
-                                                            data-order="<?= e($status['statusorder']); ?>">
-                                                            <span
-                                                                style="display:inline-block;width:14px;height:14px;border-radius:50%;margin-right:8px;background:<?= e($color); ?>;vertical-align:middle;border:1px solid rgba(0,0,0,0.06);"></span>
-                                                            <?= e($status['name']); ?></a>
-                                                        <br /><span
-                                                            class="text-muted"><?= _l('leads_table_total', total_rows(db_prefix() . 'leads', ['status' => $status['id']])); ?></span>
-                                                    </td>
-                                                    <td>
-                                                        <div class="tw-flex tw-items-center tw-space-x-2">
-                                                            <a href="#"
-                                                                onclick="edit_status(this,<?= e($status['id']); ?>);return false;"
-                                                                data-color="<?= e($status['color']); ?>"
-                                                                data-name="<?= e($status['name']); ?>"
-                                                                data-order="<?= e($status['statusorder']); ?>"
-                                                                class="tw-text-neutral-500 hover:tw-text-neutral-700 focus:tw-text-neutral-700">
-                                                                <i class="fa-regular fa-pen-to-square fa-lg"></i>
-                                                            </a>
-                                                            <?php if ($status['isdefault'] == 0) { ?>
-                                                                <a href="#"
-                                                                    onclick="ccx_delete_status(<?= e($status['id']); ?>);return false;"
-                                                                    class="tw-text-neutral-500 hover:tw-text-neutral-700 focus:tw-text-neutral-700 _delete">
-                                                                    <i class="fa-regular fa-trash-can fa-lg"></i>
-                                                                </a>
-                                                            <?php } ?>
-                                                        </div>
-                                                    </td>
+                                                    <th><?= _l('id'); ?></th>
+                                                    <th><?= _l('leads_status_table_name'); ?></th>
+                                                    <th class="options"><?= _l('options'); ?></th>
                                                 </tr>
-                                            <?php } ?>
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                                <?php foreach ($statuses as $status) { ?>
+                                                        <tr>
+                                                            <td><?= e($status['id']); ?></td>
+                                                            <td>
+                                                                <?php $color = ($status['color'] ? $status['color'] : '#757575'); ?>
+                                                                <a href="#"
+                                                                    onclick="edit_status(this,<?= e($status['id']); ?>);return false;"
+                                                                    data-color="<?= e($status['color']); ?>"
+                                                                    data-name="<?= e($status['name']); ?>"
+                                                                    data-order="<?= e($status['statusorder']); ?>">
+                                                                    <span
+                                                                        style="display:inline-block;width:14px;height:14px;border-radius:50%;margin-right:8px;background:<?= e($color); ?>;vertical-align:middle;border:1px solid rgba(0,0,0,0.06);"></span>
+                                                                    <?= e($status['name']); ?></a>
+                                                                <br /><span
+                                                                    class="text-muted"><?= _l('leads_table_total', total_rows(db_prefix() . 'leads', ['status' => $status['id']])); ?></span>
+                                                            </td>
+                                                            <td>
+                                                                <div class="tw-flex tw-items-center tw-space-x-2">
+                                                                    <a href="#"
+                                                                        onclick="edit_status(this,<?= e($status['id']); ?>);return false;"
+                                                                        data-color="<?= e($status['color']); ?>"
+                                                                        data-name="<?= e($status['name']); ?>"
+                                                                        data-order="<?= e($status['statusorder']); ?>"
+                                                                        class="tw-text-neutral-500 hover:tw-text-neutral-700 focus:tw-text-neutral-700">
+                                                                        <i class="fa-regular fa-pen-to-square fa-lg"></i>
+                                                                    </a>
+                                                                    <?php if ($status['isdefault'] == 0) { ?>
+                                                                            <a href="#"
+                                                                                onclick="ccx_delete_status(<?= e($status['id']); ?>);return false;"
+                                                                                class="tw-text-neutral-500 hover:tw-text-neutral-700 focus:tw-text-neutral-700 _delete">
+                                                                                <i class="fa-regular fa-trash-can fa-lg"></i>
+                                                                            </a>
+                                                                    <?php } ?>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                <?php } ?>
+                                            </tbody>
+                                        </table>
                                 <?php } else { ?>
-                                    <p class="no-margin"><?= _l('lead_statuses_not_found'); ?></p>
+                                        <p class="no-margin"><?= _l('lead_statuses_not_found'); ?></p>
                                 <?php } ?>
                             </div>
 
@@ -372,48 +384,48 @@
                                 </div>
 
                                 <?php if (isset($sources) && count($sources) > 0) { ?>
-                                    <table class="table dt-table" data-order-col="1" data-order-type="asc">
-                                        <thead>
-                                            <tr>
-                                                <th><?= _l('id'); ?></th>
-                                                <th><?= _l('leads_sources_table_name'); ?></th>
-                                                <th class="options"><?= _l('options'); ?></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php foreach ($sources as $source) { ?>
+                                        <table class="table dt-table" data-order-col="1" data-order-type="asc">
+                                            <thead>
                                                 <tr>
-                                                    <td><?= e($source['id']); ?></td>
-                                                    <td>
-                                                        <a href="#" class="tw-font-medium"
-                                                            onclick="edit_source(this,<?= e($source['id']); ?>); return false"
-                                                            data-name="<?= e($source['name']); ?>"><?= e($source['name']); ?></a>
-                                                        <br />
-                                                        <span class="text-muted">
-                                                            <?= _l('leads_table_total', total_rows(db_prefix() . 'leads', ['source' => $source['id']])); ?>
-                                                        </span>
-                                                    </td>
-                                                    <td>
-                                                        <div class="tw-flex tw-items-center tw-space-x-2">
-                                                            <a href="#"
-                                                                onclick="edit_source(this,<?= e($source['id']); ?>); return false"
-                                                                data-name="<?= e($source['name']); ?>"
-                                                                class="tw-text-neutral-500 hover:tw-text-neutral-700 focus:tw-text-neutral-700">
-                                                                <i class="fa-regular fa-pen-to-square fa-lg"></i>
-                                                            </a>
-                                                            <a href="#"
-                                                                onclick="ccx_delete_source(<?= e($source['id']); ?>);return false;"
-                                                                class="tw-text-neutral-500 hover:tw-text-neutral-700 focus:tw-text-neutral-700 _delete">
-                                                                <i class="fa-regular fa-trash-can fa-lg"></i>
-                                                            </a>
-                                                        </div>
-                                                    </td>
+                                                    <th><?= _l('id'); ?></th>
+                                                    <th><?= _l('leads_sources_table_name'); ?></th>
+                                                    <th class="options"><?= _l('options'); ?></th>
                                                 </tr>
-                                            <?php } ?>
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                                <?php foreach ($sources as $source) { ?>
+                                                        <tr>
+                                                            <td><?= e($source['id']); ?></td>
+                                                            <td>
+                                                                <a href="#" class="tw-font-medium"
+                                                                    onclick="edit_source(this,<?= e($source['id']); ?>); return false"
+                                                                    data-name="<?= e($source['name']); ?>"><?= e($source['name']); ?></a>
+                                                                <br />
+                                                                <span class="text-muted">
+                                                                    <?= _l('leads_table_total', total_rows(db_prefix() . 'leads', ['source' => $source['id']])); ?>
+                                                                </span>
+                                                            </td>
+                                                            <td>
+                                                                <div class="tw-flex tw-items-center tw-space-x-2">
+                                                                    <a href="#"
+                                                                        onclick="edit_source(this,<?= e($source['id']); ?>); return false"
+                                                                        data-name="<?= e($source['name']); ?>"
+                                                                        class="tw-text-neutral-500 hover:tw-text-neutral-700 focus:tw-text-neutral-700">
+                                                                        <i class="fa-regular fa-pen-to-square fa-lg"></i>
+                                                                    </a>
+                                                                    <a href="#"
+                                                                        onclick="ccx_delete_source(<?= e($source['id']); ?>);return false;"
+                                                                        class="tw-text-neutral-500 hover:tw-text-neutral-700 focus:tw-text-neutral-700 _delete">
+                                                                        <i class="fa-regular fa-trash-can fa-lg"></i>
+                                                                    </a>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                <?php } ?>
+                                            </tbody>
+                                        </table>
                                 <?php } else { ?>
-                                    <p class="no-margin"><?= _l('leads_sources_not_found'); ?></p>
+                                        <p class="no-margin"><?= _l('leads_sources_not_found'); ?></p>
                                 <?php } ?>
                             </div>
 
@@ -439,7 +451,8 @@
                                 <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
                                     <div>
                                         <h4 class="no-margin tw-font-semibold">Lead Rollercoaster</h4>
-                                        <p class="text-muted tw-mb-0" style="font-size:13px;">Auto-distribute incoming API leads across your team in round-robin fashion.</p>
+                                        <p class="text-muted tw-mb-0" style="font-size:13px;">Auto-distribute incoming
+                                            API leads across your team in round-robin fashion.</p>
                                     </div>
                                     <button type="button" class="btn btn-primary" id="ccx-save-rc">
                                         <i class="fa-regular fa-floppy-disk tw-mr-1"></i> Save Settings
@@ -459,8 +472,10 @@
                                 <!-- Role Selection -->
                                 <div style="margin-bottom:20px;">
                                     <h5 class="tw-font-semibold">Select User Roles</h5>
-                                    <p class="text-muted" style="font-size:12px; margin-bottom:6px;">Only staff from selected roles will receive auto-assigned leads.</p>
-                                    <select id="rc_roles" class="selectpicker" multiple data-width="100%" data-live-search="true" data-actions-box="true" title="Select roles...">
+                                    <p class="text-muted" style="font-size:12px; margin-bottom:6px;">Only staff from
+                                        selected roles will receive auto-assigned leads.</p>
+                                    <select id="rc_roles" class="selectpicker" multiple data-width="100%"
+                                        data-live-search="true" data-actions-box="true" title="Select roles...">
                                         <?php
                                         $all_roles = isset($roles) ? $roles : [];
                                         foreach ($all_roles as $r) {
@@ -475,27 +490,174 @@
                                 <div style="margin-bottom:20px;">
                                     <h5 class="tw-font-semibold">Assigning Strategy</h5>
                                     <select id="rc_strategy" class="selectpicker" data-width="100%">
-                                        <option value="round_robin_online" <?= $rc_strategy == 'round_robin_online' ? 'selected' : ''; ?>>Round Robin — Online Staff Only (active in last 15 min)</option>
-                                        <option value="round_robin_all" <?= $rc_strategy == 'round_robin_all' ? 'selected' : ''; ?>>Round Robin — All Active Staff</option>
-                                        <option value="least_leads" <?= $rc_strategy == 'least_leads' ? 'selected' : ''; ?>>Least Leads Today — Assign to agent with fewest leads</option>
+                                        <optgroup label="Round Robin">
+                                            <option value="round_robin_online" <?= $rc_strategy == 'round_robin_online' ? 'selected' : ''; ?>>Round Robin — Online Staff Only (active in last 15
+                                                min)</option>
+                                            <option value="round_robin_all" <?= $rc_strategy == 'round_robin_all' ? 'selected' : ''; ?>>Round Robin — All Active Staff</option>
+                                            <option value="weighted_round_robin" <?= $rc_strategy == 'weighted_round_robin' ? 'selected' : ''; ?>>Weighted Round Robin — Assign based on priority
+                                                weights</option>
+                                        </optgroup>
+                                        <optgroup label="Load Balancing">
+                                            <option value="least_leads" <?= $rc_strategy == 'least_leads' ? 'selected' : ''; ?>>Least Leads Today — Agent with fewest leads today</option>
+                                            <option value="least_leads_week" <?= $rc_strategy == 'least_leads_week' ? 'selected' : ''; ?>>Least Leads This Week — Agent with fewest leads this
+                                                week</option>
+                                            <option value="least_leads_month" <?= $rc_strategy == 'least_leads_month' ? 'selected' : ''; ?>>Least Leads This Month — Agent with fewest leads
+                                                this month</option>
+                                        </optgroup>
+                                        <optgroup label="Other">
+                                            <option value="random" <?= $rc_strategy == 'random' ? 'selected' : ''; ?>>
+                                                Random — Randomly distribute among eligible agents</option>
+                                            <option value="skill_based" <?= $rc_strategy == 'skill_based' ? 'selected' : ''; ?>>Skill-Based — Route by lead source to specific roles</option>
+                                        </optgroup>
                                     </select>
+
+                                    <!-- Strategy descriptions -->
+                                    <div id="rc-strategy-desc" style="margin-top:8px; font-size:12px;"
+                                        class="text-muted">
+                                        <span data-strategy="round_robin_online">Leads go to each online agent in order,
+                                            one by one. Skips offline agents.</span>
+                                        <span data-strategy="round_robin_all" style="display:none;">Leads go to every
+                                            active agent in order, whether they're currently online or not.</span>
+                                        <span data-strategy="weighted_round_robin" style="display:none;">High-priority
+                                            agents get more leads. Set weights below — an agent with weight 3 gets 3×
+                                            more leads than weight 1.</span>
+                                        <span data-strategy="least_leads" style="display:none;">Always assigns to the
+                                            agent who has received the fewest leads today. Best for equal daily
+                                            distribution.</span>
+                                        <span data-strategy="least_leads_week" style="display:none;">Assigns to the
+                                            agent with fewest leads this week. Balances workload over 7 days.</span>
+                                        <span data-strategy="least_leads_month" style="display:none;">Assigns to the
+                                            agent with fewest leads this month. Best for long-term fairness across large
+                                            teams.</span>
+                                        <span data-strategy="random" style="display:none;">Each lead is randomly
+                                            assigned. Good for unbiased distribution without sequential patterns.</span>
+                                        <span data-strategy="skill_based" style="display:none;">Leads from specific
+                                            sources go to specific roles. Configure source → role mapping below.</span>
+                                    </div>
+                                </div>
+
+                                <!-- Weighted Priority — visible only for weighted_round_robin -->
+                                <?php
+                                $rc_weights = isset($rc['weights']) ? $rc['weights'] : [];
+                                ?>
+                                <div id="rc-weighted-section"
+                                    style="margin-bottom:20px; <?= $rc_strategy == 'weighted_round_robin' ? '' : 'display:none;'; ?>">
+                                    <h5 class="tw-font-semibold">Agent Weights</h5>
+                                    <p class="text-muted" style="font-size:12px; margin-bottom:8px;">Higher weight =
+                                        more leads. Agent with weight 3 gets 3× more than weight 1.</p>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-condensed" id="rc-weights-table"
+                                            style="font-size:13px;">
+                                            <thead style="background:#f8f9fa;">
+                                                <tr>
+                                                    <th>Agent</th>
+                                                    <th>Role</th>
+                                                    <th style="width:100px;">Weight</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php
+                                                // Show all staff from selected roles
+                                                $weight_staff = [];
+                                                if (!empty($rc_roles) && !empty($all_roles)) {
+                                                    $CI = &get_instance();
+                                                    $CI->db->select('staffid, firstname, lastname, role');
+                                                    $CI->db->where('active', 1);
+                                                    $CI->db->where('admin', 0);
+                                                    if (!empty($rc_roles)) {
+                                                        $CI->db->where_in('role', $rc_roles);
+                                                    }
+                                                    $weight_staff = $CI->db->get(db_prefix() . 'staff')->result_array();
+                                                }
+                                                $role_map = [];
+                                                foreach ($all_roles as $r) {
+                                                    $role_map[$r['roleid']] = $r['name'];
+                                                }
+
+                                                if (!empty($weight_staff)) {
+                                                    foreach ($weight_staff as $ws) {
+                                                        $w = isset($rc_weights[$ws['staffid']]) ? intval($rc_weights[$ws['staffid']]) : 1;
+                                                        $rname = isset($role_map[$ws['role']]) ? $role_map[$ws['role']] : '-';
+                                                        echo '<tr>';
+                                                        echo '<td>' . e($ws['firstname'] . ' ' . $ws['lastname']) . '</td>';
+                                                        echo '<td><span class="label label-default">' . e($rname) . '</span></td>';
+                                                        echo '<td><input type="number" class="form-control input-sm rc-weight-input" data-staffid="' . $ws['staffid'] . '" value="' . $w . '" min="0" max="10" style="width:70px;"></td>';
+                                                        echo '</tr>';
+                                                    }
+                                                } else {
+                                                    echo '<tr><td colspan="3" class="text-muted text-center">Select user roles above and save to see agents here.</td></tr>';
+                                                }
+                                                ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <span class="help-block" style="font-size:11px;">Set weight to 0 to exclude an
+                                        agent. Save settings to refresh agent list after changing roles.</span>
+                                </div>
+
+                                <!-- Skill-Based Routing — visible only for skill_based -->
+                                <?php
+                                $rc_skill_map = isset($rc['skill_map']) ? $rc['skill_map'] : [];
+                                ?>
+                                <div id="rc-skill-section"
+                                    style="margin-bottom:20px; <?= $rc_strategy == 'skill_based' ? '' : 'display:none;'; ?>">
+                                    <h5 class="tw-font-semibold">Source → Role Mapping</h5>
+                                    <p class="text-muted" style="font-size:12px; margin-bottom:8px;">Leads from a source
+                                        go to agents of the mapped role. Unmapped sources use the default round-robin.
+                                    </p>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-condensed" style="font-size:13px;">
+                                            <thead style="background:#f8f9fa;">
+                                                <tr>
+                                                    <th>Lead Source</th>
+                                                    <th>Assign to Role</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php
+                                                $all_sources_list = isset($sources) ? $sources : [];
+                                                foreach ($all_sources_list as $src) {
+                                                    $mapped_role = isset($rc_skill_map[$src['id']]) ? $rc_skill_map[$src['id']] : '';
+                                                    echo '<tr>';
+                                                    echo '<td>' . e($src['name']) . '</td>';
+                                                    echo '<td><select class="form-control input-sm rc-skill-select" data-sourceid="' . $src['id'] . '" style="width:200px;">';
+                                                    echo '<option value="">— Default (Round Robin) —</option>';
+                                                    foreach ($all_roles as $r) {
+                                                        $sel = ($mapped_role == $r['roleid']) ? 'selected' : '';
+                                                        echo '<option value="' . e($r['roleid']) . '" ' . $sel . '>' . e($r['name']) . '</option>';
+                                                    }
+                                                    echo '</select></td>';
+                                                    echo '</tr>';
+                                                }
+                                                if (empty($all_sources_list)) {
+                                                    echo '<tr><td colspan="2" class="text-muted text-center">No sources available.</td></tr>';
+                                                }
+                                                ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
 
                                 <!-- Fallback -->
                                 <div style="margin-bottom:20px;">
                                     <h5 class="tw-font-semibold">If No Active Logged Users</h5>
                                     <select id="rc_fallback" class="selectpicker" data-width="100%">
-                                        <option value="queue" <?= $rc_fallback == 'queue' ? 'selected' : ''; ?>>Queue — Assign when next agent comes online</option>
-                                        <option value="admin" <?= $rc_fallback == 'admin' ? 'selected' : ''; ?>>Assign to Admin</option>
-                                        <option value="skip" <?= $rc_fallback == 'skip' ? 'selected' : ''; ?>>Skip — Leave unassigned</option>
+                                        <option value="queue" <?= $rc_fallback == 'queue' ? 'selected' : ''; ?>>Queue —
+                                            Assign when next agent comes online</option>
+                                        <option value="admin" <?= $rc_fallback == 'admin' ? 'selected' : ''; ?>>Assign to
+                                            Admin</option>
+                                        <option value="skip" <?= $rc_fallback == 'skip' ? 'selected' : ''; ?>>Skip — Leave
+                                            unassigned</option>
                                     </select>
                                 </div>
 
                                 <!-- Source Filter -->
                                 <div style="margin-bottom:20px;">
                                     <h5 class="tw-font-semibold">Select Sources of Leads</h5>
-                                    <p class="text-muted" style="font-size:12px; margin-bottom:6px;">Only auto-assign leads from these sources. Leave empty for all sources.</p>
-                                    <select id="rc_sources" class="selectpicker" multiple data-width="100%" data-live-search="true" data-actions-box="true" title="All Sources (default)">
+                                    <p class="text-muted" style="font-size:12px; margin-bottom:6px;">Only auto-assign
+                                        leads from these sources. Leave empty for all sources.</p>
+                                    <select id="rc_sources" class="selectpicker" multiple data-width="100%"
+                                        data-live-search="true" data-actions-box="true" title="All Sources (default)">
                                         <?php
                                         $all_sources = isset($sources) ? $sources : [];
                                         foreach ($all_sources as $s) {
@@ -511,8 +673,10 @@
                                 <!-- Daily Cap -->
                                 <div style="margin-bottom:20px;">
                                     <h5 class="tw-font-semibold">Daily Lead Cap per Agent</h5>
-                                    <p class="text-muted" style="font-size:12px; margin-bottom:6px;">Max leads an agent can receive per day. Set 0 for unlimited.</p>
-                                    <input type="number" id="rc_daily_cap" class="form-control" value="<?= $rc_daily_cap; ?>" min="0" style="max-width:200px;">
+                                    <p class="text-muted" style="font-size:12px; margin-bottom:6px;">Max leads an agent
+                                        can receive per day. Set 0 for unlimited.</p>
+                                    <input type="number" id="rc_daily_cap" class="form-control"
+                                        value="<?= $rc_daily_cap; ?>" min="0" style="max-width:200px;">
                                 </div>
 
                                 <!-- Working Hours -->
@@ -522,14 +686,17 @@
                                         <input type="checkbox" id="rc_wh_enabled" <?= $rc_wh_enabled ? 'checked' : ''; ?>>
                                         <label for="rc_wh_enabled">Only assign leads during working hours</label>
                                     </div>
-                                    <div id="rc-wh-times" class="row" style="<?= $rc_wh_enabled ? '' : 'display:none;'; ?>">
+                                    <div id="rc-wh-times" class="row"
+                                        style="<?= $rc_wh_enabled ? '' : 'display:none;'; ?>">
                                         <div class="col-md-3">
                                             <label>Start Time</label>
-                                            <input type="time" id="rc_wh_start" class="form-control" value="<?= e($rc_wh_start); ?>">
+                                            <input type="time" id="rc_wh_start" class="form-control"
+                                                value="<?= e($rc_wh_start); ?>">
                                         </div>
                                         <div class="col-md-3">
                                             <label>End Time</label>
-                                            <input type="time" id="rc_wh_end" class="form-control" value="<?= e($rc_wh_end); ?>">
+                                            <input type="time" id="rc_wh_end" class="form-control"
+                                                value="<?= e($rc_wh_end); ?>">
                                         </div>
                                     </div>
                                 </div>
@@ -541,7 +708,8 @@
                                     <h5 class="tw-font-semibold">Avoid Empty Leads</h5>
                                     <div class="checkbox checkbox-primary" style="margin-top:4px;">
                                         <input type="checkbox" id="rc_avoid_empty" <?= $rc_avoid ? 'checked' : ''; ?>>
-                                        <label for="rc_avoid_empty">Skip lead creation if name or mobile number is empty</label>
+                                        <label for="rc_avoid_empty">Skip lead creation if name or mobile number is
+                                            empty</label>
                                     </div>
                                 </div>
 
@@ -550,13 +718,17 @@
                                     <h5 class="tw-font-semibold">Auto Convert to Junk Leads</h5>
                                     <div class="checkbox checkbox-primary" style="margin-top:4px; margin-bottom:8px;">
                                         <input type="checkbox" id="rc_junk_enabled" <?= $rc_junk ? 'checked' : ''; ?>>
-                                        <label for="rc_junk_enabled">Enable auto junk conversion based on number length</label>
+                                        <label for="rc_junk_enabled">Enable auto junk conversion based on number
+                                            length</label>
                                     </div>
-                                    <div id="rc-junk-options" class="row" style="<?= $rc_junk ? '' : 'display:none;'; ?>">
+                                    <div id="rc-junk-options" class="row"
+                                        style="<?= $rc_junk ? '' : 'display:none;'; ?>">
                                         <div class="col-md-3">
                                             <label>Minimum Digits</label>
-                                            <input type="number" id="rc_junk_digits" class="form-control" value="<?= $rc_junk_digits; ?>" min="1" max="20">
-                                            <span class="help-block" style="font-size:11px;">Phone numbers with fewer digits → junk</span>
+                                            <input type="number" id="rc_junk_digits" class="form-control"
+                                                value="<?= $rc_junk_digits; ?>" min="1" max="20">
+                                            <span class="help-block" style="font-size:11px;">Phone numbers with fewer
+                                                digits → junk</span>
                                         </div>
                                         <div class="col-md-4">
                                             <label>Junk Status</label>
@@ -570,7 +742,8 @@
                                                 }
                                                 ?>
                                             </select>
-                                            <span class="help-block" style="font-size:11px;">Status to assign for junk leads</span>
+                                            <span class="help-block" style="font-size:11px;">Status to assign for junk
+                                                leads</span>
                                         </div>
                                     </div>
                                 </div>
@@ -590,12 +763,14 @@
                             <div role="tabpanel" class="tab-pane" id="api_tab">
 
                                 <!-- API Key Section -->
-                                <div style="border:1px solid #e5e5e5; border-radius:8px; padding:20px; margin-bottom:20px; background:#fff;">
+                                <div
+                                    style="border:1px solid #e5e5e5; border-radius:8px; padding:20px; margin-bottom:20px; background:#fff;">
                                     <h4 style="margin:0 0 12px 0; font-weight:600;">
                                         <i class="fa-solid fa-key tw-mr-1 text-warning"></i> API Key
                                     </h4>
                                     <p class="text-muted" style="margin-bottom:12px; font-size:13px;">
-                                        Use this key to authenticate API requests. Include it as <code>X-Api-Key</code> header or <code>api_key</code> parameter.
+                                        Use this key to authenticate API requests. Include it as <code>X-Api-Key</code>
+                                        header or <code>api_key</code> parameter.
                                     </p>
                                     <div class="form-group" style="margin-bottom:10px;">
                                         <div class="input-group">
@@ -616,15 +791,18 @@
                                         </div>
                                     </div>
                                     <?php if (isset($api_key) && $api_key) { ?>
-                                        <div class="alert alert-warning" style="font-size:12px; margin-bottom:0; padding:8px 12px;">
-                                            <i class="fa-solid fa-triangle-exclamation tw-mr-1"></i>
-                                            <strong>Keep this key secret.</strong> Anyone with this key can create leads. Regenerating invalidates the old key.
-                                        </div>
+                                            <div class="alert alert-warning"
+                                                style="font-size:12px; margin-bottom:0; padding:8px 12px;">
+                                                <i class="fa-solid fa-triangle-exclamation tw-mr-1"></i>
+                                                <strong>Keep this key secret.</strong> Anyone with this key can create leads.
+                                                Regenerating invalidates the old key.
+                                            </div>
                                     <?php } ?>
                                 </div>
 
                                 <!-- Base URL -->
-                                <div style="border:1px solid #e5e5e5; border-radius:8px; padding:20px; margin-bottom:20px; background:#fff;">
+                                <div
+                                    style="border:1px solid #e5e5e5; border-radius:8px; padding:20px; margin-bottom:20px; background:#fff;">
                                     <h4 style="margin:0 0 12px 0; font-weight:600;">
                                         <i class="fa-solid fa-link tw-mr-1 text-primary"></i> Base URL
                                     </h4>
@@ -633,7 +811,8 @@
                                             value="<?= e(isset($api_base_url) ? $api_base_url : site_url('ccx_leads_api/')); ?>"
                                             style="font-family:monospace; font-size:13px;">
                                         <div class="input-group-btn">
-                                            <button type="button" class="btn btn-default ccx-copy-btn" data-target="#ccx-api-base-url">
+                                            <button type="button" class="btn btn-default ccx-copy-btn"
+                                                data-target="#ccx-api-base-url">
                                                 <i class="fa-regular fa-copy"></i>
                                             </button>
                                         </div>
@@ -641,14 +820,19 @@
                                 </div>
 
                                 <!-- Endpoints Reference -->
-                                <div style="border:1px solid #e5e5e5; border-radius:8px; padding:20px; margin-bottom:20px; background:#fff;">
+                                <div
+                                    style="border:1px solid #e5e5e5; border-radius:8px; padding:20px; margin-bottom:20px; background:#fff;">
                                     <h4 style="margin:0 0 12px 0; font-weight:600;">
                                         <i class="fa-solid fa-list tw-mr-1 text-info"></i> Endpoints
                                     </h4>
                                     <div class="table-responsive">
                                         <table class="table table-bordered" style="margin-bottom:0;">
                                             <thead style="background:#f8f9fa;">
-                                                <tr><th style="width:80px;">Method</th><th>Endpoint</th><th>Description</th></tr>
+                                                <tr>
+                                                    <th style="width:80px;">Method</th>
+                                                    <th>Endpoint</th>
+                                                    <th>Description</th>
+                                                </tr>
                                             </thead>
                                             <tbody>
                                                 <tr>
@@ -659,7 +843,8 @@
                                                 <tr>
                                                     <td><span class="label label-info">GET</span></td>
                                                     <td><code>/ccx_leads_api/get_leads</code></td>
-                                                    <td>List leads (params: <code>status</code>, <code>limit</code>, <code>offset</code>)</td>
+                                                    <td>List leads (params: <code>status</code>, <code>limit</code>,
+                                                        <code>offset</code>)</td>
                                                 </tr>
                                                 <tr>
                                                     <td><span class="label label-info">GET</span></td>
@@ -672,34 +857,129 @@
                                 </div>
 
                                 <!-- Add Lead — Fields & Example -->
-                                <div style="border:1px solid #e5e5e5; border-radius:8px; padding:20px; margin-bottom:20px; background:#fff;">
+                                <div
+                                    style="border:1px solid #e5e5e5; border-radius:8px; padding:20px; margin-bottom:20px; background:#fff;">
                                     <h4 style="margin:0 0 4px 0; font-weight:600;">
                                         <span class="label label-success">POST</span> Add Lead
                                     </h4>
-                                    <p class="text-muted" style="font-size:13px; margin-bottom:12px;">Create a new lead. Only <code>name</code> is required.</p>
+                                    <p class="text-muted" style="font-size:13px; margin-bottom:12px;">Create a new lead.
+                                        Only <code>name</code> is required.</p>
 
                                     <h5 style="font-weight:600; margin-bottom:8px;">Request Fields</h5>
                                     <div class="table-responsive" style="margin-bottom:16px;">
-                                        <table class="table table-bordered table-condensed" style="margin-bottom:0; font-size:12px;">
-                                            <thead style="background:#f8f9fa;"><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+                                        <table class="table table-bordered table-condensed"
+                                            style="margin-bottom:0; font-size:12px;">
+                                            <thead style="background:#f8f9fa;">
+                                                <tr>
+                                                    <th>Field</th>
+                                                    <th>Type</th>
+                                                    <th>Required</th>
+                                                    <th>Description</th>
+                                                </tr>
+                                            </thead>
                                             <tbody>
-                                                <tr><td><code>name</code></td><td>string</td><td><span class="text-danger">Yes</span></td><td>Lead name</td></tr>
-                                                <tr><td><code>email</code></td><td>string</td><td>No</td><td>Email address</td></tr>
-                                                <tr><td><code>phonenumber</code></td><td>string</td><td><span class="text-danger">Yes</span></td><td>Phone number</td></tr>
-                                                <tr><td><code>title</code></td><td>string</td><td>No</td><td>Job title</td></tr>
-                                                <tr><td><code>company</code></td><td>string</td><td>No</td><td>Company name</td></tr>
-                                                <tr><td><code>website</code></td><td>string</td><td>No</td><td>Website URL</td></tr>
-                                                <tr><td><code>lead_value</code></td><td>number</td><td>No</td><td>Monetary value</td></tr>
-                                                <tr><td><code>address</code></td><td>string</td><td>No</td><td>Street address</td></tr>
-                                                <tr><td><code>city</code></td><td>string</td><td>No</td><td>City</td></tr>
-                                                <tr><td><code>state</code></td><td>string</td><td>No</td><td>State/Province</td></tr>
-                                                <tr><td><code>country</code></td><td>integer</td><td>No</td><td>Country ID</td></tr>
-                                                <tr><td><code>zip</code></td><td>string</td><td>No</td><td>ZIP/Postal code</td></tr>
-                                                <tr><td><code>description</code></td><td>string</td><td>No</td><td>Description</td></tr>
-                                                <tr><td><code>status</code></td><td>integer</td><td>No</td><td>Status ID (auto-defaults)</td></tr>
-                                                <tr><td><code>source</code></td><td>integer</td><td>No</td><td>Source ID (auto-defaults)</td></tr>
-                                                <tr><td><code>assigned</code></td><td>integer</td><td>No</td><td>Staff member ID</td></tr>
-                                                <tr><td><code>is_public</code></td><td>integer</td><td>No</td><td>1 = public, 0 = private</td></tr>
+                                                <tr>
+                                                    <td><code>name</code></td>
+                                                    <td>string</td>
+                                                    <td><span class="text-danger">Yes</span></td>
+                                                    <td>Lead name</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><code>email</code></td>
+                                                    <td>string</td>
+                                                    <td>No</td>
+                                                    <td>Email address</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><code>phonenumber</code></td>
+                                                    <td>string</td>
+                                                    <td><span class="text-danger">Yes</span></td>
+                                                    <td>Phone number</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><code>title</code></td>
+                                                    <td>string</td>
+                                                    <td>No</td>
+                                                    <td>Job title</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><code>company</code></td>
+                                                    <td>string</td>
+                                                    <td>No</td>
+                                                    <td>Company name</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><code>website</code></td>
+                                                    <td>string</td>
+                                                    <td>No</td>
+                                                    <td>Website URL</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><code>lead_value</code></td>
+                                                    <td>number</td>
+                                                    <td>No</td>
+                                                    <td>Monetary value</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><code>address</code></td>
+                                                    <td>string</td>
+                                                    <td>No</td>
+                                                    <td>Street address</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><code>city</code></td>
+                                                    <td>string</td>
+                                                    <td>No</td>
+                                                    <td>City</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><code>state</code></td>
+                                                    <td>string</td>
+                                                    <td>No</td>
+                                                    <td>State/Province</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><code>country</code></td>
+                                                    <td>integer</td>
+                                                    <td>No</td>
+                                                    <td>Country ID</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><code>zip</code></td>
+                                                    <td>string</td>
+                                                    <td>No</td>
+                                                    <td>ZIP/Postal code</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><code>description</code></td>
+                                                    <td>string</td>
+                                                    <td>No</td>
+                                                    <td>Description</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><code>status</code></td>
+                                                    <td>integer</td>
+                                                    <td>No</td>
+                                                    <td>Status ID (auto-defaults)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><code>source</code></td>
+                                                    <td>integer</td>
+                                                    <td>No</td>
+                                                    <td>Source ID (auto-defaults)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><code>assigned</code></td>
+                                                    <td>integer</td>
+                                                    <td>No</td>
+                                                    <td>Staff member ID</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><code>is_public</code></td>
+                                                    <td>integer</td>
+                                                    <td>No</td>
+                                                    <td>1 = public, 0 = private</td>
+                                                </tr>
                                             </tbody>
                                         </table>
                                     </div>
@@ -707,7 +987,8 @@
                                     <?php $_api_url = isset($api_base_url) ? $api_base_url : site_url('ccx_leads_api/'); ?>
 
                                     <h5 style="font-weight:600; margin-bottom:8px;">cURL Example</h5>
-                                    <pre style="background:#1e1e2e; color:#cdd6f4; padding:14px 16px; border-radius:6px; font-size:12px; overflow-x:auto; margin-bottom:16px;"><code>curl -X POST "<?= e($_api_url); ?>add_lead" \
+                                    <pre
+                                        style="background:#1e1e2e; color:#cdd6f4; padding:14px 16px; border-radius:6px; font-size:12px; overflow-x:auto; margin-bottom:16px;"><code>curl -X POST "<?= e($_api_url); ?>add_lead" \
   -H "X-Api-Key: YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -721,16 +1002,20 @@
 
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <h5 style="font-weight:600; margin-bottom:8px;">Success Response <span class="label label-success">201</span></h5>
-                                            <pre style="background:#1e1e2e; color:#a6e3a1; padding:12px 14px; border-radius:6px; font-size:12px;"><code>{
+                                            <h5 style="font-weight:600; margin-bottom:8px;">Success Response <span
+                                                    class="label label-success">201</span></h5>
+                                            <pre
+                                                style="background:#1e1e2e; color:#a6e3a1; padding:12px 14px; border-radius:6px; font-size:12px;"><code>{
   "success": true,
   "lead_id": 42,
   "message": "Lead created successfully."
 }</code></pre>
                                         </div>
                                         <div class="col-md-6">
-                                            <h5 style="font-weight:600; margin-bottom:8px;">Error Response <span class="label label-danger">401</span></h5>
-                                            <pre style="background:#1e1e2e; color:#f38ba8; padding:12px 14px; border-radius:6px; font-size:12px;"><code>{
+                                            <h5 style="font-weight:600; margin-bottom:8px;">Error Response <span
+                                                    class="label label-danger">401</span></h5>
+                                            <pre
+                                                style="background:#1e1e2e; color:#f38ba8; padding:12px 14px; border-radius:6px; font-size:12px;"><code>{
   "success": false,
   "error": "UNAUTHORIZED",
   "message": "Invalid or missing API key."
@@ -742,11 +1027,13 @@
                                 <!-- Code Examples -->
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <div style="border:1px solid #e5e5e5; border-radius:8px; padding:20px; background:#fff;">
+                                        <div
+                                            style="border:1px solid #e5e5e5; border-radius:8px; padding:20px; background:#fff;">
                                             <h4 style="margin:0 0 12px 0; font-weight:600;">
                                                 <i class="fa-brands fa-php tw-mr-1" style="color:#777BB3;"></i> PHP
                                             </h4>
-                                            <pre style="background:#1e1e2e; color:#cdd6f4; padding:12px 14px; border-radius:6px; font-size:11px; overflow-x:auto;"><code>$ch = curl_init('<?= e($_api_url); ?>add_lead');
+                                            <pre
+                                                style="background:#1e1e2e; color:#cdd6f4; padding:12px 14px; border-radius:6px; font-size:11px; overflow-x:auto;"><code>$ch = curl_init('<?= e($_api_url); ?>add_lead');
 curl_setopt($ch, CURLOPT_POST, true);
 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
     'name'  =&gt; 'Jane Smith',
@@ -764,11 +1051,14 @@ echo $result['lead_id'];</code></pre>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <div style="border:1px solid #e5e5e5; border-radius:8px; padding:20px; background:#fff;">
+                                        <div
+                                            style="border:1px solid #e5e5e5; border-radius:8px; padding:20px; background:#fff;">
                                             <h4 style="margin:0 0 12px 0; font-weight:600;">
-                                                <i class="fa-brands fa-js tw-mr-1" style="color:#F7DF1E;"></i> JavaScript
+                                                <i class="fa-brands fa-js tw-mr-1" style="color:#F7DF1E;"></i>
+                                                JavaScript
                                             </h4>
-                                            <pre style="background:#1e1e2e; color:#cdd6f4; padding:12px 14px; border-radius:6px; font-size:11px; overflow-x:auto;"><code>const res = await fetch(
+                                            <pre
+                                                style="background:#1e1e2e; color:#cdd6f4; padding:12px 14px; border-radius:6px; font-size:11px; overflow-x:auto;"><code>const res = await fetch(
   '<?= e($_api_url); ?>add_lead',
   {
     method: 'POST',
@@ -887,7 +1177,8 @@ console.log(data.lead_id);</code></pre>
                         <label for="bs_column"><?= _l('custom_field_column'); ?></label>
                         <div class="input-group">
                             <span class="input-group-addon">col-md-</span>
-                            <input type="number" max="12" min="1" class="form-control" name="bs_column" id="ccx_cf_bs_column" value="12">
+                            <input type="number" max="12" min="1" class="form-control" name="bs_column"
+                                id="ccx_cf_bs_column" value="12">
                         </div>
                     </div>
 
@@ -1161,21 +1452,22 @@ console.log(data.lead_id);</code></pre>
     // Store custom fields data for edit modal population
     var ccx_cf_data = <?= json_encode(
         array_column(
-            array_map(function($cf) {
-                return [
-                    'id' => $cf['id'],
-                    'name' => $cf['name'],
-                    'type' => $cf['type'],
-                    'options' => $cf['options'],
-                    'default_value' => $cf['default_value'],
-                    'field_order' => $cf['field_order'],
-                    'bs_column' => $cf['bs_column'],
-                    'required' => $cf['required'],
-                    'show_on_table' => $cf['show_on_table'],
-                    'active' => $cf['active'],
-                ];
-            }, isset($custom_fields) ? $custom_fields : []),
-            null, 'id'
+            array_map(function ($cf) {
+        return [
+            'id' => $cf['id'],
+            'name' => $cf['name'],
+            'type' => $cf['type'],
+            'options' => $cf['options'],
+            'default_value' => $cf['default_value'],
+            'field_order' => $cf['field_order'],
+            'bs_column' => $cf['bs_column'],
+            'required' => $cf['required'],
+            'show_on_table' => $cf['show_on_table'],
+            'active' => $cf['active'],
+        ];
+    }, isset($custom_fields) ? $custom_fields : []),
+            null,
+            'id'
         )
     ); ?>;
 
@@ -1220,7 +1512,7 @@ console.log(data.lead_id);</code></pre>
 
     function edit_source(invoker, id) {
         $('#source_additional').append(hidden_input('id', id));
-        $('#source input[name="name"]').val($(invoker).data('name'));
+     $('#source input[name="name"]').val($(invoker).data('name'));
         $('#source').modal('show');
         $('#source .add-title').addClass('hide');
     }
@@ -1321,6 +1613,17 @@ console.log(data.lead_id);</code></pre>
         $('#rc-junk-options').toggle(this.checked);
     });
 
+    // Strategy change — show/hide sub-sections and descriptions
+    $('#rc_strategy').on('change', function () {
+        var val = $(this).val();
+        // Toggle weighted and skill sections
+        $('#rc-weighted-section').toggle(val === 'weighted_round_robin');
+        $('#rc-skill-section').toggle(val === 'skill_based');
+        // Toggle descriptions
+        $('#rc-strategy-desc span').hide();
+        $('#rc-strategy-desc span[data-strategy="' + val + '"]').show();
+    });
+
     $('#ccx-save-rc').on('click', function () {
         var btn = $(this);
         btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin tw-mr-1"></i> Saving...');
@@ -1343,6 +1646,23 @@ console.log(data.lead_id);</code></pre>
         postData['junk_enabled'] = $('#rc_junk_enabled').is(':checked') ? 1 : 0;
         postData['junk_min_digits'] = $('#rc_junk_digits').val() || 10;
         postData['junk_status_id'] = $('#rc_junk_status').val() || 0;
+
+        // Collect agent weights
+        var weights = {};
+        $('.rc-weight-input').each(function () {
+            weights[$(this).data('staffid')] = parseInt($(this).val()) || 1;
+        });
+        postData['weights'] = weights;
+
+        // Collect skill-based source→role mapping
+        var skill_map = {};
+        $('.rc-skill-select').each(function () {
+            var v = $(this).val();
+            if (v) {
+                skill_map[$(this).data('sourceid')] = v;
+            }
+        });
+        postData['skill_map'] = skill_map;
 
         $.ajax({
             url: admin_url + 'ccx_leads/save_roller_coaster',

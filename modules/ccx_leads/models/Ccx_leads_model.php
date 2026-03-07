@@ -383,11 +383,32 @@ class Ccx_leads_model extends App_Model
         $strategy = isset($rc['strategy']) ? $rc['strategy'] : 'round_robin_online';
         $staff_id = 0;
 
-        if ($strategy === 'least_leads') {
-            $staff_id = $this->_rc_least_leads_agent($agents);
-        } else {
-            // round_robin_online or round_robin_all
-            $staff_id = $this->_rc_round_robin_agent($agents);
+        switch ($strategy) {
+            case 'weighted_round_robin':
+                $weights = isset($rc['weights']) ? $rc['weights'] : [];
+                $staff_id = $this->_rc_weighted_round_robin($agents, $weights);
+                break;
+            case 'least_leads':
+                $staff_id = $this->_rc_least_leads_agent($agents, 'today');
+                break;
+            case 'least_leads_week':
+                $staff_id = $this->_rc_least_leads_agent($agents, 'week');
+                break;
+            case 'least_leads_month':
+                $staff_id = $this->_rc_least_leads_agent($agents, 'month');
+                break;
+            case 'random':
+                $staff_id = $this->_rc_random_agent($agents);
+                break;
+            case 'skill_based':
+                $skill_map = isset($rc['skill_map']) ? $rc['skill_map'] : [];
+                $lead = $this->db->where('id', $lead_id)->get(db_prefix() . 'leads')->row();
+                $staff_id = $this->_rc_skill_based_agent($agents, $lead, $skill_map);
+                break;
+            default:
+                // round_robin_online / round_robin_all
+                $staff_id = $this->_rc_round_robin_agent($agents);
+                break;
         }
 
         if ($staff_id > 0) {
@@ -487,19 +508,31 @@ class Ccx_leads_model extends App_Model
     }
 
     /**
-     * Least-leads-today: pick the agent with fewest leads assigned today.
+     * Least-leads: pick the agent with fewest leads in the given period.
+     * @param string $period 'today', 'week', or 'month'
      */
-    private function _rc_least_leads_agent($agents)
+    private function _rc_least_leads_agent($agents, $period = 'today')
     {
         if (empty($agents))
             return 0;
 
-        $today = date('Y-m-d');
         $staff_ids = array_column($agents, 'staffid');
 
         $this->db->select('assigned, COUNT(*) as cnt');
         $this->db->where_in('assigned', $staff_ids);
-        $this->db->where('DATE(dateadded)', $today);
+
+        switch ($period) {
+            case 'week':
+                $this->db->where('dateadded >=', date('Y-m-d', strtotime('monday this week')));
+                break;
+            case 'month':
+                $this->db->where('dateadded >=', date('Y-m-01'));
+                break;
+            default: // today
+                $this->db->where('DATE(dateadded)', date('Y-m-d'));
+                break;
+        }
+
         $this->db->group_by('assigned');
         $counts = $this->db->get(db_prefix() . 'leads')->result_array();
 
@@ -511,7 +544,6 @@ class Ccx_leads_model extends App_Model
         // Find the agent with the minimum count
         $min_count = PHP_INT_MAX;
         $chosen_id = 0;
-
         foreach ($agents as $a) {
             $cnt = isset($count_map[$a['staffid']]) ? $count_map[$a['staffid']] : 0;
             if ($cnt < $min_count) {
@@ -521,6 +553,80 @@ class Ccx_leads_model extends App_Model
         }
 
         return $chosen_id;
+    }
+
+    /**
+     * Weighted Round Robin: agents with higher weight get proportionally more leads.
+     * Weight 3 means the agent appears 3× in the virtual queue.
+     */
+    private function _rc_weighted_round_robin($agents, $weights = [])
+    {
+        if (empty($agents))
+            return 0;
+
+        // Build expanded queue: agent appears N times where N = weight
+        $queue = [];
+        foreach ($agents as $a) {
+            $w = isset($weights[$a['staffid']]) ? intval($weights[$a['staffid']]) : 1;
+            if ($w <= 0)
+                continue; // weight 0 = excluded
+            for ($i = 0; $i < $w; $i++) {
+                $queue[] = intval($a['staffid']);
+            }
+        }
+
+        if (empty($queue))
+            return 0;
+
+        $idx = intval(get_option('ccx_leads_rr_index'));
+        $count = count($queue);
+        if ($idx >= $count)
+            $idx = 0;
+
+        $chosen = $queue[$idx];
+        update_option('ccx_leads_rr_index', $idx + 1);
+
+        return $chosen;
+    }
+
+    /**
+     * Random: pick a random agent from the eligible list.
+     */
+    private function _rc_random_agent($agents)
+    {
+        if (empty($agents))
+            return 0;
+        $pick = $agents[array_rand($agents)];
+        return intval($pick['staffid']);
+    }
+
+    /**
+     * Skill-Based: route leads to agents based on source → role mapping.
+     * If the lead's source is mapped to a role, only agents of that role are eligible.
+     * Falls back to round-robin among the filtered agents.
+     */
+    private function _rc_skill_based_agent($agents, $lead, $skill_map = [])
+    {
+        if (empty($agents))
+            return 0;
+
+        // Check if lead source has a role mapping
+        if (!empty($skill_map) && $lead && isset($skill_map[$lead->source])) {
+            $target_role = $skill_map[$lead->source];
+            // Filter agents to only those with the target role
+            $filtered = array_filter($agents, function ($a) use ($target_role) {
+                return $a['role'] == $target_role;
+            });
+            $filtered = array_values($filtered);
+
+            if (!empty($filtered)) {
+                // Round-robin among filtered agents
+                return $this->_rc_round_robin_agent($filtered);
+            }
+        }
+
+        // No mapping or no agents for mapped role — fallback to round-robin
+        return $this->_rc_round_robin_agent($agents);
     }
 
     /**

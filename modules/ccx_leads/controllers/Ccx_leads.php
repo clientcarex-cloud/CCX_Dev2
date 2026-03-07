@@ -362,7 +362,9 @@ class Ccx_leads extends AdminController
             'avoid_empty' => $this->input->post('avoid_empty') ? 1 : 0,
             'junk_enabled' => $this->input->post('junk_enabled') ? 1 : 0,
             'junk_min_digits' => intval($this->input->post('junk_min_digits') ?: 10),
-            'junk_status_id' => intval($this->input->post('junk_status_id')),
+            'junk_status_id'       => intval($this->input->post('junk_status_id')),
+            'weights'              => $this->input->post('weights') ?: [],
+            'skill_map'            => $this->input->post('skill_map') ?: [],
         ];
 
         update_option('ccx_leads_roller_coaster', json_encode($settings));
