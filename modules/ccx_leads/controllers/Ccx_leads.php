@@ -193,6 +193,12 @@ class Ccx_leads extends AdminController
         $data['api_key'] = get_option('ccx_leads_api_key');
         $data['api_base_url'] = site_url('ccx_leads_api/');
 
+        // Roller Coaster tab data
+        $this->load->model('roles_model');
+        $data['roles'] = $this->roles_model->get();
+        $rc_raw = get_option('ccx_leads_roller_coaster');
+        $data['rc'] = $rc_raw ? json_decode($rc_raw, true) : [];
+
         $this->load->view('ccx_leads/settings', $data);
     }
 
@@ -333,6 +339,35 @@ class Ccx_leads extends AdminController
         update_option('ccx_leads_api_key', $key);
 
         echo json_encode(['success' => true, 'api_key' => $key]);
+        die;
+    }
+
+    /* AJAX: Save Roller Coaster settings */
+    public function save_roller_coaster()
+    {
+        if (!is_admin()) {
+            ajax_access_denied();
+        }
+
+        $settings = [
+            'active' => $this->input->post('active') ? 1 : 0,
+            'roles' => $this->input->post('roles') ?: [],
+            'strategy' => $this->input->post('strategy') ?: 'round_robin_online',
+            'no_active_fallback' => $this->input->post('no_active_fallback') ?: 'queue',
+            'sources' => $this->input->post('sources') ?: [],
+            'daily_cap' => intval($this->input->post('daily_cap')),
+            'working_hours_enabled' => $this->input->post('working_hours_enabled') ? 1 : 0,
+            'working_hours_start' => $this->input->post('working_hours_start') ?: '09:00',
+            'working_hours_end' => $this->input->post('working_hours_end') ?: '18:00',
+            'avoid_empty' => $this->input->post('avoid_empty') ? 1 : 0,
+            'junk_enabled' => $this->input->post('junk_enabled') ? 1 : 0,
+            'junk_min_digits' => intval($this->input->post('junk_min_digits') ?: 10),
+            'junk_status_id' => intval($this->input->post('junk_status_id')),
+        ];
+
+        update_option('ccx_leads_roller_coaster', json_encode($settings));
+
+        echo json_encode(['success' => true, 'message' => 'Roller Coaster settings saved']);
         die;
     }
 }

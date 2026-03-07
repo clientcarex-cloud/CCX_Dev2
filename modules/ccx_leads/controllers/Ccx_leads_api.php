@@ -120,11 +120,16 @@ class Ccx_leads_api extends ClientsController
         $id = $this->leads_model->add($data);
 
         if ($id) {
+            // Roller Coaster — auto-assign the lead
+            $rc_result = $this->ccx_leads_model->auto_assign_lead($id, $data);
+
             http_response_code(201);
             echo json_encode([
                 'success' => true,
                 'lead_id' => $id,
                 'message' => 'Lead created successfully.',
+                'assigned_to' => $rc_result['assigned'],
+                'rc_action' => $rc_result['action'],
             ]);
         } else {
             http_response_code(500);

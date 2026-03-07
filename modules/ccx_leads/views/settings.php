@@ -419,7 +419,162 @@
 
                             <!-- ==================== PLACEHOLDER TABS ==================== -->
                             <div role="tabpanel" class="tab-pane" id="roller_coaster">
-                                <p class="text-muted">Roller Coaster settings coming soon...</p>
+                                <?php
+                                $rc = isset($rc) ? $rc : [];
+                                $rc_active = isset($rc['active']) ? $rc['active'] : 0;
+                                $rc_roles = isset($rc['roles']) ? $rc['roles'] : [];
+                                $rc_strategy = isset($rc['strategy']) ? $rc['strategy'] : 'round_robin_online';
+                                $rc_fallback = isset($rc['no_active_fallback']) ? $rc['no_active_fallback'] : 'queue';
+                                $rc_sources = isset($rc['sources']) ? $rc['sources'] : [];
+                                $rc_daily_cap = isset($rc['daily_cap']) ? $rc['daily_cap'] : 0;
+                                $rc_wh_enabled = isset($rc['working_hours_enabled']) ? $rc['working_hours_enabled'] : 0;
+                                $rc_wh_start = isset($rc['working_hours_start']) ? $rc['working_hours_start'] : '09:00';
+                                $rc_wh_end = isset($rc['working_hours_end']) ? $rc['working_hours_end'] : '18:00';
+                                $rc_avoid = isset($rc['avoid_empty']) ? $rc['avoid_empty'] : 0;
+                                $rc_junk = isset($rc['junk_enabled']) ? $rc['junk_enabled'] : 0;
+                                $rc_junk_digits = isset($rc['junk_min_digits']) ? $rc['junk_min_digits'] : 10;
+                                $rc_junk_status = isset($rc['junk_status_id']) ? $rc['junk_status_id'] : 0;
+                                ?>
+
+                                <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
+                                    <div>
+                                        <h4 class="no-margin tw-font-semibold">Lead Rollercoaster</h4>
+                                        <p class="text-muted tw-mb-0" style="font-size:13px;">Auto-distribute incoming API leads across your team in round-robin fashion.</p>
+                                    </div>
+                                    <button type="button" class="btn btn-primary" id="ccx-save-rc">
+                                        <i class="fa-regular fa-floppy-disk tw-mr-1"></i> Save Settings
+                                    </button>
+                                </div>
+                                <hr>
+
+                                <!-- Activate -->
+                                <div style="margin-bottom:20px;">
+                                    <h5 class="tw-font-semibold">Activate</h5>
+                                    <div class="checkbox checkbox-primary" style="margin-top:4px;">
+                                        <input type="checkbox" id="rc_active" <?= $rc_active ? 'checked' : ''; ?>>
+                                        <label for="rc_active">Enable Lead Auto Assignment</label>
+                                    </div>
+                                </div>
+
+                                <!-- Role Selection -->
+                                <div style="margin-bottom:20px;">
+                                    <h5 class="tw-font-semibold">Select User Roles</h5>
+                                    <p class="text-muted" style="font-size:12px; margin-bottom:6px;">Only staff from selected roles will receive auto-assigned leads.</p>
+                                    <select id="rc_roles" class="selectpicker" multiple data-width="100%" data-live-search="true" data-actions-box="true" title="Select roles...">
+                                        <?php
+                                        $all_roles = isset($roles) ? $roles : [];
+                                        foreach ($all_roles as $r) {
+                                            $sel = in_array($r['roleid'], $rc_roles) ? 'selected' : '';
+                                            echo '<option value="' . e($r['roleid']) . '" ' . $sel . '>' . e($r['name']) . '</option>';
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
+
+                                <!-- Assigning Strategy -->
+                                <div style="margin-bottom:20px;">
+                                    <h5 class="tw-font-semibold">Assigning Strategy</h5>
+                                    <select id="rc_strategy" class="selectpicker" data-width="100%">
+                                        <option value="round_robin_online" <?= $rc_strategy == 'round_robin_online' ? 'selected' : ''; ?>>Round Robin — Online Staff Only (active in last 15 min)</option>
+                                        <option value="round_robin_all" <?= $rc_strategy == 'round_robin_all' ? 'selected' : ''; ?>>Round Robin — All Active Staff</option>
+                                        <option value="least_leads" <?= $rc_strategy == 'least_leads' ? 'selected' : ''; ?>>Least Leads Today — Assign to agent with fewest leads</option>
+                                    </select>
+                                </div>
+
+                                <!-- Fallback -->
+                                <div style="margin-bottom:20px;">
+                                    <h5 class="tw-font-semibold">If No Active Logged Users</h5>
+                                    <select id="rc_fallback" class="selectpicker" data-width="100%">
+                                        <option value="queue" <?= $rc_fallback == 'queue' ? 'selected' : ''; ?>>Queue — Assign when next agent comes online</option>
+                                        <option value="admin" <?= $rc_fallback == 'admin' ? 'selected' : ''; ?>>Assign to Admin</option>
+                                        <option value="skip" <?= $rc_fallback == 'skip' ? 'selected' : ''; ?>>Skip — Leave unassigned</option>
+                                    </select>
+                                </div>
+
+                                <!-- Source Filter -->
+                                <div style="margin-bottom:20px;">
+                                    <h5 class="tw-font-semibold">Select Sources of Leads</h5>
+                                    <p class="text-muted" style="font-size:12px; margin-bottom:6px;">Only auto-assign leads from these sources. Leave empty for all sources.</p>
+                                    <select id="rc_sources" class="selectpicker" multiple data-width="100%" data-live-search="true" data-actions-box="true" title="All Sources (default)">
+                                        <?php
+                                        $all_sources = isset($sources) ? $sources : [];
+                                        foreach ($all_sources as $s) {
+                                            $sel = in_array($s['id'], $rc_sources) ? 'selected' : '';
+                                            echo '<option value="' . e($s['id']) . '" ' . $sel . '>' . e($s['name']) . '</option>';
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
+
+                                <hr>
+
+                                <!-- Daily Cap -->
+                                <div style="margin-bottom:20px;">
+                                    <h5 class="tw-font-semibold">Daily Lead Cap per Agent</h5>
+                                    <p class="text-muted" style="font-size:12px; margin-bottom:6px;">Max leads an agent can receive per day. Set 0 for unlimited.</p>
+                                    <input type="number" id="rc_daily_cap" class="form-control" value="<?= $rc_daily_cap; ?>" min="0" style="max-width:200px;">
+                                </div>
+
+                                <!-- Working Hours -->
+                                <div style="margin-bottom:20px;">
+                                    <h5 class="tw-font-semibold">Working Hours</h5>
+                                    <div class="checkbox checkbox-primary" style="margin-top:4px; margin-bottom:8px;">
+                                        <input type="checkbox" id="rc_wh_enabled" <?= $rc_wh_enabled ? 'checked' : ''; ?>>
+                                        <label for="rc_wh_enabled">Only assign leads during working hours</label>
+                                    </div>
+                                    <div id="rc-wh-times" class="row" style="<?= $rc_wh_enabled ? '' : 'display:none;'; ?>">
+                                        <div class="col-md-3">
+                                            <label>Start Time</label>
+                                            <input type="time" id="rc_wh_start" class="form-control" value="<?= e($rc_wh_start); ?>">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label>End Time</label>
+                                            <input type="time" id="rc_wh_end" class="form-control" value="<?= e($rc_wh_end); ?>">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr>
+
+                                <!-- Avoid Empty Leads -->
+                                <div style="margin-bottom:20px;">
+                                    <h5 class="tw-font-semibold">Avoid Empty Leads</h5>
+                                    <div class="checkbox checkbox-primary" style="margin-top:4px;">
+                                        <input type="checkbox" id="rc_avoid_empty" <?= $rc_avoid ? 'checked' : ''; ?>>
+                                        <label for="rc_avoid_empty">Skip lead creation if name or mobile number is empty</label>
+                                    </div>
+                                </div>
+
+                                <!-- Auto Junk -->
+                                <div style="margin-bottom:20px;">
+                                    <h5 class="tw-font-semibold">Auto Convert to Junk Leads</h5>
+                                    <div class="checkbox checkbox-primary" style="margin-top:4px; margin-bottom:8px;">
+                                        <input type="checkbox" id="rc_junk_enabled" <?= $rc_junk ? 'checked' : ''; ?>>
+                                        <label for="rc_junk_enabled">Enable auto junk conversion based on number length</label>
+                                    </div>
+                                    <div id="rc-junk-options" class="row" style="<?= $rc_junk ? '' : 'display:none;'; ?>">
+                                        <div class="col-md-3">
+                                            <label>Minimum Digits</label>
+                                            <input type="number" id="rc_junk_digits" class="form-control" value="<?= $rc_junk_digits; ?>" min="1" max="20">
+                                            <span class="help-block" style="font-size:11px;">Phone numbers with fewer digits → junk</span>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label>Junk Status</label>
+                                            <select id="rc_junk_status" class="selectpicker" data-width="100%">
+                                                <option value="0">-- Select Status --</option>
+                                                <?php
+                                                $all_statuses = isset($statuses) ? $statuses : [];
+                                                foreach ($all_statuses as $st) {
+                                                    $sel = ($rc_junk_status == $st['id']) ? 'selected' : '';
+                                                    echo '<option value="' . e($st['id']) . '" ' . $sel . '>' . e($st['name']) . '</option>';
+                                                }
+                                                ?>
+                                            </select>
+                                            <span class="help-block" style="font-size:11px;">Status to assign for junk leads</span>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
                             <div role="tabpanel" class="tab-pane" id="wa_web">
                                 <p class="text-muted">WA Web settings coming soon...</p>
@@ -1154,6 +1309,58 @@ console.log(data.lead_id);</code></pre>
             },
             complete: function () {
                 btn.prop('disabled', false);
+            }
+        });
+    });
+
+    // ==================== ROLLER COASTER TAB JS ====================
+    $('#rc_wh_enabled').on('change', function () {
+        $('#rc-wh-times').toggle(this.checked);
+    });
+    $('#rc_junk_enabled').on('change', function () {
+        $('#rc-junk-options').toggle(this.checked);
+    });
+
+    $('#ccx-save-rc').on('click', function () {
+        var btn = $(this);
+        btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin tw-mr-1"></i> Saving...');
+
+        var postData = {};
+        if (typeof csrfData !== 'undefined') {
+            postData[csrfData.token_name] = csrfData.hash;
+        }
+
+        postData['active'] = $('#rc_active').is(':checked') ? 1 : 0;
+        postData['roles'] = $('#rc_roles').val() || [];
+        postData['strategy'] = $('#rc_strategy').val();
+        postData['no_active_fallback'] = $('#rc_fallback').val();
+        postData['sources'] = $('#rc_sources').val() || [];
+        postData['daily_cap'] = $('#rc_daily_cap').val() || 0;
+        postData['working_hours_enabled'] = $('#rc_wh_enabled').is(':checked') ? 1 : 0;
+        postData['working_hours_start'] = $('#rc_wh_start').val();
+        postData['working_hours_end'] = $('#rc_wh_end').val();
+        postData['avoid_empty'] = $('#rc_avoid_empty').is(':checked') ? 1 : 0;
+        postData['junk_enabled'] = $('#rc_junk_enabled').is(':checked') ? 1 : 0;
+        postData['junk_min_digits'] = $('#rc_junk_digits').val() || 10;
+        postData['junk_status_id'] = $('#rc_junk_status').val() || 0;
+
+        $.ajax({
+            url: admin_url + 'ccx_leads/save_roller_coaster',
+            type: 'POST',
+            data: postData,
+            dataType: 'json',
+            success: function (response) {
+                if (response.success) {
+                    alert_float('success', response.message);
+                } else {
+                    alert_float('danger', response.message || 'Failed to save');
+                }
+            },
+            error: function () {
+                alert_float('danger', 'An error occurred');
+            },
+            complete: function () {
+                btn.prop('disabled', false).html('<i class="fa-regular fa-floppy-disk tw-mr-1"></i> Save Settings');
             }
         });
     });

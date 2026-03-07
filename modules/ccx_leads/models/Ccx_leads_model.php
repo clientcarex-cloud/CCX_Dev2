@@ -308,4 +308,252 @@ class Ccx_leads_model extends App_Model
 
         return $summary;
     }
+
+    // ==================== ROLLER COASTER — AUTO ASSIGNMENT ====================
+
+    /**
+     * Auto-assign a newly created lead based on Roller Coaster settings.
+     * Called from the API controller after lead creation.
+     *
+     * @param int   $lead_id  The new lead's ID
+     * @param array $data     The lead data that was submitted
+     * @return array ['assigned' => staffid|0, 'action' => string]
+     */
+    public function auto_assign_lead($lead_id, $data = [])
+    {
+        $result = ['assigned' => 0, 'action' => 'none'];
+
+        // Load RC settings
+        $rc_raw = get_option('ccx_leads_roller_coaster');
+        if (empty($rc_raw))
+            return $result;
+        $rc = json_decode($rc_raw, true);
+        if (empty($rc) || empty($rc['active']))
+            return $result;
+
+        // 1. Check "avoid empty leads"
+        if (!empty($rc['avoid_empty'])) {
+            if (empty($data['name']) || empty($data['phonenumber'])) {
+                $result['action'] = 'skipped_empty';
+                return $result;
+            }
+        }
+
+        // 2. Check "auto junk" — short phone numbers
+        if (!empty($rc['junk_enabled']) && !empty($data['phonenumber'])) {
+            $digits_only = preg_replace('/\D/', '', $data['phonenumber']);
+            $min_digits = isset($rc['junk_min_digits']) ? intval($rc['junk_min_digits']) : 10;
+            if (strlen($digits_only) < $min_digits && !empty($rc['junk_status_id'])) {
+                // Mark as junk — update status
+                $this->db->where('id', $lead_id);
+                $this->db->update(db_prefix() . 'leads', ['status' => intval($rc['junk_status_id'])]);
+                $result['action'] = 'junk';
+                return $result;
+            }
+        }
+
+        // 3. Check source filter
+        if (!empty($rc['sources']) && is_array($rc['sources'])) {
+            $lead = $this->db->where('id', $lead_id)->get(db_prefix() . 'leads')->row();
+            if ($lead && !in_array($lead->source, $rc['sources'])) {
+                $result['action'] = 'source_filtered';
+                return $result;
+            }
+        }
+
+        // 4. Check working hours
+        if (!empty($rc['working_hours_enabled'])) {
+            $now_time = date('H:i');
+            $wh_start = isset($rc['working_hours_start']) ? $rc['working_hours_start'] : '09:00';
+            $wh_end = isset($rc['working_hours_end']) ? $rc['working_hours_end'] : '18:00';
+            if ($now_time < $wh_start || $now_time > $wh_end) {
+                // Outside working hours — apply fallback
+                return $this->_rc_apply_fallback($lead_id, $rc, 'outside_hours');
+            }
+        }
+
+        // 5. Build eligible agent list
+        $agents = $this->_rc_get_eligible_agents($rc);
+
+        if (empty($agents)) {
+            return $this->_rc_apply_fallback($lead_id, $rc, 'no_agents');
+        }
+
+        // 6. Pick agent based on strategy
+        $strategy = isset($rc['strategy']) ? $rc['strategy'] : 'round_robin_online';
+        $staff_id = 0;
+
+        if ($strategy === 'least_leads') {
+            $staff_id = $this->_rc_least_leads_agent($agents);
+        } else {
+            // round_robin_online or round_robin_all
+            $staff_id = $this->_rc_round_robin_agent($agents);
+        }
+
+        if ($staff_id > 0) {
+            $this->db->where('id', $lead_id);
+            $this->db->update(db_prefix() . 'leads', ['assigned' => $staff_id]);
+            $result['assigned'] = $staff_id;
+            $result['action'] = 'assigned';
+        } else {
+            return $this->_rc_apply_fallback($lead_id, $rc, 'no_eligible');
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get eligible agents based on RC settings (roles, active, online, daily cap).
+     */
+    private function _rc_get_eligible_agents($rc)
+    {
+        $roles = isset($rc['roles']) ? $rc['roles'] : [];
+        $strategy = isset($rc['strategy']) ? $rc['strategy'] : 'round_robin_online';
+
+        // Start with active staff
+        $this->db->select('staffid, firstname, lastname, last_activity, role');
+        $this->db->where('active', 1);
+
+        // Filter by roles
+        if (!empty($roles)) {
+            $this->db->where_in('role', $roles);
+        }
+
+        // Exclude admins from round-robin (they're the fallback)
+        $this->db->where('admin', 0);
+
+        $staff = $this->db->get(db_prefix() . 'staff')->result_array();
+
+        if (empty($staff))
+            return [];
+
+        // Filter by online status if strategy requires it
+        if ($strategy === 'round_robin_online') {
+            $threshold = date('Y-m-d H:i:s', strtotime('-15 minutes'));
+            $staff = array_filter($staff, function ($s) use ($threshold) {
+                return !empty($s['last_activity']) && $s['last_activity'] >= $threshold;
+            });
+            $staff = array_values($staff);
+        }
+
+        // Filter by daily cap
+        $daily_cap = isset($rc['daily_cap']) ? intval($rc['daily_cap']) : 0;
+        if ($daily_cap > 0 && !empty($staff)) {
+            $today = date('Y-m-d');
+            $staff_ids = array_column($staff, 'staffid');
+
+            // Count leads assigned today per agent
+            $this->db->select('assigned, COUNT(*) as cnt');
+            $this->db->where_in('assigned', $staff_ids);
+            $this->db->where('DATE(dateadded)', $today);
+            $this->db->group_by('assigned');
+            $counts = $this->db->get(db_prefix() . 'leads')->result_array();
+
+            $count_map = [];
+            foreach ($counts as $c) {
+                $count_map[$c['assigned']] = intval($c['cnt']);
+            }
+
+            $staff = array_filter($staff, function ($s) use ($count_map, $daily_cap) {
+                $cnt = isset($count_map[$s['staffid']]) ? $count_map[$s['staffid']] : 0;
+                return $cnt < $daily_cap;
+            });
+            $staff = array_values($staff);
+        }
+
+        return $staff;
+    }
+
+    /**
+     * Round-robin: pick next agent from the list using a persisted index.
+     */
+    private function _rc_round_robin_agent($agents)
+    {
+        if (empty($agents))
+            return 0;
+
+        $idx = intval(get_option('ccx_leads_rr_index'));
+        $count = count($agents);
+
+        // Wrap around
+        if ($idx >= $count)
+            $idx = 0;
+
+        $chosen = $agents[$idx];
+        $next_idx = $idx + 1;
+        update_option('ccx_leads_rr_index', $next_idx);
+
+        return intval($chosen['staffid']);
+    }
+
+    /**
+     * Least-leads-today: pick the agent with fewest leads assigned today.
+     */
+    private function _rc_least_leads_agent($agents)
+    {
+        if (empty($agents))
+            return 0;
+
+        $today = date('Y-m-d');
+        $staff_ids = array_column($agents, 'staffid');
+
+        $this->db->select('assigned, COUNT(*) as cnt');
+        $this->db->where_in('assigned', $staff_ids);
+        $this->db->where('DATE(dateadded)', $today);
+        $this->db->group_by('assigned');
+        $counts = $this->db->get(db_prefix() . 'leads')->result_array();
+
+        $count_map = [];
+        foreach ($counts as $c) {
+            $count_map[$c['assigned']] = intval($c['cnt']);
+        }
+
+        // Find the agent with the minimum count
+        $min_count = PHP_INT_MAX;
+        $chosen_id = 0;
+
+        foreach ($agents as $a) {
+            $cnt = isset($count_map[$a['staffid']]) ? $count_map[$a['staffid']] : 0;
+            if ($cnt < $min_count) {
+                $min_count = $cnt;
+                $chosen_id = intval($a['staffid']);
+            }
+        }
+
+        return $chosen_id;
+    }
+
+    /**
+     * Apply fallback when no eligible agents are available.
+     */
+    private function _rc_apply_fallback($lead_id, $rc, $reason)
+    {
+        $fallback = isset($rc['no_active_fallback']) ? $rc['no_active_fallback'] : 'skip';
+        $result = ['assigned' => 0, 'action' => 'fallback_' . $reason];
+
+        if ($fallback === 'admin') {
+            // Find the first admin user
+            $admin = $this->db
+                ->select('staffid')
+                ->where('admin', 1)
+                ->where('active', 1)
+                ->limit(1)
+                ->get(db_prefix() . 'staff')
+                ->row();
+
+            if ($admin) {
+                $this->db->where('id', $lead_id);
+                $this->db->update(db_prefix() . 'leads', ['assigned' => $admin->staffid]);
+                $result['assigned'] = $admin->staffid;
+                $result['action'] = 'assigned_admin';
+            }
+        } elseif ($fallback === 'queue') {
+            // Leave unassigned with a marker for queue processing
+            // The next agent that comes online will pick it up
+            $result['action'] = 'queued';
+        }
+        // 'skip' = leave unassigned, no action
+
+        return $result;
+    }
 }
