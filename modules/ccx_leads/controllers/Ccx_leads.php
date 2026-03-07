@@ -122,6 +122,7 @@ class Ccx_leads extends AdminController
         $data['lead_locked'] = false;
         $data['base_currency'] = $this->currencies_model->get_base_currency();
         $data['field_settings'] = $this->ccx_leads_model->get_field_settings_map();
+        $data['field_layout'] = $this->ccx_leads_model->get_field_layout();
 
         $this->load->view('ccx_leads/lead_modal', $data);
     }
@@ -140,6 +141,7 @@ class Ccx_leads extends AdminController
         $data['members'] = $this->staff_model->get('', ['active' => 1]);
         $data['base_currency'] = $this->currencies_model->get_base_currency();
         $data['field_settings'] = $this->ccx_leads_model->get_field_settings_map();
+        $data['field_layout'] = $this->ccx_leads_model->get_field_layout();
 
         $this->load->view('ccx_leads/new_lead_form', $data);
     }
@@ -184,8 +186,8 @@ class Ccx_leads extends AdminController
         $this->db->order_by('field_order', 'asc');
         $data['custom_fields'] = $this->db->get(db_prefix() . 'customfields')->result_array();
 
-        // Merged fields list for ordering tab
-        $data['all_fields_ordered'] = $this->ccx_leads_model->get_all_fields_ordered();
+        // Merged fields list for ordering tab (3 columns)
+        $data['field_layout'] = $this->ccx_leads_model->get_field_layout();
 
         $this->load->view('ccx_leads/settings', $data);
     }
@@ -221,20 +223,20 @@ class Ccx_leads extends AdminController
         die;
     }
 
-    /* AJAX: Save field order */
+    /* AJAX: Save field layout (3-column ordering) */
     public function save_field_order()
     {
         if (!is_admin()) {
             ajax_access_denied();
         }
 
-        $items = $this->input->post('items');
-        if (!$items || !is_array($items)) {
+        $columns = $this->input->post('columns');
+        if (!$columns || !is_array($columns)) {
             echo json_encode(['success' => false, 'message' => 'No data received']);
             die;
         }
 
-        $this->ccx_leads_model->save_field_order($items);
+        $this->ccx_leads_model->save_field_layout($columns);
         echo json_encode(['success' => true, 'message' => 'Field order saved successfully']);
         die;
     }

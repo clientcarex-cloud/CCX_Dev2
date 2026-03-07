@@ -239,7 +239,7 @@
                                 <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
                                     <p class="text-muted tw-mb-0">
                                         <i class="fa-solid fa-circle-info tw-mr-1"></i>
-                                        Drag and drop to reorder fields. This order applies to both the New Lead form and the View/Edit form.
+                                        Drag and drop fields between columns to control form layout. Reorder within each column.
                                     </p>
                                     <button type="button" class="btn btn-primary" id="ccx-save-field-order">
                                         <i class="fa-regular fa-floppy-disk tw-mr-1"></i>
@@ -247,36 +247,51 @@
                                     </button>
                                 </div>
 
-                                <ul id="ccx-field-order-list" class="list-unstyled" style="max-width:600px;">
+                                <div class="row">
                                     <?php
-                                    if (isset($all_fields_ordered)) {
-                                        foreach ($all_fields_ordered as $idx => $fo) {
-                                            $is_custom = ($fo['type'] === 'custom');
-                                            $badge_class = $is_custom ? 'label-primary' : 'label-default';
-                                            $badge_text = $is_custom ? 'Custom' : 'Standard';
-                                            $inactive = ($fo['active'] == 0) ? ' opacity:0.5;' : '';
+                                    $col_labels = [
+                                        '1' => ['title' => 'Top Row', 'desc' => 'Status, Source, Assigned (col-md-4)', 'icon' => 'fa-table-columns'],
+                                        '2' => ['title' => 'Left Column', 'desc' => 'Contact & business fields (col-md-6)', 'icon' => 'fa-arrow-left'],
+                                        '3' => ['title' => 'Right Column', 'desc' => 'Address & other fields (col-md-6)', 'icon' => 'fa-arrow-right'],
+                                    ];
+                                    $layout = isset($field_layout) ? $field_layout : ['1' => [], '2' => [], '3' => []];
+                                    foreach (['1', '2', '3'] as $col_num) {
+                                        $col_info = $col_labels[$col_num];
+                                        $fields_in_col = isset($layout[$col_num]) ? $layout[$col_num] : [];
                                     ?>
-                                        <li class="ccx-field-order-item"
-                                            data-type="<?= e($fo['type']); ?>"
-                                            data-id="<?= e($fo['id']); ?>"
-                                            style="padding:10px 14px; margin-bottom:4px; background:#fff; border:1px solid #e5e5e5; border-radius:6px; cursor:grab; display:flex; align-items:center; justify-content:space-between;<?= $inactive; ?>">
-                                            <div style="display:flex; align-items:center; gap:10px;">
-                                                <i class="fa-solid fa-grip-vertical text-muted" style="font-size:14px;"></i>
-                                                <span class="tw-font-medium"><?= e($fo['label']); ?></span>
-                                                <?php if ($is_custom && !empty($fo['slug'])) { ?>
-                                                    <span class="text-muted" style="font-size:12px;">(<?= e($fo['slug']); ?>)</span>
-                                                <?php } ?>
+                                        <div class="col-md-4">
+                                            <div style="background:#f8f9fa; border:1px solid #e5e5e5; border-radius:8px; padding:12px; min-height:300px;">
+                                                <div style="margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid #e0e0e0;">
+                                                    <h5 style="margin:0 0 2px 0; font-weight:600;">
+                                                        <i class="fa-solid <?= $col_info['icon']; ?> tw-mr-1 text-muted"></i>
+                                                        <?= $col_info['title']; ?>
+                                                    </h5>
+                                                    <small class="text-muted"><?= $col_info['desc']; ?></small>
+                                                </div>
+                                                <ul class="ccx-col-sortable list-unstyled" data-column="<?= $col_num; ?>"
+                                                    style="min-height:200px; padding:4px 0;">
+                                                    <?php foreach ($fields_in_col as $fo) {
+                                                        $is_custom = ($fo['type'] === 'custom');
+                                                        $badge_class = $is_custom ? 'label-primary' : 'label-default';
+                                                        $badge_text = $is_custom ? 'Custom' : 'Standard';
+                                                        $inactive = ($fo['active'] == 0) ? ' opacity:0.5;' : '';
+                                                    ?>
+                                                        <li class="ccx-field-order-item"
+                                                            data-type="<?= e($fo['type']); ?>"
+                                                            data-id="<?= e($fo['id']); ?>"
+                                                            style="padding:8px 10px; margin-bottom:3px; background:#fff; border:1px solid #ddd; border-radius:5px; cursor:grab; display:flex; align-items:center; justify-content:space-between; font-size:13px;<?= $inactive; ?>">
+                                                            <div style="display:flex; align-items:center; gap:8px;">
+                                                                <i class="fa-solid fa-grip-vertical text-muted" style="font-size:12px;"></i>
+                                                                <span class="tw-font-medium"><?= e($fo['label']); ?></span>
+                                                            </div>
+                                                            <span class="label <?= $badge_class; ?>" style="font-size:10px;"><?= $badge_text; ?></span>
+                                                        </li>
+                                                    <?php } ?>
+                                                </ul>
                                             </div>
-                                            <div style="display:flex; align-items:center; gap:8px;">
-                                                <span class="label <?= $badge_class; ?>" style="font-size:11px;"><?= $badge_text; ?></span>
-                                                <?php if ($fo['active'] == 0) { ?>
-                                                    <span class="label label-warning" style="font-size:11px;">Inactive</span>
-                                                <?php } ?>
-                                                <span class="text-muted" style="font-size:12px;">#<?= $idx + 1; ?></span>
-                                            </div>
-                                        </li>
-                                    <?php }} ?>
-                                </ul>
+                                        </div>
+                                    <?php } ?>
+                                </div>
                             </div>
 
                             <!-- ==================== STATUSES TAB ==================== -->
@@ -582,41 +597,37 @@
         });
 
         // ==================== ORDERING TAB JS ====================
-        $('#ccx-field-order-list').sortable({
+        $('.ccx-col-sortable').sortable({
+            connectWith: '.ccx-col-sortable',
             handle: '.fa-grip-vertical',
-            axis: 'y',
             cursor: 'grabbing',
             placeholder: 'ccx-sort-placeholder',
             tolerance: 'pointer',
-            update: function () {
-                // Update the # numbers on the right side
-                $('#ccx-field-order-list .ccx-field-order-item').each(function (i) {
-                    $(this).find('.text-muted:last').text('#' + (i + 1));
-                });
-            }
+            forcePlaceholderSize: true
         });
 
         $('#ccx-save-field-order').on('click', function () {
             var btn = $(this);
             btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin tw-mr-1"></i> Saving...');
 
-            var items = [];
-            $('#ccx-field-order-list .ccx-field-order-item').each(function () {
-                items.push({
-                    type: $(this).data('type'),
-                    id: $(this).data('id')
+            // Build PHP-compatible POST params: columns[1][0][type]=..., columns[1][0][id]=...
+            var params = [];
+            if (typeof csrfData !== 'undefined') {
+                params.push(encodeURIComponent(csrfData.token_name) + '=' + encodeURIComponent(csrfData.hash));
+            }
+
+            $('.ccx-col-sortable').each(function () {
+                var colNum = $(this).data('column');
+                $(this).find('.ccx-field-order-item').each(function (i) {
+                    params.push('columns[' + colNum + '][' + i + '][type]=' + encodeURIComponent($(this).data('type')));
+                    params.push('columns[' + colNum + '][' + i + '][id]=' + encodeURIComponent($(this).data('id')));
                 });
             });
-
-            var postData = { items: items };
-            if (typeof csrfData !== 'undefined') {
-                postData[csrfData.token_name] = csrfData.hash;
-            }
 
             $.ajax({
                 url: admin_url + 'ccx_leads/save_field_order',
                 type: 'POST',
-                data: postData,
+                data: params.join('&'),
                 dataType: 'json',
                 success: function (response) {
                     if (response.success) {

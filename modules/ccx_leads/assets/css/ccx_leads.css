@@ -246,3 +246,18 @@
     .kanban-column { min-width: 260px; max-width: 260px; }
     .ccx-floating-settings-btn { bottom: 16px; right: 16px; }
 }
+
+/* Ordering tab sortable */
+.ccx-sort-placeholder {
+    background: #e3f2fd;
+    border: 2px dashed #90caf9;
+    border-radius: 5px;
+    margin-bottom: 3px;
+    min-height: 36px;
+}
+
+.ccx-field-order-item.ui-sortable-helper {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transform: scale(1.02);
+    background: #fff !important;
+}

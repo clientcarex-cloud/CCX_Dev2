@@ -90,66 +90,128 @@ class Ccx_leads_model extends App_Model
     }
 
     /**
-     * Get all fields (standard + custom) merged and sorted by field_order
+     * Get the 3-column field layout.
+     * Returns ['1' => [...fields], '2' => [...], '3' => [...]]
      */
-    public function get_all_fields_ordered()
+    public function get_field_layout()
     {
-        $fields = [];
+        $saved = get_option('ccx_leads_field_layout');
+        if ($saved) {
+            $layout = json_decode($saved, true);
+            if (is_array($layout) && !empty($layout)) {
+                return $layout;
+            }
+        }
 
-        // Standard fields from ccx_lead_field_settings
+        // Build default layout from current fields
+        return $this->build_default_layout();
+    }
+
+    /**
+     * Build default 3-column layout based on slug conventions
+     */
+    private function build_default_layout()
+    {
+        $col1_slugs = ['status', 'source', 'assigned'];
+        $col2_slugs = ['name', 'title', 'email', 'website', 'phonenumber', 'lead_value', 'company'];
+        $col3_slugs = ['address', 'city', 'state', 'country', 'zip', 'description', 'is_public', 'tags'];
+
+        $layout = ['1' => [], '2' => [], '3' => []];
+
+        // Standard fields
         $this->db->order_by('field_order', 'asc');
         $standard = $this->db->get(db_prefix() . 'ccx_lead_field_settings')->result_array();
         foreach ($standard as $f) {
-            $fields[] = [
+            $item = [
                 'type' => 'standard',
                 'id' => $f['id'],
                 'slug' => $f['slug'],
                 'label' => $f['label'],
                 'active' => $f['active'],
-                'field_order' => $f['field_order'],
             ];
+            if (in_array($f['slug'], $col1_slugs)) {
+                $layout['1'][] = $item;
+            } elseif (in_array($f['slug'], $col2_slugs)) {
+                $layout['2'][] = $item;
+            } else {
+                $layout['3'][] = $item;
+            }
         }
 
-        // Custom fields for leads
+        // Custom fields go to column 3 by default
         $this->db->where('fieldto', 'leads');
         $this->db->order_by('field_order', 'asc');
         $custom = $this->db->get(db_prefix() . 'customfields')->result_array();
         foreach ($custom as $f) {
-            $fields[] = [
+            $layout['3'][] = [
                 'type' => 'custom',
                 'id' => $f['id'],
                 'slug' => $f['slug'],
                 'label' => $f['name'],
                 'active' => $f['active'],
-                'field_order' => $f['field_order'],
             ];
         }
 
-        // Sort by field_order
-        usort($fields, function ($a, $b) {
-            return ($a['field_order'] ?? 999) - ($b['field_order'] ?? 999);
-        });
-
-        return $fields;
+        return $layout;
     }
 
     /**
-     * Save field order for both standard and custom fields
-     * @param array $items Array of ['type' => 'standard'|'custom', 'id' => int]
+     * Save the 3-column field layout + field_order values
+     * @param array $columns ['1' => [{type, id}, ...], '2' => [...], '3' => [...]]
      */
-    public function save_field_order($items)
+    public function save_field_layout($columns)
     {
-        foreach ($items as $index => $item) {
-            $order = $index + 1;
-            if ($item['type'] === 'standard') {
-                $this->db->where('id', $item['id']);
-                $this->db->update(db_prefix() . 'ccx_lead_field_settings', ['field_order' => $order]);
-            } elseif ($item['type'] === 'custom') {
-                $this->db->where('id', $item['id']);
-                $this->db->where('fieldto', 'leads');
-                $this->db->update(db_prefix() . 'customfields', ['field_order' => $order]);
+        // Build layout JSON for storage and update field_order in DB
+        $layout = ['1' => [], '2' => [], '3' => []];
+        $global_order = 1;
+
+        foreach (['1', '2', '3'] as $col) {
+            if (!isset($columns[$col]) || !is_array($columns[$col]))
+                continue;
+            foreach ($columns[$col] as $item) {
+                $type = $item['type'];
+                $id = intval($item['id']);
+
+                // Get field info for storage
+                if ($type === 'standard') {
+                    $row = $this->db->where('id', $id)->get(db_prefix() . 'ccx_lead_field_settings')->row_array();
+                    if ($row) {
+                        $layout[$col][] = [
+                            'type' => 'standard',
+                            'id' => $id,
+                            'slug' => $row['slug'],
+                            'label' => $row['label'],
+                            'active' => $row['active'],
+                        ];
+                        $this->db->where('id', $id);
+                        $this->db->update(db_prefix() . 'ccx_lead_field_settings', ['field_order' => $global_order]);
+                    }
+                } elseif ($type === 'custom') {
+                    $row = $this->db->where('id', $id)->where('fieldto', 'leads')->get(db_prefix() . 'customfields')->row_array();
+                    if ($row) {
+                        $layout[$col][] = [
+                            'type' => 'custom',
+                            'id' => $id,
+                            'slug' => $row['slug'],
+                            'label' => $row['name'],
+                            'active' => $row['active'],
+                        ];
+                        $this->db->where('id', $id);
+                        $this->db->where('fieldto', 'leads');
+                        $this->db->update(db_prefix() . 'customfields', ['field_order' => $global_order]);
+                    }
+                }
+                $global_order++;
             }
         }
+
+        // Save layout JSON as option
+        if (get_option('ccx_leads_field_layout') === false) {
+            add_option('ccx_leads_field_layout', json_encode($layout));
+        } else {
+            update_option('ccx_leads_field_layout', json_encode($layout));
+        }
+
         return true;
     }
 
