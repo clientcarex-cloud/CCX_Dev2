@@ -530,7 +530,7 @@
                                             <tbody>
                                                 <tr><td><code>name</code></td><td>string</td><td><span class="text-danger">Yes</span></td><td>Lead name</td></tr>
                                                 <tr><td><code>email</code></td><td>string</td><td>No</td><td>Email address</td></tr>
-                                                <tr><td><code>phonenumber</code></td><td>string</td><td>No</td><td>Phone number</td></tr>
+                                                <tr><td><code>phonenumber</code></td><td>string</td><td><span class="text-danger">Yes</span></td><td>Phone number</td></tr>
                                                 <tr><td><code>title</code></td><td>string</td><td>No</td><td>Job title</td></tr>
                                                 <tr><td><code>company</code></td><td>string</td><td>No</td><td>Company name</td></tr>
                                                 <tr><td><code>website</code></td><td>string</td><td>No</td><td>Website URL</td></tr>

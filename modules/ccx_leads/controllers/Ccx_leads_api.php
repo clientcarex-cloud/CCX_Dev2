@@ -50,8 +50,8 @@ class Ccx_leads_api extends ClientsController
      * POST /ccx_leads_api/add_lead
      * Add a new lead via API
      *
-     * Required: name
-     * Optional: title, email, phonenumber, website, company, address, city, state,
+     * Required: name, phonenumber
+     * Optional: title, email, website, company, address, city, state,
      *           country, zip, description, status, source, assigned, lead_value, is_public
      */
     public function add_lead()
@@ -91,12 +91,19 @@ class Ccx_leads_api extends ClientsController
         // Remove api_key from data before saving
         unset($data['api_key']);
 
-        if (empty($data) || empty($data['name'])) {
+        // Validate required fields: name and phonenumber
+        $missing = [];
+        if (empty($data['name']))
+            $missing[] = 'name';
+        if (empty($data['phonenumber']))
+            $missing[] = 'phonenumber';
+
+        if (!empty($missing)) {
             http_response_code(400);
             echo json_encode([
                 'success' => false,
                 'error' => 'VALIDATION_ERROR',
-                'message' => 'Field "name" is required.',
+                'message' => 'Required field(s) missing: ' . implode(', ', $missing),
             ]);
             die;
         }
