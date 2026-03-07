@@ -29,6 +29,7 @@ class Ccx_leads extends AdminController
         $data['sources'] = $this->leads_model->get_source();
         $data['members'] = $this->staff_model->get('', ['active' => 1]);
         $data['summary'] = $this->ccx_leads_model->get_status_summary();
+        $data['field_settings_map'] = $this->ccx_leads_model->get_field_settings_map();
         $data['title'] = 'CCX Leads';
 
         // Kanban logic

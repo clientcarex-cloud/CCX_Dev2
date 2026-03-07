@@ -203,6 +203,7 @@
     var CcxLeadsServerParams = {
         "custom_view": "[name='custom_view']"
     };
+    var ccx_field_settings = <?php echo json_encode(isset($field_settings_map) ? $field_settings_map : new stdClass()); ?>;
     var ccx_leads_table;
     $(function () {
         ccx_leads_table = initDataTable('.table-ccx-leads', admin_url + 'ccx_leads/table', [0], [0], CcxLeadsServerParams, [8, 'desc']);
