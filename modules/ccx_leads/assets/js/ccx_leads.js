@@ -176,6 +176,16 @@ $(function () {
         init_datepicker();
         init_tags_inputs();
         init_color_pickers();
+
+        // Auto-populate "Date Contacted" with current date/time
+        var $contactDate = $('#ccx-lead-modal input[name="custom_contact_date"]');
+        if ($contactDate.length > 0 && !$contactDate.val()) {
+            var fmt = new DateFormatter();
+            var vformat = app.options.time_format == 24
+                ? app.options.date_format + ' H:i'
+                : app.options.date_format + ' g:i A';
+            $contactDate.val(fmt.formatDate(new Date(), vformat));
+        }
     });
 
     // Keyboard support for status filter (Enter / Space)

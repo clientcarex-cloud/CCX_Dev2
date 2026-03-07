@@ -122,15 +122,15 @@
                             <textarea id="lead_note_description" name="lead_note_description" class="form-control"
                                 rows="4"></textarea>
                         </div>
-                        <div class="lead-select-date-contacted hide">
+                        <div class="lead-select-date-contacted">
                             <?= render_datetime_input('custom_contact_date', 'lead_add_edit_datecontacted', '', ['data-date-end-date' => date('Y-m-d')]); ?>
                         </div>
                         <div class="radio radio-primary">
-                            <input type="radio" name="contacted_indicator" id="contacted_indicator_yes" value="yes">
+                            <input type="radio" name="contacted_indicator" id="contacted_indicator_yes" value="yes" checked>
                             <label for="contacted_indicator_yes"><?= _l('lead_add_edit_contacted_this_lead'); ?></label>
                         </div>
                         <div class="radio radio-primary">
-                            <input type="radio" name="contacted_indicator" id="contacted_indicator_no" value="no" checked>
+                            <input type="radio" name="contacted_indicator" id="contacted_indicator_no" value="no">
                             <label for="contacted_indicator_no"><?= _l('lead_not_contacted'); ?></label>
                         </div>
                         <button type="submit"
