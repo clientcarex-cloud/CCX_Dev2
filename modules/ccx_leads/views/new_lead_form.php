@@ -288,11 +288,53 @@ function ccx_render_new_field($slug, $fs, $statuses, $sources, $members, $base_c
             ?>
 
             <div class="clearfix"></div>
+
+            <!-- Call Log Section -->
             <div class="row">
                 <div class="col-md-12">
                     <div class="checkbox-inline checkbox checkbox-primary">
-                        <input type="checkbox" name="contacted_today" id="ccx_contacted_today" checked>
-                        <label for="ccx_contacted_today"><?= _l('lead_add_edit_contacted_today'); ?></label>
+                        <input type="checkbox" name="add_call_log" id="ccx_add_call_log" value="1">
+                        <label for="ccx_add_call_log"><i class="fa fa-phone"></i>
+                            <?= _l('lead_add_edit_contacted_today'); ?> / Add Call Log</label>
+                    </div>
+                </div>
+            </div>
+
+            <div id="ccx_call_log_section" style="display:none;" class="mtop10">
+                <div class="panel panel-default">
+                    <div class="panel-body" style="padding:15px;">
+                        <div class="form-group">
+                            <label for="call_log_description" class="control-label">
+                                <i class="fa fa-pencil"></i> Call Notes
+                            </label>
+                            <textarea id="call_log_description" name="call_log_description" class="form-control"
+                                rows="3" placeholder="Enter call notes..."></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <?= render_datetime_input(
+                                    'call_log_contact_date',
+                                    'lead_add_edit_datecontacted',
+                                    _dt(date('Y-m-d H:i:s')),
+                                    ['data-date-end-date' => date('Y-m-d')]
+                                ); ?>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group" style="margin-top:25px;">
+                                    <div class="radio radio-primary radio-inline">
+                                        <input type="radio" name="call_log_contacted" id="call_log_contacted_yes"
+                                            value="yes" checked>
+                                        <label
+                                            for="call_log_contacted_yes"><?= _l('lead_add_edit_contacted_this_lead'); ?></label>
+                                    </div>
+                                    <div class="radio radio-primary radio-inline">
+                                        <input type="radio" name="call_log_contacted" id="call_log_contacted_no"
+                                            value="no">
+                                        <label for="call_log_contacted_no"><?= _l('lead_not_contacted'); ?></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

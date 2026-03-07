@@ -158,7 +158,50 @@ class Ccx_leads extends AdminController
             die;
         }
 
-        $id = $this->leads_model->add($this->input->post());
+        $post_data = $this->input->post();
+
+        // Extract call log fields before passing to leads_model
+        $add_call_log = isset($post_data['add_call_log']) ? $post_data['add_call_log'] : '';
+        $call_log_description = isset($post_data['call_log_description']) ? trim($post_data['call_log_description']) : '';
+        $call_log_contact_date = isset($post_data['call_log_contact_date']) ? $post_data['call_log_contact_date'] : '';
+        $call_log_contacted = isset($post_data['call_log_contacted']) ? $post_data['call_log_contacted'] : 'no';
+
+        // Remove call log fields so they don't interfere with lead creation
+        unset($post_data['add_call_log']);
+        unset($post_data['call_log_description']);
+        unset($post_data['call_log_contact_date']);
+        unset($post_data['call_log_contacted']);
+
+        $id = $this->leads_model->add($post_data);
+
+        // If lead was created and call log checkbox was checked with notes
+        if ($id && $add_call_log == '1' && $call_log_description !== '') {
+            $note_data = [
+                'description' => $call_log_description,
+            ];
+
+            $contacted_date = null;
+            if ($call_log_contacted === 'yes' && !empty($call_log_contact_date)) {
+                $contacted_date = to_sql_date($call_log_contact_date, true);
+                $note_data['date_contacted'] = $contacted_date;
+            }
+
+            $note_id = $this->misc_model->add_note($note_data, 'lead', $id);
+
+            // Update lead's lastcontact if contacted
+            if ($note_id && $contacted_date) {
+                $this->db->where('id', $id);
+                $this->db->update(db_prefix() . 'leads', [
+                    'lastcontact' => $contacted_date,
+                ]);
+                if ($this->db->affected_rows() > 0) {
+                    $this->leads_model->log_lead_activity($id, 'not_lead_activity_contacted', false, serialize([
+                        get_staff_full_name(get_staff_user_id()),
+                        _dt($contacted_date),
+                    ]));
+                }
+            }
+        }
 
         echo json_encode([
             'success' => $id ? true : false,
@@ -362,9 +405,9 @@ class Ccx_leads extends AdminController
             'avoid_empty' => $this->input->post('avoid_empty') ? 1 : 0,
             'junk_enabled' => $this->input->post('junk_enabled') ? 1 : 0,
             'junk_min_digits' => intval($this->input->post('junk_min_digits') ?: 10),
-            'junk_status_id'       => intval($this->input->post('junk_status_id')),
-            'weights'              => $this->input->post('weights') ?: [],
-            'skill_map'            => $this->input->post('skill_map') ?: [],
+            'junk_status_id' => intval($this->input->post('junk_status_id')),
+            'weights' => $this->input->post('weights') ?: [],
+            'skill_map' => $this->input->post('skill_map') ?: [],
         ];
 
         update_option('ccx_leads_roller_coaster', json_encode($settings));

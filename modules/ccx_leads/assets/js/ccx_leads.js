@@ -63,6 +63,15 @@ function ccx_leads_new_lead() {
         init_datepicker();
         init_color_pickers();
 
+        // Toggle call log section visibility
+        $('#ccx_add_call_log').off('change').on('change', function () {
+            $('#ccx_call_log_section').slideToggle(200);
+            if ($(this).is(':checked')) {
+                // Re-init datepicker for the revealed datetime field
+                init_datepicker();
+            }
+        });
+
         // Bind the form submission handler
         var $form = $('#ccx_new_lead_form');
         $form.off('submit').on('submit', function (e) {
