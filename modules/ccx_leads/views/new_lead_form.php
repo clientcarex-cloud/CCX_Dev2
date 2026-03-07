@@ -290,17 +290,8 @@ function ccx_render_new_field($slug, $fs, $statuses, $sources, $members, $base_c
             <div class="clearfix"></div>
 
             <!-- Call Log Section -->
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="checkbox-inline checkbox checkbox-primary">
-                        <input type="checkbox" name="add_call_log" id="ccx_add_call_log" value="1">
-                        <label for="ccx_add_call_log"><i class="fa fa-phone"></i>
-                            <?= _l('lead_add_edit_contacted_today'); ?> / Add Call Log</label>
-                    </div>
-                </div>
-            </div>
-
-            <div id="ccx_call_log_section" style="display:none;" class="mtop10">
+            <input type="hidden" name="add_call_log" value="1">
+            <div class="mtop10">
                 <div class="panel panel-default">
                     <div class="panel-body" style="padding:15px;">
                         <div class="form-group">
