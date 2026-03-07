@@ -11,6 +11,7 @@ class Ccx_leads extends AdminController
         $this->load->model('leads_model');
         $this->load->model('staff_model');
         $this->load->model('misc_model');
+        $this->load->model('custom_fields_model');
     }
 
     /* List all leads */
@@ -177,6 +178,12 @@ class Ccx_leads extends AdminController
         $data['statuses'] = $this->leads_model->get_status();
         $data['sources'] = $this->leads_model->get_source();
         $data['field_settings'] = $this->ccx_leads_model->get_field_settings();
+
+        // Custom fields for leads
+        $this->db->where('fieldto', 'leads');
+        $this->db->order_by('field_order', 'asc');
+        $data['custom_fields'] = $this->db->get(db_prefix() . 'customfields')->result_array();
+
         $this->load->view('ccx_leads/settings', $data);
     }
 
@@ -208,6 +215,83 @@ class Ccx_leads extends AdminController
         }
 
         echo json_encode(['success' => true, 'message' => 'Field settings saved successfully']);
+        die;
+    }
+
+    /* AJAX: Save (add/edit) a custom field for leads */
+    public function save_custom_field()
+    {
+        if (!is_admin()) {
+            ajax_access_denied();
+        }
+
+        $data = $this->input->post();
+        if (!$data) {
+            echo json_encode(['success' => false, 'message' => 'No data received']);
+            die;
+        }
+
+        // Force fieldto = leads
+        $data['fieldto'] = 'leads';
+
+        $id = isset($data['id']) && $data['id'] != '' ? $data['id'] : '';
+        unset($data['id']);
+
+        if ($id == '') {
+            $insert_id = $this->custom_fields_model->add($data);
+            if ($insert_id) {
+                echo json_encode(['success' => true, 'message' => _l('added_successfully', _l('custom_field')), 'id' => $insert_id]);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Failed to add custom field']);
+            }
+        } else {
+            // Verify this custom field belongs to leads
+            $existing = $this->custom_fields_model->get($id);
+            if (!$existing || $existing->fieldto != 'leads') {
+                echo json_encode(['success' => false, 'message' => 'Invalid custom field']);
+                die;
+            }
+            $result = $this->custom_fields_model->update($data, $id);
+            echo json_encode(['success' => true, 'message' => _l('updated_successfully', _l('custom_field')), 'id' => $id]);
+        }
+        die;
+    }
+
+    /* AJAX: Delete a custom field (leads only) */
+    public function delete_custom_field($id)
+    {
+        if (!is_admin()) {
+            ajax_access_denied();
+        }
+
+        // Verify this custom field belongs to leads
+        $existing = $this->custom_fields_model->get($id);
+        if (!$existing || $existing->fieldto != 'leads') {
+            echo json_encode(['success' => false, 'message' => 'Invalid custom field']);
+            die;
+        }
+
+        $result = $this->custom_fields_model->delete($id);
+        echo json_encode(['success' => $result ? true : false, 'message' => $result ? _l('deleted', _l('custom_field')) : 'Failed to delete']);
+        die;
+    }
+
+    /* AJAX: Toggle custom field active/inactive */
+    public function toggle_custom_field($id, $status)
+    {
+        if (!is_admin()) {
+            ajax_access_denied();
+        }
+
+        // Verify this custom field belongs to leads
+        $existing = $this->custom_fields_model->get($id);
+        if (!$existing || $existing->fieldto != 'leads') {
+            echo json_encode(['success' => false, 'message' => 'Invalid custom field']);
+            die;
+        }
+
+        $this->custom_fields_model->change_custom_field_status($id, $status);
+        echo json_encode(['success' => true]);
         die;
     }
 }

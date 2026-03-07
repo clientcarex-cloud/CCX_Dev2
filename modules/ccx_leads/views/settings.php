@@ -25,6 +25,11 @@
                                         </a>
                                     </li>
                                     <li role="presentation">
+                                        <a href="#custom_fields_tab" aria-controls="custom_fields_tab" role="tab" data-toggle="tab">
+                                            <?php echo _l('custom_fields'); ?>
+                                        </a>
+                                    </li>
+                                    <li role="presentation">
                                         <a href="#ordering" aria-controls="ordering" role="tab" data-toggle="tab">
                                             <?php echo _l('Ordering'); ?>
                                         </a>
@@ -134,6 +139,99 @@
                                         </tbody>
                                     </table>
                                 </form>
+                            </div>
+
+                            <!-- ==================== CUSTOM FIELDS TAB ==================== -->
+                            <div role="tabpanel" class="tab-pane" id="custom_fields_tab">
+                                <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
+                                    <p class="text-muted tw-mb-0">
+                                        <i class="fa-solid fa-circle-info tw-mr-1"></i>
+                                        Add custom fields to capture additional lead information beyond the standard fields.
+                                    </p>
+                                    <button type="button" class="btn btn-primary" onclick="ccx_open_cf_modal(); return false;">
+                                        <i class="fa-regular fa-plus tw-mr-1"></i>
+                                        Add Custom Field
+                                    </button>
+                                </div>
+
+                                <?php if (isset($custom_fields) && count($custom_fields) > 0) { ?>
+                                    <table class="table table-striped" id="ccx-custom-fields-table">
+                                        <thead>
+                                            <tr>
+                                                <th style="width:5%">#</th>
+                                                <th style="width:25%">Name</th>
+                                                <th style="width:15%">Type</th>
+                                                <th style="width:10%">Order</th>
+                                                <th style="width:15%">Active</th>
+                                                <th style="width:10%">Required</th>
+                                                <th style="width:20%" class="text-right">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($custom_fields as $ci => $cf) { ?>
+                                                <tr id="cf-row-<?= e($cf['id']); ?>">
+                                                    <td class="tw-align-middle">
+                                                        <span class="text-muted"><?= $ci + 1; ?></span>
+                                                    </td>
+                                                    <td class="tw-align-middle">
+                                                        <span class="tw-font-medium"><?= e($cf['name']); ?></span>
+                                                        <?php if (!empty($cf['slug'])) { ?>
+                                                            <br><span class="label label-default" style="font-size:11px;"><?= e($cf['slug']); ?></span>
+                                                        <?php } ?>
+                                                    </td>
+                                                    <td class="tw-align-middle">
+                                                        <span class="label label-info" style="font-size:12px;"><?= e(ucwords(str_replace('_', ' ', $cf['type']))); ?></span>
+                                                    </td>
+                                                    <td class="tw-align-middle">
+                                                        <?= e($cf['field_order']); ?>
+                                                    </td>
+                                                    <td class="tw-align-middle">
+                                                        <div class="onoffswitch">
+                                                            <input type="checkbox" class="onoffswitch-checkbox ccx-cf-active-toggle"
+                                                                id="cf_active_<?= e($cf['id']); ?>"
+                                                                data-id="<?= e($cf['id']); ?>"
+                                                                <?= $cf['active'] == 1 ? 'checked' : ''; ?>>
+                                                            <label class="onoffswitch-label"
+                                                                for="cf_active_<?= e($cf['id']); ?>"></label>
+                                                        </div>
+                                                    </td>
+                                                    <td class="tw-align-middle">
+                                                        <?php if ($cf['required'] == 1) { ?>
+                                                            <span class="label label-danger">Yes</span>
+                                                        <?php } else { ?>
+                                                            <span class="text-muted">No</span>
+                                                        <?php } ?>
+                                                    </td>
+                                                    <td class="tw-align-middle text-right">
+                                                        <div class="tw-flex tw-items-center tw-justify-end tw-space-x-2">
+                                                            <a href="#"
+                                                                onclick="ccx_edit_cf(<?= e($cf['id']); ?>);return false;"
+                                                                class="tw-text-neutral-500 hover:tw-text-neutral-700 focus:tw-text-neutral-700"
+                                                                data-toggle="tooltip" title="Edit">
+                                                                <i class="fa-regular fa-pen-to-square fa-lg"></i>
+                                                            </a>
+                                                            <a href="#"
+                                                                onclick="ccx_delete_cf(<?= e($cf['id']); ?>);return false;"
+                                                                class="tw-text-neutral-500 hover:tw-text-neutral-700 focus:tw-text-neutral-700 _delete"
+                                                                data-toggle="tooltip" title="Delete">
+                                                                <i class="fa-regular fa-trash-can fa-lg"></i>
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            <?php } ?>
+                                        </tbody>
+                                    </table>
+                                <?php } else { ?>
+                                    <div class="text-center tw-py-8">
+                                        <i class="fa-solid fa-puzzle-piece fa-3x text-muted tw-mb-3" style="display:block;"></i>
+                                        <p class="text-muted">No custom fields have been added yet.</p>
+                                        <button type="button" class="btn btn-primary btn-sm" onclick="ccx_open_cf_modal(); return false;">
+                                            <i class="fa-regular fa-plus tw-mr-1"></i>
+                                            Add Your First Custom Field
+                                        </button>
+                                    </div>
+                                <?php } ?>
                             </div>
 
                             <!-- ==================== ORDERING TAB ==================== -->
@@ -315,6 +413,87 @@
     </div>
 </div>
 
+<!-- ==================== CUSTOM FIELD ADD/EDIT MODAL ==================== -->
+<div class="modal fade" id="ccx_cf_modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">
+                    <span class="ccx-cf-modal-add-title"><?= _l('add_new', _l('custom_field')); ?></span>
+                    <span class="ccx-cf-modal-edit-title hide"><?= _l('edit', _l('custom_field')); ?></span>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <form id="ccx-cf-form">
+                    <input type="hidden" name="id" id="ccx_cf_id" value="">
+                    <input type="hidden" name="fieldto" value="leads">
+
+                    <?= render_input('name', 'custom_field_name', '', 'text', ['required' => true]); ?>
+
+                    <div class="select-placeholder form-group">
+                        <label for="ccx_cf_type"><?= _l('custom_field_add_edit_type'); ?></label>
+                        <select name="type" id="ccx_cf_type" class="selectpicker" data-width="100%"
+                            data-none-selected-text="<?= _l('dropdown_non_selected_tex'); ?>" required>
+                            <option value=""></option>
+                            <option value="input">Input</option>
+                            <option value="number">Number</option>
+                            <option value="textarea">Textarea</option>
+                            <option value="select">Select</option>
+                            <option value="multiselect">Multi Select</option>
+                            <option value="checkbox">Checkbox</option>
+                            <option value="date_picker">Date Picker</option>
+                            <option value="date_picker_time">Datetime Picker</option>
+                            <option value="colorpicker">Color Picker</option>
+                        </select>
+                    </div>
+                    <div class="clearfix"></div>
+
+                    <div id="ccx_cf_options_wrapper" class="hide">
+                        <span class="pull-left fa-regular fa-circle-question" data-toggle="tooltip"
+                            title="Separate each option by comma. e.g: Option1, Option2"></span>
+                        <?= render_textarea('options', 'custom_field_add_edit_options', '', ['rows' => 3]); ?>
+                    </div>
+
+                    <div id="ccx_cf_default_value_wrapper">
+                        <?= render_input('default_value', 'custom_field_add_edit_default_value', ''); ?>
+                    </div>
+
+                    <?= render_input('field_order', 'custom_field_add_edit_order', '', 'number'); ?>
+
+                    <div class="form-group">
+                        <label for="bs_column"><?= _l('custom_field_column'); ?></label>
+                        <div class="input-group">
+                            <span class="input-group-addon">col-md-</span>
+                            <input type="number" max="12" min="1" class="form-control" name="bs_column" id="ccx_cf_bs_column" value="12">
+                        </div>
+                    </div>
+
+                    <div class="checkbox checkbox-primary">
+                        <input type="checkbox" name="required" id="ccx_cf_required">
+                        <label for="ccx_cf_required"><?= _l('custom_field_required'); ?></label>
+                    </div>
+
+                    <div class="checkbox checkbox-primary">
+                        <input type="checkbox" name="show_on_table" id="ccx_cf_show_on_table">
+                        <label for="ccx_cf_show_on_table"><?= _l('custom_field_show_on_table'); ?></label>
+                    </div>
+
+                    <div class="checkbox checkbox-primary">
+                        <input type="checkbox" name="disabled" id="ccx_cf_disabled">
+                        <label for="ccx_cf_disabled"><?= _l('custom_field_add_edit_disabled'); ?></label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><?= _l('close'); ?></button>
+                <button type="button" class="btn btn-primary" id="ccx-cf-save-btn"><?= _l('submit'); ?></button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <?php init_tail(); ?>
 
 <script>
@@ -361,7 +540,174 @@
             $('#source .add-title').removeClass('hide');
             $('#source .edit-title').removeClass('hide');
         });
+
+        // ==================== CUSTOM FIELDS TAB JS ====================
+        // Toggle active/inactive
+        $(document).on('change', '.ccx-cf-active-toggle', function () {
+            var cfId = $(this).data('id');
+            var status = $(this).is(':checked') ? 1 : 0;
+            $.ajax({
+                url: admin_url + 'ccx_leads/toggle_custom_field/' + cfId + '/' + status,
+                type: 'GET',
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        alert_float('success', 'Custom field status updated');
+                    }
+                }
+            });
+        });
+
+        // Type change in modal — show/hide options
+        $('#ccx_cf_type').on('change', function () {
+            var type = $(this).val();
+            if (type == 'select' || type == 'multiselect' || type == 'checkbox') {
+                $('#ccx_cf_options_wrapper').removeClass('hide');
+            } else {
+                $('#ccx_cf_options_wrapper').addClass('hide');
+            }
+            if (type == 'link') {
+                $('#ccx_cf_default_value_wrapper').addClass('hide');
+            } else {
+                $('#ccx_cf_default_value_wrapper').removeClass('hide');
+            }
+        });
+
+        // Save custom field
+        $('#ccx-cf-save-btn').on('click', function () {
+            var name = $('#ccx-cf-form input[name="name"]').val();
+            var type = $('#ccx_cf_type').val();
+            if (!name || name.trim() == '') {
+                alert_float('warning', 'Field name is required');
+                return;
+            }
+            if (!type || type == '') {
+                alert_float('warning', 'Field type is required');
+                return;
+            }
+
+            var btn = $(this);
+            btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin tw-mr-1"></i> Saving...');
+
+            var postData = $('#ccx-cf-form').serialize();
+            if (typeof csrfData !== 'undefined') {
+                postData += '&' + csrfData.token_name + '=' + csrfData.hash;
+            }
+
+            $.ajax({
+                url: admin_url + 'ccx_leads/save_custom_field',
+                type: 'POST',
+                data: postData,
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        alert_float('success', response.message);
+                        $('#ccx_cf_modal').modal('hide');
+                        window.location.reload();
+                    } else {
+                        alert_float('danger', response.message || 'Failed to save');
+                    }
+                },
+                error: function () {
+                    alert_float('danger', 'An error occurred while saving');
+                },
+                complete: function () {
+                    btn.prop('disabled', false).html('<?= _l("submit"); ?>');
+                }
+            });
+        });
+
+        // Reset modal on close
+        $('#ccx_cf_modal').on('hidden.bs.modal', function () {
+            $('#ccx-cf-form')[0].reset();
+            $('#ccx_cf_id').val('');
+            $('#ccx_cf_type').val('').selectpicker('refresh');
+            $('#ccx_cf_options_wrapper').addClass('hide');
+            $('#ccx_cf_default_value_wrapper').removeClass('hide');
+            $('.ccx-cf-modal-add-title').removeClass('hide');
+            $('.ccx-cf-modal-edit-title').addClass('hide');
+        });
     });
+
+    // ==================== CUSTOM FIELD FUNCTIONS ====================
+    function ccx_open_cf_modal() {
+        $('.ccx-cf-modal-add-title').removeClass('hide');
+        $('.ccx-cf-modal-edit-title').addClass('hide');
+        $('#ccx_cf_modal').modal('show');
+    }
+
+    function ccx_edit_cf(id) {
+        var cfData = ccx_cf_data[id];
+        if (!cfData) {
+            alert_float('danger', 'Custom field data not found');
+            return;
+        }
+
+        $('#ccx_cf_id').val(cfData.id);
+        $('#ccx-cf-form input[name="name"]').val(cfData.name);
+        $('#ccx_cf_type').val(cfData.type).selectpicker('refresh');
+
+        if (cfData.type == 'select' || cfData.type == 'multiselect' || cfData.type == 'checkbox') {
+            $('#ccx_cf_options_wrapper').removeClass('hide');
+            $('#ccx-cf-form textarea[name="options"]').val(cfData.options);
+        } else {
+            $('#ccx_cf_options_wrapper').addClass('hide');
+        }
+
+        $('#ccx-cf-form input[name="default_value"]').val(cfData.default_value);
+        $('#ccx-cf-form input[name="field_order"]').val(cfData.field_order);
+        $('#ccx_cf_bs_column').val(cfData.bs_column || 12);
+        $('#ccx_cf_required').prop('checked', cfData.required == 1);
+        $('#ccx_cf_show_on_table').prop('checked', cfData.show_on_table == 1);
+        $('#ccx_cf_disabled').prop('checked', cfData.active == 0);
+
+        $('.ccx-cf-modal-add-title').addClass('hide');
+        $('.ccx-cf-modal-edit-title').removeClass('hide');
+        $('#ccx_cf_modal').modal('show');
+    }
+
+    function ccx_delete_cf(id) {
+        if (confirm_delete()) {
+            $.ajax({
+                url: admin_url + 'ccx_leads/delete_custom_field/' + id,
+                type: 'GET',
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        alert_float('success', response.message);
+                        window.location.reload();
+                    } else {
+                        alert_float('danger', response.message || 'Failed to delete');
+                    }
+                },
+                error: function () {
+                    alert_float('danger', 'An error occurred');
+                }
+            });
+        }
+        return false;
+    }
+
+    // Store custom fields data for edit modal population
+    var ccx_cf_data = <?= json_encode(
+        array_column(
+            array_map(function($cf) {
+                return [
+                    'id' => $cf['id'],
+                    'name' => $cf['name'],
+                    'type' => $cf['type'],
+                    'options' => $cf['options'],
+                    'default_value' => $cf['default_value'],
+                    'field_order' => $cf['field_order'],
+                    'bs_column' => $cf['bs_column'],
+                    'required' => $cf['required'],
+                    'show_on_table' => $cf['show_on_table'],
+                    'active' => $cf['active'],
+                ];
+            }, isset($custom_fields) ? $custom_fields : []),
+            null, 'id'
+        )
+    ); ?>;
 
     // ==================== STATUS FUNCTIONS ====================
     function new_status() {
@@ -426,6 +772,7 @@
         }
         return false;
     }
+
 </script>
 </body>
 
