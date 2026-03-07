@@ -10,6 +10,7 @@ Requires at least: 2.3.*
 */
 
 define('CCX_LEADS_MODULE_NAME', 'ccx_leads');
+define('CCX_LEADS_VERSION', '1.0.1');
 
 hooks()->add_action('admin_init', 'ccx_leads_module_init_menu_items');
 hooks()->add_action('app_admin_head', 'ccx_leads_add_head_components');
@@ -57,7 +58,7 @@ function ccx_leads_add_head_components()
     $CI = &get_instance();
     $view = $CI->router->fetch_class();
     if ($view == 'ccx_leads') {
-        echo '<link href="' . module_dir_url(CCX_LEADS_MODULE_NAME, 'assets/css/ccx_leads.css') . '?v=' . $CI->app_scripts->core_version() . '"  rel="stylesheet" type="text/css" />';
+        echo '<link href="' . module_dir_url(CCX_LEADS_MODULE_NAME, 'assets/css/ccx_leads.css') . '?v=' . CCX_LEADS_VERSION . '"  rel="stylesheet" type="text/css" />';
     }
 }
 
@@ -69,6 +70,6 @@ function ccx_leads_load_js()
     $CI = &get_instance();
     $view = $CI->router->fetch_class();
     if ($view == 'ccx_leads') {
-        echo '<script src="' . module_dir_url(CCX_LEADS_MODULE_NAME, 'assets/js/ccx_leads.js') . '?v=' . $CI->app_scripts->core_version() . '"></script>';
+        echo '<script src="' . module_dir_url(CCX_LEADS_MODULE_NAME, 'assets/js/ccx_leads.js') . '?v=' . CCX_LEADS_VERSION . '"></script>';
     }
 }
