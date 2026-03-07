@@ -178,13 +178,17 @@ $(function () {
         init_color_pickers();
 
         // Auto-populate "Date Contacted" with current date/time
-        var $contactDate = $('#ccx-lead-modal input[name="custom_contact_date"]');
+        var $contactDate = $('#ccx-lead-modal #custom_contact_date');
         if ($contactDate.length > 0 && !$contactDate.val()) {
-            var fmt = new DateFormatter();
-            var vformat = app.options.time_format == 24
-                ? app.options.date_format + ' H:i'
-                : app.options.date_format + ' g:i A';
-            $contactDate.val(fmt.formatDate(new Date(), vformat));
+            // Use setTimeout to ensure the datetimepicker plugin is fully initialized
+            setTimeout(function () {
+                var fmt = new DateFormatter();
+                var vformat = app.options.time_format == 24
+                    ? app.options.date_format + ' H:i'
+                    : app.options.date_format + ' g:i A';
+                var nowFormatted = fmt.formatDate(new Date(), vformat);
+                $('#ccx-lead-modal #custom_contact_date').val(nowFormatted);
+            }, 300);
         }
     });
 
