@@ -821,7 +821,7 @@ class Patients_model extends App_Model
         $this->db->join(db_prefix() . 'invoices', db_prefix() . 'invoices.id = ' . db_prefix() . 'patient_tests.invoice_id', 'left');
         $this->db->join(db_prefix() . 'staff', db_prefix() . 'staff.staffid = ' . db_prefix() . 'invoices.sale_agent', 'left');
 
-        $this->db->where('invoice_id', $invoice_id);
+        $this->db->where(db_prefix() . 'patient_tests.invoice_id', $invoice_id);
         return $this->db->get()->result_array();
     }
     public function check_latest_visit_today($patient_id)
