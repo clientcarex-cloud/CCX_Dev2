@@ -2,11 +2,11 @@
 
 <div class="ccx-panel-header" style="border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px;">
     <h3 style="margin-top:0; font-weight:600;">
-        <?php echo $lead->name; ?>
+        <?php echo e($lead->name); ?>
     </h3>
     <p class="text-muted">
-        <?php echo $lead->company; ?> | <a href="tel:<?php echo $lead->phonenumber; ?>">
-            <?php echo $lead->phonenumber; ?>
+        <?php echo e($lead->company); ?> | <a href="tel:<?php echo e($lead->phonenumber); ?>">
+            <?php echo e($lead->phonenumber); ?>
         </a>
     </p>
 
@@ -72,17 +72,22 @@
                         <tr>
                             <td class="bold">Email</td>
                             <td>
-                                <?php echo $lead->email; ?>
+                                <?php echo e($lead->email); ?>
                             </td>
                         </tr>
                         <tr>
                             <td class="bold">Address</td>
                             <td>
-                                <?php echo $lead->address; ?><br />
-                                <?php echo $lead->city; ?>
-                                <?php echo $lead->state; ?><br />
-                                <?php echo $lead->zip; ?>
-                                <?php echo $lead->country; ?>
+                                <?php echo e($lead->address); ?><br />
+                                <?php echo e($lead->city); ?>
+                                <?php echo e($lead->state); ?><br />
+                                <?php echo e($lead->zip); ?>
+                                <?php
+                                if ($lead->country != 0) {
+                                    $country = get_country($lead->country);
+                                    echo e($country ? $country->short_name : '');
+                                }
+                                ?>
                             </td>
                         </tr>
                     </tbody>

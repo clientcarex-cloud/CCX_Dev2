@@ -426,7 +426,6 @@ if (!function_exists('ccx_field_required')) {
                             <?= e($base_currency->symbol); ?>
                         </div>
                     </div>
-                    </label>
                 </div>
             <?php } ?>
             <?php if (ccx_field_active('company')) { ?>

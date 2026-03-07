@@ -2,10 +2,10 @@
 <div class="kanban-card" onclick="ccx_lead_profile(<?php echo $lead['id']; ?>)"
     data-lead-id="<?php echo $lead['id']; ?>">
     <div class="kanban-card-title">
-        <?php echo $lead['name']; ?>
+        <?php echo e($lead['name']); ?>
     </div>
     <div class="text-muted" style="font-size:12px;">
-        <?php echo $lead['company']; ?>
+        <?php echo e($lead['company']); ?>
     </div>
 
     <div class="kanban-card-meta">

@@ -85,7 +85,6 @@ foreach ($rResult as $aRow) {
     $row[] = $assignedOutput;
 
     // Status
-    // Status
     $CI = &get_instance();
     $status = null;
     if (is_numeric($aRow['status'])) {
