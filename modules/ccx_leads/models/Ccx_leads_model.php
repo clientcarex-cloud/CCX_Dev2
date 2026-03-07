@@ -89,6 +89,70 @@ class Ccx_leads_model extends App_Model
         }
     }
 
+    /**
+     * Get all fields (standard + custom) merged and sorted by field_order
+     */
+    public function get_all_fields_ordered()
+    {
+        $fields = [];
+
+        // Standard fields from ccx_lead_field_settings
+        $this->db->order_by('field_order', 'asc');
+        $standard = $this->db->get(db_prefix() . 'ccx_lead_field_settings')->result_array();
+        foreach ($standard as $f) {
+            $fields[] = [
+                'type' => 'standard',
+                'id' => $f['id'],
+                'slug' => $f['slug'],
+                'label' => $f['label'],
+                'active' => $f['active'],
+                'field_order' => $f['field_order'],
+            ];
+        }
+
+        // Custom fields for leads
+        $this->db->where('fieldto', 'leads');
+        $this->db->order_by('field_order', 'asc');
+        $custom = $this->db->get(db_prefix() . 'customfields')->result_array();
+        foreach ($custom as $f) {
+            $fields[] = [
+                'type' => 'custom',
+                'id' => $f['id'],
+                'slug' => $f['slug'],
+                'label' => $f['name'],
+                'active' => $f['active'],
+                'field_order' => $f['field_order'],
+            ];
+        }
+
+        // Sort by field_order
+        usort($fields, function ($a, $b) {
+            return ($a['field_order'] ?? 999) - ($b['field_order'] ?? 999);
+        });
+
+        return $fields;
+    }
+
+    /**
+     * Save field order for both standard and custom fields
+     * @param array $items Array of ['type' => 'standard'|'custom', 'id' => int]
+     */
+    public function save_field_order($items)
+    {
+        foreach ($items as $index => $item) {
+            $order = $index + 1;
+            if ($item['type'] === 'standard') {
+                $this->db->where('id', $item['id']);
+                $this->db->update(db_prefix() . 'ccx_lead_field_settings', ['field_order' => $order]);
+            } elseif ($item['type'] === 'custom') {
+                $this->db->where('id', $item['id']);
+                $this->db->where('fieldto', 'leads');
+                $this->db->update(db_prefix() . 'customfields', ['field_order' => $order]);
+            }
+        }
+        return true;
+    }
+
     public function do_kanban_query($status, $search = '', $page = 1, $sort = [], $count = false)
     {
         // Wrapper for core kanban query but allows for future optimization

@@ -184,6 +184,9 @@ class Ccx_leads extends AdminController
         $this->db->order_by('field_order', 'asc');
         $data['custom_fields'] = $this->db->get(db_prefix() . 'customfields')->result_array();
 
+        // Merged fields list for ordering tab
+        $data['all_fields_ordered'] = $this->ccx_leads_model->get_all_fields_ordered();
+
         $this->load->view('ccx_leads/settings', $data);
     }
 
@@ -215,6 +218,24 @@ class Ccx_leads extends AdminController
         }
 
         echo json_encode(['success' => true, 'message' => 'Field settings saved successfully']);
+        die;
+    }
+
+    /* AJAX: Save field order */
+    public function save_field_order()
+    {
+        if (!is_admin()) {
+            ajax_access_denied();
+        }
+
+        $items = $this->input->post('items');
+        if (!$items || !is_array($items)) {
+            echo json_encode(['success' => false, 'message' => 'No data received']);
+            die;
+        }
+
+        $this->ccx_leads_model->save_field_order($items);
+        echo json_encode(['success' => true, 'message' => 'Field order saved successfully']);
         die;
     }
 

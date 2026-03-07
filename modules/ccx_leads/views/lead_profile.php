@@ -22,6 +22,13 @@ if (!function_exists('ccx_field_required')) {
         return isset($_fs[$slug]) && $_fs[$slug]['required'] == 1;
     }
 }
+if (!function_exists('ccx_field_order')) {
+    function ccx_field_order($slug)
+    {
+        global $_fs;
+        return isset($_fs[$slug]) && isset($_fs[$slug]['field_order']) ? (int) $_fs[$slug]['field_order'] : 999;
+    }
+}
 ?>
 <div
     class="lead-wrapper<?= $openEdit == true ? ' open-edit' : ''; ?><?= isset($lead) && ($lead->junk == 1 || $lead->lost == 1) ? ' lead-is-junk-or-lost' : ''; ?>">
@@ -341,8 +348,12 @@ if (!function_exists('ccx_field_required')) {
         </div>
         <div class="clearfix"></div>
         <div class="lead-edit<?= isset($lead) ? ' hide' : ''; ?>">
+            <?php
+            // ── Top row: Status, Source, Assigned ──
+            ?>
+            <div class="row" style="display:flex; flex-wrap:wrap;">
             <?php if (ccx_field_active('status')) { ?>
-                <div class="col-md-4">
+                <div class="col-md-4" style="order:<?= ccx_field_order('status'); ?>">
                     <?php
                     $selected = '';
                     if (isset($lead)) {
@@ -355,110 +366,153 @@ if (!function_exists('ccx_field_required')) {
                 </div>
             <?php } ?>
             <?php if (ccx_field_active('source')) { ?>
-            <div class="col-md-4">
-                <?= render_leads_source_select($sources, (isset($lead) ? $lead->source : get_option('leads_default_source')), 'lead_add_edit_source'); ?>
+                <div class="col-md-4" style="order:<?= ccx_field_order('source'); ?>">
+                    <?= render_leads_source_select($sources, (isset($lead) ? $lead->source : get_option('leads_default_source')), 'lead_add_edit_source'); ?>
+                </div>
+            <?php } ?>
+            <?php if (ccx_field_active('assigned')) { ?>
+                <div class="col-md-4" style="order:<?= ccx_field_order('assigned'); ?>">
+                    <?php
+                    $assigned_attrs = [];
+                    $selected = (isset($lead) ? $lead->assigned : get_staff_user_id());
+                    if (
+                        isset($lead)
+                        && $lead->assigned == get_staff_user_id()
+                        && $lead->addedfrom != get_staff_user_id()
+                        && !is_admin($lead->assigned)
+                        && staff_cant('view', 'leads')
+                    ) {
+                        $assigned_attrs['disabled'] = true;
+                    }
+                    echo render_select('assigned', $members, ['staffid', ['firstname', 'lastname']], 'lead_add_edit_assigned', $selected, $assigned_attrs); ?>
+                </div>
+            <?php } ?>
             </div>
-        <?php } ?>
-        <?php if (ccx_field_active('assigned')) { ?>
-            <div class="col-md-4">
-                <?php
-                $assigned_attrs = [];
-                $selected = (isset($lead) ? $lead->assigned : get_staff_user_id());
-                if (
-                    isset($lead)
-                    && $lead->assigned == get_staff_user_id()
-                    && $lead->addedfrom != get_staff_user_id()
-                    && !is_admin($lead->assigned)
-                    && staff_cant('view', 'leads')
-                ) {
-                    $assigned_attrs['disabled'] = true;
-                }
-                echo render_select('assigned', $members, ['staffid', ['firstname', 'lastname']], 'lead_add_edit_assigned', $selected, $assigned_attrs); ?>
-            </div>
-        <?php } ?>
-        <div class="clearfix"></div>
-        <div class="col-md-6">
+            <div class="clearfix"></div>
+            <?php
+            // ==================== MAIN FIELDS — flex container with configurable order ====================
+            ?>
+            <div class="row ccx-ordered-fields" style="display:flex; flex-wrap:wrap;">
             <?php if (ccx_field_active('name')) { ?>
-                <?php $value = (isset($lead) ? $lead->name : ''); ?>
-                <?= render_input('name', ccx_field_label('name', 'lead_add_edit_name'), $value, 'text', ccx_field_required('name') ? ['required' => true] : []); ?>
+                <div class="col-md-6" style="order:<?= ccx_field_order('name'); ?>">
+                    <?php $value = (isset($lead) ? $lead->name : ''); ?>
+                    <?= render_input('name', ccx_field_label('name', 'lead_add_edit_name'), $value, 'text', ccx_field_required('name') ? ['required' => true] : []); ?>
+                </div>
             <?php } ?>
             <?php if (ccx_field_active('title')) { ?>
-                <?php $value = (isset($lead) ? $lead->title : ''); ?>
-                <?= render_input('title', ccx_field_label('title', 'lead_title'), $value, 'text', ccx_field_required('title') ? ['required' => true] : []); ?>
+                <div class="col-md-6" style="order:<?= ccx_field_order('title'); ?>">
+                    <?php $value = (isset($lead) ? $lead->title : ''); ?>
+                    <?= render_input('title', ccx_field_label('title', 'lead_title'), $value, 'text', ccx_field_required('title') ? ['required' => true] : []); ?>
+                </div>
             <?php } ?>
             <?php if (ccx_field_active('email')) { ?>
-                <?php $value = (isset($lead) ? $lead->email : ''); ?>
-                <?= render_input('email', ccx_field_label('email', 'lead_add_edit_email'), $value, 'text', ccx_field_required('email') ? ['required' => true] : []); ?>
+                <div class="col-md-6" style="order:<?= ccx_field_order('email'); ?>">
+                    <?php $value = (isset($lead) ? $lead->email : ''); ?>
+                    <?= render_input('email', ccx_field_label('email', 'lead_add_edit_email'), $value, 'text', ccx_field_required('email') ? ['required' => true] : []); ?>
+                </div>
             <?php } ?>
             <?php if (ccx_field_active('website')) { ?>
-                <?php if ((isset($lead) && empty($lead->website)) || !isset($lead)) {
-                    $value = (isset($lead) ? $lead->website : '');
-                    echo render_input('website', ccx_field_label('website', 'lead_website'), $value);
-                } else { ?>
+                <div class="col-md-6" style="order:<?= ccx_field_order('website'); ?>">
+                    <?php if ((isset($lead) && empty($lead->website)) || !isset($lead)) {
+                        $value = (isset($lead) ? $lead->website : '');
+                        echo render_input('website', ccx_field_label('website', 'lead_website'), $value);
+                    } else { ?>
+                        <div class="form-group">
+                            <label for="website"><?= ccx_field_label('website', _l('lead_website')); ?></label>
+                            <div class="input-group">
+                                <input type="text" name="website" id="website" value="<?= e($lead->website); ?>"
+                                    class="form-control">
+                                <div class="input-group-addon">
+                                    <span>
+                                        <a href="<?= e(maybe_add_http($lead->website)); ?>" target="_blank" tabindex="-1">
+                                            <i class="fa fa-globe"></i>
+                                        </a>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    <?php } ?>
+                </div>
+            <?php } ?>
+            <?php if (ccx_field_active('phonenumber')) { ?>
+                <div class="col-md-6" style="order:<?= ccx_field_order('phonenumber'); ?>">
+                    <?php $value = (isset($lead) ? $lead->phonenumber : ''); ?>
+                    <?= render_input('phonenumber', ccx_field_label('phonenumber', 'lead_add_edit_phonenumber'), $value, 'text', ccx_field_required('phonenumber') ? ['required' => true] : []); ?>
+                </div>
+            <?php } ?>
+            <?php if (ccx_field_active('lead_value')) { ?>
+                <div class="col-md-6" style="order:<?= ccx_field_order('lead_value'); ?>">
                     <div class="form-group">
-                        <label for="website"><?= ccx_field_label('website', _l('lead_website')); ?></label>
-                        <div class="input-group">
-                            <input type="text" name="website" id="website" value="<?= e($lead->website); ?>"
-                                class="form-control">
+                        <label for="lead_value"><?= ccx_field_label('lead_value', _l('lead_value')); ?></label>
+                        <div class="input-group" data-toggle="tooltip" title="<?= _l('lead_value_tooltip'); ?>">
+                            <input type="number" class="form-control" name="lead_value" value="<?php if (isset($lead)) {
+                                echo $lead->lead_value;
+                            } ?>">
                             <div class="input-group-addon">
-                                <span>
-                                    <a href="<?= e(maybe_add_http($lead->website)); ?>" target="_blank" tabindex="-1">
-                                        <i class="fa fa-globe"></i>
-                                    </a>
-                                </span>
+                                <?= e($base_currency->symbol); ?>
                             </div>
                         </div>
                     </div>
-                <?php } ?>
-            <?php } ?>
-            <?php if (ccx_field_active('phonenumber')) { ?>
-                <?php $value = (isset($lead) ? $lead->phonenumber : ''); ?>
-                <?= render_input('phonenumber', ccx_field_label('phonenumber', 'lead_add_edit_phonenumber'), $value, 'text', ccx_field_required('phonenumber') ? ['required' => true] : []); ?>
-            <?php } ?>
-            <?php if (ccx_field_active('lead_value')) { ?>
-                <div class="form-group">
-                    <label for="lead_value"><?= ccx_field_label('lead_value', _l('lead_value')); ?></label>
-                    <div class="input-group" data-toggle="tooltip" title="<?= _l('lead_value_tooltip'); ?>">
-                        <input type="number" class="form-control" name="lead_value" value="<?php if (isset($lead)) {
-                            echo $lead->lead_value;
-                        } ?>">
-                        <div class="input-group-addon">
-                            <?= e($base_currency->symbol); ?>
-                        </div>
-                    </div>
-                    </label>
                 </div>
             <?php } ?>
             <?php if (ccx_field_active('company')) { ?>
-                <?php $value = (isset($lead) ? $lead->company : ''); ?>
-                <?= render_input('company', ccx_field_label('company', 'lead_company'), $value, 'text', ccx_field_required('company') ? ['required' => true] : []); ?>
+                <div class="col-md-6" style="order:<?= ccx_field_order('company'); ?>">
+                    <?php $value = (isset($lead) ? $lead->company : ''); ?>
+                    <?= render_input('company', ccx_field_label('company', 'lead_company'), $value, 'text', ccx_field_required('company') ? ['required' => true] : []); ?>
+                </div>
             <?php } ?>
-        </div>
-        <div class="col-md-6">
             <?php if (ccx_field_active('address')) { ?>
-                <?php $value = (isset($lead) ? $lead->address : ''); ?>
-                <?= render_textarea('address', ccx_field_label('address', 'lead_address'), $value, ['rows' => 1, 'style' => 'height:36px;font-size:100%;']); ?>
+                <div class="col-md-6" style="order:<?= ccx_field_order('address'); ?>">
+                    <?php $value = (isset($lead) ? $lead->address : ''); ?>
+                    <?= render_textarea('address', ccx_field_label('address', 'lead_address'), $value, ['rows' => 1, 'style' => 'height:36px;font-size:100%;']); ?>
+                </div>
             <?php } ?>
             <?php if (ccx_field_active('city')) { ?>
-                <?php $value = (isset($lead) ? $lead->city : ''); ?>
-                <?= render_input('city', ccx_field_label('city', 'lead_city'), $value, 'text', ccx_field_required('city') ? ['required' => true] : []); ?>
+                <div class="col-md-6" style="order:<?= ccx_field_order('city'); ?>">
+                    <?php $value = (isset($lead) ? $lead->city : ''); ?>
+                    <?= render_input('city', ccx_field_label('city', 'lead_city'), $value, 'text', ccx_field_required('city') ? ['required' => true] : []); ?>
+                </div>
             <?php } ?>
             <?php if (ccx_field_active('state')) { ?>
-                <?php $value = (isset($lead) ? $lead->state : ''); ?>
-                <?= render_input('state', ccx_field_label('state', 'lead_state'), $value, 'text', ccx_field_required('state') ? ['required' => true] : []); ?>
+                <div class="col-md-6" style="order:<?= ccx_field_order('state'); ?>">
+                    <?php $value = (isset($lead) ? $lead->state : ''); ?>
+                    <?= render_input('state', ccx_field_label('state', 'lead_state'), $value, 'text', ccx_field_required('state') ? ['required' => true] : []); ?>
+                </div>
             <?php } ?>
             <?php if (ccx_field_active('country')) { ?>
-                <?php
-                $countries = get_all_countries();
-                $customer_default_country = get_option('customer_default_country');
-                $selected = (isset($lead) ? $lead->country : $customer_default_country);
-                echo render_select('country', $countries, ['country_id', ['short_name']], ccx_field_label('country', 'lead_country'), $selected, ['data-none-selected-text' => _l('dropdown_non_selected_tex')]);
-                ?>
+                <div class="col-md-6" style="order:<?= ccx_field_order('country'); ?>">
+                    <?php
+                    $countries = get_all_countries();
+                    $customer_default_country = get_option('customer_default_country');
+                    $selected = (isset($lead) ? $lead->country : $customer_default_country);
+                    echo render_select('country', $countries, ['country_id', ['short_name']], ccx_field_label('country', 'lead_country'), $selected, ['data-none-selected-text' => _l('dropdown_non_selected_tex')]);
+                    ?>
+                </div>
             <?php } ?>
             <?php if (ccx_field_active('zip')) { ?>
-                <?php $value = (isset($lead) ? $lead->zip : ''); ?>
-                <?= render_input('zip', ccx_field_label('zip', 'lead_zip'), $value, 'text', ccx_field_required('zip') ? ['required' => true] : []); ?>
+                <div class="col-md-6" style="order:<?= ccx_field_order('zip'); ?>">
+                    <?php $value = (isset($lead) ? $lead->zip : ''); ?>
+                    <?= render_input('zip', ccx_field_label('zip', 'lead_zip'), $value, 'text', ccx_field_required('zip') ? ['required' => true] : []); ?>
+                </div>
             <?php } ?>
+            <?php
+            // ── Render custom fields as a block inside the flex container ──
+            $rel_id = (isset($lead) ? $lead->id : false);
+            $cf_html = render_custom_fields('leads', $rel_id);
+            if (trim($cf_html) != '') {
+                // Get the highest field_order from custom fields for positioning
+                $cf_max_order = 999;
+                $lead_cfs_for_order = get_custom_fields('leads');
+                if (!empty($lead_cfs_for_order)) {
+                    $cf_orders = array_map(function($c) { return isset($c['field_order']) ? (int)$c['field_order'] : 999; }, $lead_cfs_for_order);
+                    $cf_max_order = min($cf_orders);
+                }
+            ?>
+                <div class="col-md-12" style="order:<?= $cf_max_order; ?>; padding:0;">
+                    <?= $cf_html; ?>
+                </div>
+            <?php } ?>
+            </div>
             <?php if (!is_language_disabled()) { ?>
                 <div class="form-group">
                     <label for="default_language" class="control-label"><?= _l('localization_default_language'); ?></label>
@@ -482,7 +536,6 @@ if (!function_exists('ccx_field_required')) {
                     </select>
                 </div>
             <?php } ?>
-        </div>
         <div class="col-md-12">
             <?php if (ccx_field_active('description')) { ?>
                 <?php $value = (isset($lead) ? $lead->description : ''); ?>
@@ -517,10 +570,6 @@ if (!function_exists('ccx_field_required')) {
                     <?php } ?>
                 </div>
             </div>
-        </div>
-        <div class="col-md-12 mtop15">
-            <?php $rel_id = (isset($lead) ? $lead->id : false); ?>
-            <?= render_custom_fields('leads', $rel_id); ?>
         </div>
         <div class="clearfix"></div>
     </div>

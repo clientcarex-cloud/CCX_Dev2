@@ -236,7 +236,47 @@
 
                             <!-- ==================== ORDERING TAB ==================== -->
                             <div role="tabpanel" class="tab-pane" id="ordering">
-                                <p class="text-muted">Ordering settings coming soon...</p>
+                                <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
+                                    <p class="text-muted tw-mb-0">
+                                        <i class="fa-solid fa-circle-info tw-mr-1"></i>
+                                        Drag and drop to reorder fields. This order applies to both the New Lead form and the View/Edit form.
+                                    </p>
+                                    <button type="button" class="btn btn-primary" id="ccx-save-field-order">
+                                        <i class="fa-regular fa-floppy-disk tw-mr-1"></i>
+                                        Save Order
+                                    </button>
+                                </div>
+
+                                <ul id="ccx-field-order-list" class="list-unstyled" style="max-width:600px;">
+                                    <?php
+                                    if (isset($all_fields_ordered)) {
+                                        foreach ($all_fields_ordered as $idx => $fo) {
+                                            $is_custom = ($fo['type'] === 'custom');
+                                            $badge_class = $is_custom ? 'label-primary' : 'label-default';
+                                            $badge_text = $is_custom ? 'Custom' : 'Standard';
+                                            $inactive = ($fo['active'] == 0) ? ' opacity:0.5;' : '';
+                                    ?>
+                                        <li class="ccx-field-order-item"
+                                            data-type="<?= e($fo['type']); ?>"
+                                            data-id="<?= e($fo['id']); ?>"
+                                            style="padding:10px 14px; margin-bottom:4px; background:#fff; border:1px solid #e5e5e5; border-radius:6px; cursor:grab; display:flex; align-items:center; justify-content:space-between;<?= $inactive; ?>">
+                                            <div style="display:flex; align-items:center; gap:10px;">
+                                                <i class="fa-solid fa-grip-vertical text-muted" style="font-size:14px;"></i>
+                                                <span class="tw-font-medium"><?= e($fo['label']); ?></span>
+                                                <?php if ($is_custom && !empty($fo['slug'])) { ?>
+                                                    <span class="text-muted" style="font-size:12px;">(<?= e($fo['slug']); ?>)</span>
+                                                <?php } ?>
+                                            </div>
+                                            <div style="display:flex; align-items:center; gap:8px;">
+                                                <span class="label <?= $badge_class; ?>" style="font-size:11px;"><?= $badge_text; ?></span>
+                                                <?php if ($fo['active'] == 0) { ?>
+                                                    <span class="label label-warning" style="font-size:11px;">Inactive</span>
+                                                <?php } ?>
+                                                <span class="text-muted" style="font-size:12px;">#<?= $idx + 1; ?></span>
+                                            </div>
+                                        </li>
+                                    <?php }} ?>
+                                </ul>
                             </div>
 
                             <!-- ==================== STATUSES TAB ==================== -->
@@ -539,6 +579,59 @@
             $('#source input[name="name"]').val('');
             $('#source .add-title').removeClass('hide');
             $('#source .edit-title').removeClass('hide');
+        });
+
+        // ==================== ORDERING TAB JS ====================
+        $('#ccx-field-order-list').sortable({
+            handle: '.fa-grip-vertical',
+            axis: 'y',
+            cursor: 'grabbing',
+            placeholder: 'ccx-sort-placeholder',
+            tolerance: 'pointer',
+            update: function () {
+                // Update the # numbers on the right side
+                $('#ccx-field-order-list .ccx-field-order-item').each(function (i) {
+                    $(this).find('.text-muted:last').text('#' + (i + 1));
+                });
+            }
+        });
+
+        $('#ccx-save-field-order').on('click', function () {
+            var btn = $(this);
+            btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin tw-mr-1"></i> Saving...');
+
+            var items = [];
+            $('#ccx-field-order-list .ccx-field-order-item').each(function () {
+                items.push({
+                    type: $(this).data('type'),
+                    id: $(this).data('id')
+                });
+            });
+
+            var postData = { items: items };
+            if (typeof csrfData !== 'undefined') {
+                postData[csrfData.token_name] = csrfData.hash;
+            }
+
+            $.ajax({
+                url: admin_url + 'ccx_leads/save_field_order',
+                type: 'POST',
+                data: postData,
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        alert_float('success', response.message);
+                    } else {
+                        alert_float('danger', response.message || 'Failed to save');
+                    }
+                },
+                error: function () {
+                    alert_float('danger', 'An error occurred while saving');
+                },
+                complete: function () {
+                    btn.prop('disabled', false).html('<i class="fa-regular fa-floppy-disk tw-mr-1"></i> Save Order');
+                }
+            });
         });
 
         // ==================== CUSTOM FIELDS TAB JS ====================

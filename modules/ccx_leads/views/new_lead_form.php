@@ -4,9 +4,10 @@
  * CCX Leads — Independent New Lead Form
  * Adapted from core profile.php for new-lead creation only.
  * Field Management settings are applied server-side.
+ * Fields are rendered in configurable order via field_order.
  */
 
-// Helper to check field visibility, label, and required status
+// Helper to check field visibility, label, required status, and order
 if (!function_exists('ccx_field')) {
     function ccx_field($slug, $field_settings, $default_label = '')
     {
@@ -14,12 +15,14 @@ if (!function_exists('ccx_field')) {
             'active' => 1,
             'label' => $default_label,
             'required' => 0,
+            'field_order' => 999,
         ];
         if (isset($field_settings[$slug])) {
             $s = $field_settings[$slug];
             $setting['active'] = isset($s['active']) ? (int) $s['active'] : 1;
             $setting['label'] = !empty($s['label']) ? $s['label'] : $default_label;
             $setting['required'] = isset($s['required']) ? (int) $s['required'] : 0;
+            $setting['field_order'] = isset($s['field_order']) ? (int) $s['field_order'] : 999;
         }
         return $setting;
     }
@@ -50,16 +53,19 @@ $fs = isset($field_settings) ? $field_settings : [];
         <div class="col-md-12">
             <?= form_open(admin_url('ccx_leads/save_lead'), ['id' => 'ccx_new_lead_form']); ?>
 
+            <?php
+            // ── Top row: Status, Source, Assigned ──
+            $f_status = ccx_field('status', $fs, _l('lead_add_edit_status'));
+            $f_source = ccx_field('source', $fs, _l('lead_add_edit_source'));
+            $f_assigned = ccx_field('assigned', $fs, _l('lead_add_edit_assigned'));
+            ?>
             <div class="row">
-                <?php
-                // ── Status ──
-                $f = ccx_field('status', $fs, _l('lead_add_edit_status'));
-                if ($f['active']) { ?>
-                    <div class="col-md-4">
+                <?php if ($f_status['active']) { ?>
+                    <div class="col-md-4" style="order:<?= $f_status['field_order']; ?>">
                         <div class="select-placeholder form-group" app-field-wrapper="status">
-                            <?= ccx_label('status', $f['label'], $f['required']); ?>
+                            <?= ccx_label('status', $f_status['label'], $f_status['required']); ?>
                             <select id="status" name="status" class="selectpicker" data-live-search="true" data-width="100%"
-                                data-none-selected-text="<?= _l('dropdown_non_selected_tex'); ?>" <?= $f['required'] ? ' required' : ''; ?>>
+                                data-none-selected-text="<?= _l('dropdown_non_selected_tex'); ?>" <?= $f_status['required'] ? ' required' : ''; ?>>
                                 <option value=""></option>
                                 <?php
                                 $default_status = get_option('leads_default_status');
@@ -73,15 +79,12 @@ $fs = isset($field_settings) ? $field_settings : [];
                     </div>
                 <?php } ?>
 
-                <?php
-                // ── Source ──
-                $f = ccx_field('source', $fs, _l('lead_add_edit_source'));
-                if ($f['active']) { ?>
-                    <div class="col-md-4">
+                <?php if ($f_source['active']) { ?>
+                    <div class="col-md-4" style="order:<?= $f_source['field_order']; ?>">
                         <div class="select-placeholder form-group" app-field-wrapper="source">
-                            <?= ccx_label('source', $f['label'], $f['required']); ?>
+                            <?= ccx_label('source', $f_source['label'], $f_source['required']); ?>
                             <select id="source" name="source" class="selectpicker" data-live-search="true" data-width="100%"
-                                data-none-selected-text="<?= _l('dropdown_non_selected_tex'); ?>" <?= $f['required'] ? ' required' : ''; ?>>
+                                data-none-selected-text="<?= _l('dropdown_non_selected_tex'); ?>" <?= $f_source['required'] ? ' required' : ''; ?>>
                                 <option value=""></option>
                                 <?php
                                 $default_source = get_option('leads_default_source');
@@ -95,16 +98,13 @@ $fs = isset($field_settings) ? $field_settings : [];
                     </div>
                 <?php } ?>
 
-                <?php
-                // ── Assigned ──
-                $f = ccx_field('assigned', $fs, _l('lead_add_edit_assigned'));
-                if ($f['active']) { ?>
-                    <div class="col-md-4">
+                <?php if ($f_assigned['active']) { ?>
+                    <div class="col-md-4" style="order:<?= $f_assigned['field_order']; ?>">
                         <div class="select-placeholder form-group" app-field-wrapper="assigned">
-                            <?= ccx_label('assigned', $f['label'], $f['required']); ?>
+                            <?= ccx_label('assigned', $f_assigned['label'], $f_assigned['required']); ?>
                             <select id="assigned" name="assigned" class="selectpicker" data-live-search="true"
                                 data-width="100%" data-none-selected-text="<?= _l('dropdown_non_selected_tex'); ?>"
-                                <?= $f['required'] ? ' required' : ''; ?>>
+                                <?= $f_assigned['required'] ? ' required' : ''; ?>>
                                 <option value=""></option>
                                 <?php
                                 $current_staff = get_staff_user_id();
@@ -122,139 +122,97 @@ $fs = isset($field_settings) ? $field_settings : [];
             <div class="clearfix"></div>
             <hr class="mtop5 mbot10" />
 
-            <div class="row">
-                <div class="col-md-6">
-                    <?php
-                    // ── Name ──
-                    $f = ccx_field('name', $fs, _l('lead_add_edit_name'));
-                    if ($f['active']) { ?>
-                        <div class="form-group" app-field-wrapper="name">
-                            <?= ccx_label('name', $f['label'], $f['required']); ?>
-                            <input type="text" id="name" name="name" class="form-control" value="" <?= $f['required'] ? ' required' : ''; ?>>
-                        </div>
-                    <?php }
+            <?php
+            // ==================== MAIN FIELDS — flex container with configurable order ====================
+            // Build array of field configs for the main area
+            $main_fields = [
+                'name' => ['default_label' => _l('lead_add_edit_name'), 'type' => 'text'],
+                'title' => ['default_label' => _l('lead_title'), 'type' => 'text'],
+                'email' => ['default_label' => _l('lead_add_edit_email'), 'type' => 'text'],
+                'website' => ['default_label' => _l('lead_website'), 'type' => 'text'],
+                'phonenumber' => ['default_label' => _l('lead_add_edit_phonenumber'), 'type' => 'text'],
+                'lead_value' => ['default_label' => _l('lead_value'), 'type' => 'lead_value'],
+                'company' => ['default_label' => _l('lead_company'), 'type' => 'text'],
+                'address' => ['default_label' => _l('lead_address'), 'type' => 'address'],
+                'city' => ['default_label' => _l('lead_city'), 'type' => 'text'],
+                'state' => ['default_label' => _l('lead_state'), 'type' => 'text'],
+                'country' => ['default_label' => _l('lead_country'), 'type' => 'country'],
+                'zip' => ['default_label' => _l('lead_zip'), 'type' => 'text'],
+            ];
 
-                    // ── Title ──
-                    $f = ccx_field('title', $fs, _l('lead_title'));
-                    if ($f['active']) { ?>
-                        <div class="form-group" app-field-wrapper="title">
-                            <?= ccx_label('title', $f['label'], $f['required']); ?>
-                            <input type="text" id="title" name="title" class="form-control" value="" <?= $f['required'] ? ' required' : ''; ?>>
-                        </div>
-                    <?php }
-
-                    // ── Email ──
-                    $f = ccx_field('email', $fs, _l('lead_add_edit_email'));
-                    if ($f['active']) { ?>
-                        <div class="form-group" app-field-wrapper="email">
-                            <?= ccx_label('email', $f['label'], $f['required']); ?>
-                            <input type="text" id="email" name="email" class="form-control" value="" <?= $f['required'] ? ' required' : ''; ?>>
-                        </div>
-                    <?php }
-
-                    // ── Website ──
-                    $f = ccx_field('website', $fs, _l('lead_website'));
-                    if ($f['active']) { ?>
-                        <div class="form-group" app-field-wrapper="website">
-                            <?= ccx_label('website', $f['label'], $f['required']); ?>
-                            <input type="text" id="website" name="website" class="form-control" value="" <?= $f['required'] ? ' required' : ''; ?>>
-                        </div>
-                    <?php }
-
-                    // ── Phone ──
-                    $f = ccx_field('phonenumber', $fs, _l('lead_add_edit_phonenumber'));
-                    if ($f['active']) { ?>
-                        <div class="form-group" app-field-wrapper="phonenumber">
-                            <?= ccx_label('phonenumber', $f['label'], $f['required']); ?>
-                            <input type="text" id="phonenumber" name="phonenumber" class="form-control" value=""
-                                <?= $f['required'] ? ' required' : ''; ?>>
-                        </div>
-                    <?php }
-
-                    // ── Lead Value ──
-                    $f = ccx_field('lead_value', $fs, _l('lead_value'));
-                    if ($f['active']) { ?>
-                        <div class="form-group" app-field-wrapper="lead_value">
-                            <?= ccx_label('lead_value', $f['label'], $f['required']); ?>
-                            <div class="input-group" data-toggle="tooltip" title="<?= _l('lead_value_tooltip'); ?>">
-                                <input type="number" class="form-control" name="lead_value" id="lead_value" value=""
+            // Get custom fields for leads to render inline
+            $lead_custom_fields = get_custom_fields('leads');
+            ?>
+            <div class="row ccx-ordered-fields" style="display:flex; flex-wrap:wrap;">
+                <?php
+                // Render standard fields
+                foreach ($main_fields as $slug => $cfg) {
+                    $f = ccx_field($slug, $fs, $cfg['default_label']);
+                    if (!$f['active'])
+                        continue;
+                    $order = $f['field_order'];
+                    ?>
+                    <div class="col-md-6" style="order:<?= $order; ?>">
+                        <?php if ($cfg['type'] === 'text') { ?>
+                            <div class="form-group" app-field-wrapper="<?= $slug; ?>">
+                                <?= ccx_label($slug, $f['label'], $f['required']); ?>
+                                <input type="text" id="<?= $slug; ?>" name="<?= $slug; ?>" class="form-control" value=""
                                     <?= $f['required'] ? ' required' : ''; ?>>
-                                <div class="input-group-addon">
-                                    <?= e($base_currency->symbol); ?>
+                            </div>
+                        <?php } elseif ($cfg['type'] === 'address') { ?>
+                            <div class="form-group" app-field-wrapper="address">
+                                <?= ccx_label('address', $f['label'], $f['required']); ?>
+                                <textarea id="address" name="address" class="form-control" rows="1"
+                                    style="height:36px;font-size:100%;" <?= $f['required'] ? ' required' : ''; ?>></textarea>
+                            </div>
+                        <?php } elseif ($cfg['type'] === 'lead_value') { ?>
+                            <div class="form-group" app-field-wrapper="lead_value">
+                                <?= ccx_label('lead_value', $f['label'], $f['required']); ?>
+                                <div class="input-group" data-toggle="tooltip" title="<?= _l('lead_value_tooltip'); ?>">
+                                    <input type="number" class="form-control" name="lead_value" id="lead_value" value=""
+                                        <?= $f['required'] ? ' required' : ''; ?>>
+                                    <div class="input-group-addon">
+                                        <?= e($base_currency->symbol); ?>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    <?php }
+                        <?php } elseif ($cfg['type'] === 'country') { ?>
+                            <?php
+                            $countries = get_all_countries();
+                            $customer_default_country = get_option('customer_default_country');
+                            ?>
+                            <div class="select-placeholder form-group" app-field-wrapper="country">
+                                <?= ccx_label('country', $f['label'], $f['required']); ?>
+                                <select id="country" name="country" class="selectpicker" data-live-search="true"
+                                    data-width="100%" data-none-selected-text="<?= _l('dropdown_non_selected_tex'); ?>"
+                                    <?= $f['required'] ? ' required' : ''; ?>>
+                                    <option value=""></option>
+                                    <?php foreach ($countries as $c) {
+                                        $sel = ($c['country_id'] == $customer_default_country) ? ' selected' : '';
+                                        echo '<option value="' . $c['country_id'] . '"' . $sel . '>' . e($c['short_name']) . '</option>';
+                                    } ?>
+                                </select>
+                            </div>
+                        <?php } ?>
+                    </div>
+                <?php } ?>
 
-                    // ── Company ──
-                    $f = ccx_field('company', $fs, _l('lead_company'));
-                    if ($f['active']) { ?>
-                        <div class="form-group" app-field-wrapper="company">
-                            <?= ccx_label('company', $f['label'], $f['required']); ?>
-                            <input type="text" id="company" name="company" class="form-control" value="" <?= $f['required'] ? ' required' : ''; ?>>
-                        </div>
-                    <?php } ?>
-                </div>
-
-                <div class="col-md-6">
-                    <?php
-                    // ── Address ──
-                    $f = ccx_field('address', $fs, _l('lead_address'));
-                    if ($f['active']) { ?>
-                        <div class="form-group" app-field-wrapper="address">
-                            <?= ccx_label('address', $f['label'], $f['required']); ?>
-                            <textarea id="address" name="address" class="form-control" rows="1"
-                                style="height:36px;font-size:100%;" <?= $f['required'] ? ' required' : ''; ?>></textarea>
-                        </div>
-                    <?php }
-
-                    // ── City ──
-                    $f = ccx_field('city', $fs, _l('lead_city'));
-                    if ($f['active']) { ?>
-                        <div class="form-group" app-field-wrapper="city">
-                            <?= ccx_label('city', $f['label'], $f['required']); ?>
-                            <input type="text" id="city" name="city" class="form-control" value="" <?= $f['required'] ? ' required' : ''; ?>>
-                        </div>
-                    <?php }
-
-                    // ── State ──
-                    $f = ccx_field('state', $fs, _l('lead_state'));
-                    if ($f['active']) { ?>
-                        <div class="form-group" app-field-wrapper="state">
-                            <?= ccx_label('state', $f['label'], $f['required']); ?>
-                            <input type="text" id="state" name="state" class="form-control" value="" <?= $f['required'] ? ' required' : ''; ?>>
-                        </div>
-                    <?php }
-
-                    // ── Country ──
-                    $f = ccx_field('country', $fs, _l('lead_country'));
-                    if ($f['active']) {
-                        $countries = get_all_countries();
-                        $customer_default_country = get_option('customer_default_country');
-                        ?>
-                        <div class="select-placeholder form-group" app-field-wrapper="country">
-                            <?= ccx_label('country', $f['label'], $f['required']); ?>
-                            <select id="country" name="country" class="selectpicker" data-live-search="true"
-                                data-width="100%" data-none-selected-text="<?= _l('dropdown_non_selected_tex'); ?>"
-                                <?= $f['required'] ? ' required' : ''; ?>>
-                                <option value=""></option>
-                                <?php foreach ($countries as $c) {
-                                    $sel = ($c['country_id'] == $customer_default_country) ? ' selected' : '';
-                                    echo '<option value="' . $c['country_id'] . '"' . $sel . '>' . e($c['short_name']) . '</option>';
-                                } ?>
-                            </select>
-                        </div>
-                    <?php }
-
-                    // ── Zip ──
-                    $f = ccx_field('zip', $fs, _l('lead_zip'));
-                    if ($f['active']) { ?>
-                        <div class="form-group" app-field-wrapper="zip">
-                            <?= ccx_label('zip', $f['label'], $f['required']); ?>
-                            <input type="text" id="zip" name="zip" class="form-control" value="" <?= $f['required'] ? ' required' : ''; ?>>
-                        </div>
-                    <?php } ?>
-                </div>
+                <?php
+                // ── Render custom fields as a block inside the flex container ──
+                $cf_html = render_custom_fields('leads', false);
+                if (trim($cf_html) != '') {
+                    $cf_min_order = 999;
+                    if (!empty($lead_custom_fields)) {
+                        $cf_orders = array_map(function ($c) {
+                            return isset($c['field_order']) ? (int) $c['field_order'] : 999;
+                        }, $lead_custom_fields);
+                        $cf_min_order = min($cf_orders);
+                    }
+                    ?>
+                    <div class="col-md-12" style="order:<?= $cf_min_order; ?>; padding:0;">
+                        <?= $cf_html; ?>
+                    </div>
+                <?php } ?>
             </div>
 
             <div class="col-md-12" style="padding:0;">
@@ -262,7 +220,7 @@ $fs = isset($field_settings) ? $field_settings : [];
                 // ── Description ──
                 $f = ccx_field('description', $fs, _l('lead_description'));
                 if ($f['active']) { ?>
-                    <div class="form-group" app-field-wrapper="description">
+                    <div class="form-group" app-field-wrapper="description" style="order:<?= $f['field_order']; ?>">
                         <?= ccx_label('description', $f['label'], $f['required']); ?>
                         <textarea id="description" name="description" class="form-control" rows="4" <?= $f['required'] ? ' required' : ''; ?>></textarea>
                     </div>
@@ -287,11 +245,6 @@ $fs = isset($field_settings) ? $field_settings : [];
                     </div>
                 </div>
             </div>
-
-            <?php
-            // ── Custom fields ──
-            echo render_custom_fields('leads', false);
-            ?>
 
             <div class="clearfix"></div>
             <hr class="-tw-mx-5 tw-border-neutral-200" />
