@@ -123,7 +123,7 @@
                                 rows="4"></textarea>
                         </div>
                         <div class="lead-select-date-contacted">
-                            <?= render_datetime_input('custom_contact_date', 'lead_add_edit_datecontacted', '', ['data-date-end-date' => date('Y-m-d')]); ?>
+                            <?= render_datetime_input('custom_contact_date', 'lead_add_edit_datecontacted', _dt(date('Y-m-d H:i:s')), ['data-date-end-date' => date('Y-m-d')]); ?>
                         </div>
                         <div class="radio radio-primary">
                             <input type="radio" name="contacted_indicator" id="contacted_indicator_yes" value="yes" checked>
