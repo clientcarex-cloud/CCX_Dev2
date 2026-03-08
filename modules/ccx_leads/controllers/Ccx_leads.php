@@ -218,6 +218,19 @@ class Ccx_leads extends AdminController
         die;
     }
 
+    /* Reports page */
+    public function reports()
+    {
+        if (!has_permission('leads', '', 'view')) {
+            access_denied('leads');
+        }
+
+        $data['title'] = 'CCX Leads - Reports';
+        $data['members'] = $this->staff_model->get('', ['active' => 1]);
+
+        $this->load->view('ccx_leads/reports', $data);
+    }
+
     /* Settings page */
     public function settings()
     {

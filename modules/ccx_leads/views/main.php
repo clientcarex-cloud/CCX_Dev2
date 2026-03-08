@@ -107,6 +107,10 @@
                             </nav>
 
                             <div class="ccx-actions" style="display:flex; gap:10px; align-items:center;">
+                                <a href="<?php echo admin_url('ccx_leads/reports'); ?>" class="btn btn-default"
+                                    aria-label="Reports">
+                                    <i class="fa fa-chart-bar"></i> Reports
+                                </a>
                                 <a href="#" onclick="ccx_leads_new_lead(); return false;" class="btn btn-info"
                                     aria-label="Create new lead">
                                     <?php echo _l('new_lead'); ?>
