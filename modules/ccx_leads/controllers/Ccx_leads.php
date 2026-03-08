@@ -160,6 +160,13 @@ class Ccx_leads extends AdminController
 
         $post_data = $this->input->post();
 
+        // Handle phone country code — prepend to phonenumber
+        $phone_country_code = isset($post_data['phone_country_code']) ? trim($post_data['phone_country_code']) : '';
+        if (!empty($phone_country_code) && !empty($post_data['phonenumber'])) {
+            $post_data['phonenumber'] = $phone_country_code . ' ' . ltrim($post_data['phonenumber']);
+        }
+        unset($post_data['phone_country_code']);
+
         // Extract call log fields before passing to leads_model
         $add_call_log = isset($post_data['add_call_log']) ? $post_data['add_call_log'] : '';
         $call_log_description = isset($post_data['call_log_description']) ? trim($post_data['call_log_description']) : '';
