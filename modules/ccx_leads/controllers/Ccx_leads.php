@@ -238,20 +238,21 @@ class Ccx_leads extends AdminController
             access_denied('leads');
         }
 
+        $this->load->model('ccx_leads_reports_model');
         $report_id = intval($report_id);
 
-        // Report metadata
+        // Report metadata: name, model method, view partial
         $reports_meta = [
-            1 => ['name' => 'Overall Leads Assigned', 'method' => 'report_overall_leads_assigned'],
-            2 => ['name' => 'Overall Staff New Leads & Calls', 'method' => 'report_staff_new_leads_calls'],
-            3 => ['name' => 'Overall Missed Leads Calls', 'method' => 'report_missed_leads_calls'],
-            4 => ['name' => 'Staff Wise Leads Call TAT Report', 'method' => 'report_call_tat'],
-            5 => ['name' => 'Leads Follow-ups', 'method' => 'report_leads_followups'],
-            6 => ['name' => 'Overview of Leads by Staff', 'method' => 'report_leads_by_staff'],
-            7 => ['name' => 'Complete Overview of Whole Leads', 'method' => 'report_complete_overview'],
-            8 => ['name' => 'Last One Week Leads & Conversion', 'method' => 'report_last_week_leads'],
-            9 => ['name' => 'Last 2 Week Leads & Conversion', 'method' => 'report_last_2week_leads'],
-            10 => ['name' => 'Overall Leads Statuses', 'method' => 'report_leads_statuses'],
+            1 => ['name' => 'Overall Leads Assigned', 'method' => 'report_overall_leads_assigned', 'view' => 'report_1_leads_assigned'],
+            2 => ['name' => 'Overall Staff New Leads & Calls', 'method' => 'report_staff_new_leads_calls', 'view' => 'report_2_staff_leads_calls'],
+            3 => ['name' => 'Overall Missed Leads Calls', 'method' => 'report_missed_leads_calls', 'view' => 'report_3_missed_calls'],
+            4 => ['name' => 'Staff Wise Leads Call TAT Report', 'method' => 'report_call_tat', 'view' => 'report_4_call_tat'],
+            5 => ['name' => 'Leads Follow-ups', 'method' => 'report_leads_followups', 'view' => 'report_5_followups'],
+            6 => ['name' => 'Overview of Leads by Staff', 'method' => 'report_leads_by_staff', 'view' => 'report_6_leads_by_staff'],
+            7 => ['name' => 'Complete Overview of Whole Leads', 'method' => 'report_complete_overview', 'view' => 'report_7_complete_overview'],
+            8 => ['name' => 'Last One Week Leads & Conversion', 'method' => 'report_last_week_leads', 'view' => 'report_8_9_conversion'],
+            9 => ['name' => 'Last 2 Week Leads & Conversion', 'method' => 'report_last_2week_leads', 'view' => 'report_8_9_conversion'],
+            10 => ['name' => 'Overall Leads Statuses', 'method' => 'report_leads_statuses', 'view' => 'report_10_statuses'],
         ];
 
         if (!isset($reports_meta[$report_id])) {
@@ -265,9 +266,9 @@ class Ccx_leads extends AdminController
         $date_to = $this->input->get('date_to') ?: '';
         $staff_id = $this->input->get('staff_id') ?: '';
 
-        // Call the model method
+        // Call the dedicated reports model
         $method = $meta['method'];
-        $data['report_data'] = $this->ccx_leads_model->$method($date_from, $date_to, $staff_id);
+        $data['report_data'] = $this->ccx_leads_reports_model->$method($date_from, $date_to, $staff_id);
 
         $data['report_id'] = $report_id;
         $data['report_name'] = $meta['name'];
@@ -277,7 +278,11 @@ class Ccx_leads extends AdminController
         $data['members'] = $this->staff_model->get('', ['active' => 1]);
         $data['title'] = 'CCX Leads - ' . $meta['name'];
 
-        $this->load->view('ccx_leads/report_detail', $data);
+        // Render the individual report table into a string
+        $data['report_content'] = $this->load->view('ccx_leads/reports/' . $meta['view'], $data, true);
+
+        // Render the shared layout with the report content inside
+        $this->load->view('ccx_leads/reports/_layout', $data);
     }
 
     /* Settings page */
