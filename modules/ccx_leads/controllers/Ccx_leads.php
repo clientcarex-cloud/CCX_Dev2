@@ -276,6 +276,8 @@ class Ccx_leads extends AdminController
             $data['report_data'] = $this->ccx_leads_reports_model->$method($date_from, $date_to, $staff_id);
         } catch (\Throwable $e) {
             log_message('error', 'CCX Report Error [ID: ' . $report_id . ']: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
+            // Reset query builder to flush any leftover SELECT/FROM/JOIN state
+            $this->db->reset_query();
             $data['report_data'] = [];
         }
         // Guarantee report_data is always an array
