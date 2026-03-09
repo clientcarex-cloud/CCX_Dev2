@@ -211,6 +211,209 @@
     .conversion-no {
         color: #9ca3af;
     }
+
+    /* ─── KPI Cards Grid ─── */
+    .ccx-kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 14px;
+        margin-bottom: 22px;
+    }
+
+    .ccx-kpi-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-left: 4px solid #3b82f6;
+        border-radius: 10px;
+        padding: 14px 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .ccx-kpi-card.kpi-green {
+        border-left-color: #059669;
+    }
+
+    .ccx-kpi-card.kpi-red {
+        border-left-color: #dc2626;
+    }
+
+    .ccx-kpi-card.kpi-amber {
+        border-left-color: #d97706;
+    }
+
+    .ccx-kpi-card.kpi-purple {
+        border-left-color: #7c3aed;
+    }
+
+    .ccx-kpi-card.kpi-pink {
+        border-left-color: #ec4899;
+    }
+
+    .ccx-kpi-card.kpi-indigo {
+        border-left-color: #4f46e5;
+    }
+
+    .ccx-kpi-val {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1f2937;
+        line-height: 1.1;
+    }
+
+    .ccx-kpi-lbl {
+        font-size: 11px;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        font-weight: 600;
+    }
+
+    .ccx-kpi-sub {
+        font-size: 11px;
+        color: #9ca3af;
+        margin-top: 2px;
+    }
+
+    /* ─── Percentage inline bar ─── */
+    .ccx-pct-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .ccx-pct-track {
+        flex: 1;
+        max-width: 120px;
+        height: 7px;
+        background: #f3f4f6;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .ccx-pct-fill {
+        height: 100%;
+        border-radius: 4px;
+        background: #3b82f6;
+        transition: width .3s;
+    }
+
+    .ccx-pct-text {
+        font-size: 12px;
+        font-weight: 600;
+        color: #374151;
+        min-width: 40px;
+    }
+
+    /* ─── Totals Row ─── */
+    .ccx-rpt-table tr.totals-row td {
+        font-weight: 700;
+        background: #f0f4ff;
+        border-top: 2px solid #3b82f6;
+        color: #1e3a5f;
+    }
+
+    /* ─── Urgency colors ─── */
+    .ccx-age-green {
+        color: #059669;
+        font-weight: 600;
+    }
+
+    .ccx-age-amber {
+        color: #d97706;
+        font-weight: 600;
+    }
+
+    .ccx-age-red {
+        color: #dc2626;
+        font-weight: 600;
+    }
+
+    /* ─── Mini Summary Table ─── */
+    .ccx-mini-summary {
+        margin-bottom: 18px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .ccx-mini-summary .mini-title {
+        background: #f0f4ff;
+        padding: 8px 14px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #1e40af;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .ccx-mini-summary table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+    }
+
+    .ccx-mini-summary table th {
+        background: #f9fafb;
+        padding: 7px 12px;
+        text-align: left;
+        font-weight: 600;
+        color: #374151;
+        border-bottom: 1px solid #e5e7eb;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: .3px;
+    }
+
+    .ccx-mini-summary table td {
+        padding: 6px 12px;
+        border-bottom: 1px solid #f3f4f6;
+        color: #374151;
+    }
+
+    /* ─── SLA indicator ─── */
+    .ccx-sla-pass {
+        color: #059669;
+        font-weight: 700;
+    }
+
+    .ccx-sla-fail {
+        color: #dc2626;
+        font-weight: 700;
+    }
+
+    /* ─── Overdue / Upcoming badges ─── */
+    .ccx-badge-overdue {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 10px;
+        background: #fef2f2;
+        color: #dc2626;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .ccx-badge-upcoming {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 10px;
+        background: #eff6ff;
+        color: #2563eb;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .ccx-badge-done {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 10px;
+        background: #f0fdf4;
+        color: #059669;
+        font-size: 11px;
+        font-weight: 600;
+    }
 </style>
 <div id="wrapper">
     <div class="content">
