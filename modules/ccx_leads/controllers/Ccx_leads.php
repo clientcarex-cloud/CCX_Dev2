@@ -268,7 +268,15 @@ class Ccx_leads extends AdminController
 
         // Call the dedicated reports model
         $method = $meta['method'];
-        $data['report_data'] = $this->ccx_leads_reports_model->$method($date_from, $date_to, $staff_id);
+        try {
+            $data['report_data'] = $this->ccx_leads_reports_model->$method($date_from, $date_to, $staff_id);
+        } catch (Exception $e) {
+            $data['report_data'] = [];
+        }
+        // Guarantee report_data is always an array
+        if (!is_array($data['report_data'])) {
+            $data['report_data'] = [];
+        }
 
         $data['report_id'] = $report_id;
         $data['report_name'] = $meta['name'];
