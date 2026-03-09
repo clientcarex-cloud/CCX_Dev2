@@ -234,6 +234,10 @@ class Ccx_leads extends AdminController
     /* Individual report view */
     public function report_view($report_id = 1)
     {
+        // TEMPORARY DEBUG — remove after fixing
+        ini_set('display_errors', 1);
+        error_reporting(E_ALL);
+
         if (!has_permission('leads', '', 'view')) {
             access_denied('leads');
         }
@@ -270,7 +274,8 @@ class Ccx_leads extends AdminController
         $method = $meta['method'];
         try {
             $data['report_data'] = $this->ccx_leads_reports_model->$method($date_from, $date_to, $staff_id);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
+            log_message('error', 'CCX Report Error [ID: ' . $report_id . ']: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
             $data['report_data'] = [];
         }
         // Guarantee report_data is always an array
