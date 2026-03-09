@@ -309,6 +309,464 @@ class Ccx_leads_model extends App_Model
         return $summary;
     }
 
+    // ==================== REPORTS ====================
+
+    /**
+     * Helper: apply common date + staff filters on tblleads.
+     */
+    private function _apply_lead_filters($date_from = '', $date_to = '', $staff_id = '', $date_col = 'dateadded')
+    {
+        if (!empty($date_from)) {
+            $this->db->where(db_prefix() . 'leads.' . $date_col . ' >=', $date_from . ' 00:00:00');
+        }
+        if (!empty($date_to)) {
+            $this->db->where(db_prefix() . 'leads.' . $date_col . ' <=', $date_to . ' 23:59:59');
+        }
+        if (!empty($staff_id)) {
+            $this->db->where(db_prefix() . 'leads.assigned', $staff_id);
+        }
+    }
+
+    /**
+     * Report 1: Overall Leads Assigned
+     * Staff-wise summary of assigned leads.
+     */
+    public function report_overall_leads_assigned($date_from = '', $date_to = '', $staff_id = '')
+    {
+        $this->db->select('
+            s.staffid,
+            CONCAT(s.firstname, " ", s.lastname) as staff_name,
+            COUNT(l.id) as total_assigned
+        ');
+        $this->db->from(db_prefix() . 'leads as l');
+        $this->db->join(db_prefix() . 'staff as s', 's.staffid = l.assigned', 'inner');
+        $this->db->where('l.assigned >', 0);
+
+        if (!empty($date_from)) {
+            $this->db->where('l.dateadded >=', $date_from . ' 00:00:00');
+        }
+        if (!empty($date_to)) {
+            $this->db->where('l.dateadded <=', $date_to . ' 23:59:59');
+        }
+        if (!empty($staff_id)) {
+            $this->db->where('l.assigned', $staff_id);
+        }
+
+        $this->db->group_by('s.staffid');
+        $this->db->order_by('total_assigned', 'desc');
+        return $this->db->get()->result_array();
+    }
+
+    /**
+     * Report 2: Overall Staff New Leads & Calls
+     * Per-staff count of new leads created + call logs (notes).
+     */
+    public function report_staff_new_leads_calls($date_from = '', $date_to = '', $staff_id = '')
+    {
+        // Get all active staff
+        $this->db->select('staffid, CONCAT(firstname, " ", lastname) as staff_name');
+        $this->db->where('active', 1);
+        if (!empty($staff_id)) {
+            $this->db->where('staffid', $staff_id);
+        }
+        $staff = $this->db->get(db_prefix() . 'staff')->result_array();
+
+        $result = [];
+        foreach ($staff as $s) {
+            $sid = $s['staffid'];
+
+            // Count new leads assigned to this staff
+            $this->db->where('assigned', $sid);
+            if (!empty($date_from))
+                $this->db->where('dateadded >=', $date_from . ' 00:00:00');
+            if (!empty($date_to))
+                $this->db->where('dateadded <=', $date_to . ' 23:59:59');
+            $new_leads = $this->db->count_all_results(db_prefix() . 'leads');
+
+            // Count call logs (notes with rel_type = 'lead') by this staff
+            $this->db->where('addedfrom', $sid);
+            $this->db->where('rel_type', 'lead');
+            if (!empty($date_from))
+                $this->db->where('dateadded >=', $date_from . ' 00:00:00');
+            if (!empty($date_to))
+                $this->db->where('dateadded <=', $date_to . ' 23:59:59');
+            $call_logs = $this->db->count_all_results(db_prefix() . 'notes');
+
+            if ($new_leads > 0 || $call_logs > 0) {
+                $result[] = [
+                    'staffid' => $sid,
+                    'staff_name' => $s['staff_name'],
+                    'new_leads' => $new_leads,
+                    'call_logs' => $call_logs,
+                    'total' => $new_leads + $call_logs,
+                ];
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Report 3: Overall Missed Leads Calls
+     * Leads that have never been contacted (lastcontact IS NULL and no call log notes).
+     */
+    public function report_missed_leads_calls($date_from = '', $date_to = '', $staff_id = '')
+    {
+        $this->db->select('
+            l.id, l.name, l.phonenumber, l.email,
+            l.dateadded, l.assigned,
+            CONCAT(s.firstname, " ", s.lastname) as staff_name,
+            ls.name as status_name
+        ');
+        $this->db->from(db_prefix() . 'leads as l');
+        $this->db->join(db_prefix() . 'staff as s', 's.staffid = l.assigned', 'left');
+        $this->db->join(db_prefix() . 'leads_status as ls', 'ls.id = l.status', 'left');
+        $this->db->where('(l.lastcontact IS NULL OR l.lastcontact = "0000-00-00 00:00:00")', null, false);
+
+        if (!empty($date_from)) {
+            $this->db->where('l.dateadded >=', $date_from . ' 00:00:00');
+        }
+        if (!empty($date_to)) {
+            $this->db->where('l.dateadded <=', $date_to . ' 23:59:59');
+        }
+        if (!empty($staff_id)) {
+            $this->db->where('l.assigned', $staff_id);
+        }
+
+        $this->db->order_by('l.dateadded', 'desc');
+        return $this->db->get()->result_array();
+    }
+
+    /**
+     * Report 4: Staff Wise Leads Call TAT Report
+     * Turn-around-time = difference between lead dateadded and first call note.
+     */
+    public function report_call_tat($date_from = '', $date_to = '', $staff_id = '')
+    {
+        // Get leads with their first call log
+        $sub = '(SELECT rel_id, MIN(dateadded) as first_call FROM ' . db_prefix() . 'notes WHERE rel_type = "lead" GROUP BY rel_id)';
+
+        $this->db->select('
+            l.id, l.name, l.phonenumber,
+            l.dateadded as lead_created,
+            l.assigned,
+            CONCAT(s.firstname, " ", s.lastname) as staff_name,
+            fc.first_call,
+            TIMESTAMPDIFF(MINUTE, l.dateadded, fc.first_call) as tat_minutes
+        ');
+        $this->db->from(db_prefix() . 'leads as l');
+        $this->db->join(db_prefix() . 'staff as s', 's.staffid = l.assigned', 'left');
+        $this->db->join($sub . ' as fc', 'fc.rel_id = l.id', 'left');
+
+        if (!empty($date_from)) {
+            $this->db->where('l.dateadded >=', $date_from . ' 00:00:00');
+        }
+        if (!empty($date_to)) {
+            $this->db->where('l.dateadded <=', $date_to . ' 23:59:59');
+        }
+        if (!empty($staff_id)) {
+            $this->db->where('l.assigned', $staff_id);
+        }
+
+        $this->db->order_by('l.assigned', 'asc');
+        $this->db->order_by('l.dateadded', 'desc');
+        return $this->db->get()->result_array();
+    }
+
+    /**
+     * Report 5: Leads Follow-ups
+     * Reminders set for leads with their status.
+     */
+    public function report_leads_followups($date_from = '', $date_to = '', $staff_id = '')
+    {
+        $this->db->select('
+            r.id as reminder_id,
+            r.description as reminder_desc,
+            r.date as reminder_date,
+            r.isnotified,
+            r.rel_id as lead_id,
+            l.name as lead_name,
+            l.phonenumber,
+            CONCAT(s.firstname, " ", s.lastname) as staff_name,
+            CONCAT(cr.firstname, " ", cr.lastname) as created_by,
+            ls.name as lead_status
+        ');
+        $this->db->from(db_prefix() . 'reminders as r');
+        $this->db->join(db_prefix() . 'leads as l', 'l.id = r.rel_id', 'inner');
+        $this->db->join(db_prefix() . 'staff as s', 's.staffid = r.staff', 'left');
+        $this->db->join(db_prefix() . 'staff as cr', 'cr.staffid = r.creator', 'left');
+        $this->db->join(db_prefix() . 'leads_status as ls', 'ls.id = l.status', 'left');
+        $this->db->where('r.rel_type', 'lead');
+
+        if (!empty($date_from)) {
+            $this->db->where('r.date >=', $date_from . ' 00:00:00');
+        }
+        if (!empty($date_to)) {
+            $this->db->where('r.date <=', $date_to . ' 23:59:59');
+        }
+        if (!empty($staff_id)) {
+            $this->db->where('r.staff', $staff_id);
+        }
+
+        $this->db->order_by('r.date', 'desc');
+        return $this->db->get()->result_array();
+    }
+
+    /**
+     * Report 6: Overview of Leads by Staff
+     * Per-staff breakdown: total leads, contacted, not contacted, by-status counts.
+     */
+    public function report_leads_by_staff($date_from = '', $date_to = '', $staff_id = '')
+    {
+        // Get all statuses
+        $statuses = $this->leads_model->get_status();
+
+        // Get all active staff
+        $this->db->select('staffid, CONCAT(firstname, " ", lastname) as staff_name');
+        $this->db->where('active', 1);
+        if (!empty($staff_id)) {
+            $this->db->where('staffid', $staff_id);
+        }
+        $all_staff = $this->db->get(db_prefix() . 'staff')->result_array();
+
+        $result = [];
+        foreach ($all_staff as $s) {
+            $sid = $s['staffid'];
+            $row = [
+                'staffid' => $sid,
+                'staff_name' => $s['staff_name'],
+                'total_leads' => 0,
+                'contacted' => 0,
+                'not_contacted' => 0,
+                'junk' => 0,
+                'lost' => 0,
+                'statuses' => [],
+            ];
+
+            // Base query builder for this staff
+            $base_where = ['assigned' => $sid];
+
+            // Total leads
+            $this->db->where($base_where);
+            if (!empty($date_from))
+                $this->db->where('dateadded >=', $date_from . ' 00:00:00');
+            if (!empty($date_to))
+                $this->db->where('dateadded <=', $date_to . ' 23:59:59');
+            $row['total_leads'] = $this->db->count_all_results(db_prefix() . 'leads');
+
+            if ($row['total_leads'] == 0)
+                continue;
+
+            // Contacted (lastcontact is not null)
+            $this->db->where($base_where);
+            $this->db->where('lastcontact IS NOT NULL', null, false);
+            $this->db->where('lastcontact !=', '0000-00-00 00:00:00');
+            if (!empty($date_from))
+                $this->db->where('dateadded >=', $date_from . ' 00:00:00');
+            if (!empty($date_to))
+                $this->db->where('dateadded <=', $date_to . ' 23:59:59');
+            $row['contacted'] = $this->db->count_all_results(db_prefix() . 'leads');
+
+            $row['not_contacted'] = $row['total_leads'] - $row['contacted'];
+
+            // Junk
+            $this->db->where($base_where);
+            $this->db->where('junk', 1);
+            if (!empty($date_from))
+                $this->db->where('dateadded >=', $date_from . ' 00:00:00');
+            if (!empty($date_to))
+                $this->db->where('dateadded <=', $date_to . ' 23:59:59');
+            $row['junk'] = $this->db->count_all_results(db_prefix() . 'leads');
+
+            // Lost
+            $this->db->where($base_where);
+            $this->db->where('lost', 1);
+            if (!empty($date_from))
+                $this->db->where('dateadded >=', $date_from . ' 00:00:00');
+            if (!empty($date_to))
+                $this->db->where('dateadded <=', $date_to . ' 23:59:59');
+            $row['lost'] = $this->db->count_all_results(db_prefix() . 'leads');
+
+            // Per-status counts
+            foreach ($statuses as $status) {
+                $this->db->where($base_where);
+                $this->db->where('status', $status['id']);
+                $this->db->where('junk', 0);
+                $this->db->where('lost', 0);
+                if (!empty($date_from))
+                    $this->db->where('dateadded >=', $date_from . ' 00:00:00');
+                if (!empty($date_to))
+                    $this->db->where('dateadded <=', $date_to . ' 23:59:59');
+                $cnt = $this->db->count_all_results(db_prefix() . 'leads');
+                if ($cnt > 0) {
+                    $row['statuses'][] = ['name' => $status['name'], 'count' => $cnt, 'color' => $status['color']];
+                }
+            }
+
+            $result[] = $row;
+        }
+
+        // Sort by total leads desc
+        usort($result, function ($a, $b) {
+            return $b['total_leads'] - $a['total_leads'];
+        });
+
+        return $result;
+    }
+
+    /**
+     * Report 7: Complete Overview of Whole Leads
+     * All leads with full detail columns.
+     */
+    public function report_complete_overview($date_from = '', $date_to = '', $staff_id = '')
+    {
+        $this->db->select('
+            l.id, l.name, l.email, l.phonenumber, l.company,
+            l.lead_value, l.dateadded, l.lastcontact, l.last_status_change,
+            l.junk, l.lost, l.assigned,
+            CONCAT(s.firstname, " ", s.lastname) as staff_name,
+            ls.name as status_name, ls.color as status_color,
+            lso.name as source_name
+        ');
+        $this->db->from(db_prefix() . 'leads as l');
+        $this->db->join(db_prefix() . 'staff as s', 's.staffid = l.assigned', 'left');
+        $this->db->join(db_prefix() . 'leads_status as ls', 'ls.id = l.status', 'left');
+        $this->db->join(db_prefix() . 'leads_sources as lso', 'lso.id = l.source', 'left');
+
+        if (!empty($date_from)) {
+            $this->db->where('l.dateadded >=', $date_from . ' 00:00:00');
+        }
+        if (!empty($date_to)) {
+            $this->db->where('l.dateadded <=', $date_to . ' 23:59:59');
+        }
+        if (!empty($staff_id)) {
+            $this->db->where('l.assigned', $staff_id);
+        }
+
+        $this->db->order_by('l.dateadded', 'desc');
+        return $this->db->get()->result_array();
+    }
+
+    /**
+     * Report 8: Last One Week Leads & Conversion
+     * Leads created in last 7 days with conversion status.
+     */
+    public function report_last_week_leads($date_from = '', $date_to = '', $staff_id = '')
+    {
+        // If no explicit dates, default to last 7 days
+        if (empty($date_from) && empty($date_to)) {
+            $date_from = date('Y-m-d', strtotime('-7 days'));
+            $date_to = date('Y-m-d');
+        }
+
+        return $this->_report_leads_conversion($date_from, $date_to, $staff_id);
+    }
+
+    /**
+     * Report 9: Last 2 Week Leads & Conversion
+     * Leads created in last 14 days with conversion status.
+     */
+    public function report_last_2week_leads($date_from = '', $date_to = '', $staff_id = '')
+    {
+        // If no explicit dates, default to last 14 days
+        if (empty($date_from) && empty($date_to)) {
+            $date_from = date('Y-m-d', strtotime('-14 days'));
+            $date_to = date('Y-m-d');
+        }
+
+        return $this->_report_leads_conversion($date_from, $date_to, $staff_id);
+    }
+
+    /**
+     * Shared helper for weekly/bi-weekly conversion reports.
+     */
+    private function _report_leads_conversion($date_from, $date_to, $staff_id = '')
+    {
+        $this->db->select('
+            l.id, l.name, l.email, l.phonenumber, l.company,
+            l.dateadded, l.lastcontact, l.assigned,
+            l.junk, l.lost,
+            CONCAT(s.firstname, " ", s.lastname) as staff_name,
+            ls.name as status_name, ls.color as status_color,
+            lso.name as source_name,
+            c.userid as client_id
+        ');
+        $this->db->from(db_prefix() . 'leads as l');
+        $this->db->join(db_prefix() . 'staff as s', 's.staffid = l.assigned', 'left');
+        $this->db->join(db_prefix() . 'leads_status as ls', 'ls.id = l.status', 'left');
+        $this->db->join(db_prefix() . 'leads_sources as lso', 'lso.id = l.source', 'left');
+        $this->db->join(db_prefix() . 'clients as c', 'c.leadid = l.id', 'left');
+
+        if (!empty($date_from)) {
+            $this->db->where('l.dateadded >=', $date_from . ' 00:00:00');
+        }
+        if (!empty($date_to)) {
+            $this->db->where('l.dateadded <=', $date_to . ' 23:59:59');
+        }
+        if (!empty($staff_id)) {
+            $this->db->where('l.assigned', $staff_id);
+        }
+
+        $this->db->order_by('l.dateadded', 'desc');
+        return $this->db->get()->result_array();
+    }
+
+    /**
+     * Report 10: Overall Leads Statuses
+     * Count of leads per status (including junk/lost).
+     */
+    public function report_leads_statuses($date_from = '', $date_to = '', $staff_id = '')
+    {
+        // Get leads count per status
+        $this->db->select('ls.name as status_name, ls.color, COUNT(l.id) as total');
+        $this->db->from(db_prefix() . 'leads as l');
+        $this->db->join(db_prefix() . 'leads_status as ls', 'ls.id = l.status', 'inner');
+        $this->db->where('l.junk', 0);
+        $this->db->where('l.lost', 0);
+
+        if (!empty($date_from)) {
+            $this->db->where('l.dateadded >=', $date_from . ' 00:00:00');
+        }
+        if (!empty($date_to)) {
+            $this->db->where('l.dateadded <=', $date_to . ' 23:59:59');
+        }
+        if (!empty($staff_id)) {
+            $this->db->where('l.assigned', $staff_id);
+        }
+
+        $this->db->group_by('l.status');
+        $this->db->order_by('total', 'desc');
+        $statuses = $this->db->get()->result_array();
+
+        // Add Junk count
+        $this->db->where('junk', 1);
+        if (!empty($date_from))
+            $this->db->where('dateadded >=', $date_from . ' 00:00:00');
+        if (!empty($date_to))
+            $this->db->where('dateadded <=', $date_to . ' 23:59:59');
+        if (!empty($staff_id))
+            $this->db->where('assigned', $staff_id);
+        $junk = $this->db->count_all_results(db_prefix() . 'leads');
+        if ($junk > 0) {
+            $statuses[] = ['status_name' => 'Junk', 'color' => '#9CA3AF', 'total' => $junk];
+        }
+
+        // Add Lost count
+        $this->db->where('lost', 1);
+        if (!empty($date_from))
+            $this->db->where('dateadded >=', $date_from . ' 00:00:00');
+        if (!empty($date_to))
+            $this->db->where('dateadded <=', $date_to . ' 23:59:59');
+        if (!empty($staff_id))
+            $this->db->where('assigned', $staff_id);
+        $lost = $this->db->count_all_results(db_prefix() . 'leads');
+        if ($lost > 0) {
+            $statuses[] = ['status_name' => 'Lost', 'color' => '#EF4444', 'total' => $lost];
+        }
+
+        return $statuses;
+    }
+
     // ==================== ROLLER COASTER — AUTO ASSIGNMENT ====================
 
     /**

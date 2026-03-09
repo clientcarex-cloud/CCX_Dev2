@@ -141,11 +141,24 @@
         font-size: 12px;
         padding: 5px 14px;
         border-radius: 5px;
-        border: 1px solid #d1d5db;
-        background: #f9fafb;
-        color: #6b7280;
-        cursor: not-allowed;
+        border: 1px solid #3b82f6;
+        background: #eff6ff;
+        color: #3b82f6;
+        cursor: pointer;
         font-weight: 500;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.2s;
+    }
+
+    .ccx-report-btn:hover {
+        background: #3b82f6;
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .ccx-report-card {
+        cursor: pointer;
     }
 </style>
 
@@ -164,32 +177,7 @@
                             </a>
                         </div>
 
-                        <!-- Filters -->
-                        <div class="ccx-reports-filters">
-                            <div class="ccx-filter-group">
-                                <label>Date From</label>
-                                <input type="date" id="ccx_report_date_from" />
-                            </div>
-                            <div class="ccx-filter-group">
-                                <label>Date To</label>
-                                <input type="date" id="ccx_report_date_to" />
-                            </div>
-                            <div class="ccx-filter-group">
-                                <label>Staff</label>
-                                <select id="ccx_report_staff">
-                                    <option value="">All Staff</option>
-                                    <?php foreach ($members as $m) { ?>
-                                        <option value="<?php echo $m['staffid']; ?>">
-                                            <?php echo $m['firstname'] . ' ' . $m['lastname']; ?>
-                                        </option>
-                                    <?php } ?>
-                                </select>
-                            </div>
-                            <button class="ccx-filter-apply"
-                                onclick="alert('Filters will be functional once individual reports are implemented.'); return false;">
-                                <i class="fa fa-filter"></i> Apply Filters
-                            </button>
-                        </div>
+
 
                         <!-- Reports Grid -->
                         <?php
@@ -209,20 +197,18 @@
 
                         <div class="ccx-reports-grid">
                             <?php foreach ($reports as $idx => $r) { ?>
-                                <div class="ccx-report-card">
+                                <div class="ccx-report-card"
+                                    onclick="window.location='<?php echo admin_url('ccx_leads/report_view/' . ($idx + 1)); ?>';">
                                     <div class="ccx-report-icon" style="background:<?php echo $r['color']; ?>;">
                                         <i class="fa-solid <?php echo $r['icon']; ?>"></i>
                                     </div>
                                     <div class="ccx-report-body">
-                                        <h5>
-                                            <?php echo ($idx + 1) . '. ' . $r['name']; ?>
-                                        </h5>
-                                        <p>
-                                            <?php echo $r['desc']; ?>
-                                        </p>
-                                        <button class="ccx-report-btn" disabled>
+                                        <h5><?php echo ($idx + 1) . '. ' . $r['name']; ?></h5>
+                                        <p><?php echo $r['desc']; ?></p>
+                                        <a href="<?php echo admin_url('ccx_leads/report_view/' . ($idx + 1)); ?>"
+                                            class="ccx-report-btn">
                                             <i class="fa fa-eye"></i> View Report
-                                        </button>
+                                        </a>
                                     </div>
                                 </div>
                             <?php } ?>
